@@ -4,6 +4,42 @@ import { useContext } from 'react'
 import { AppContext } from '../context/AppContext'
 import { createPortal } from 'react-dom'
 
+/* Inline SVG flags — crisper and more consistent across OS/browsers than emoji flags */
+const FlagUK = ({ className = 'w-5 h-5' }) => (
+  <svg className={`${className} rounded-full`} viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice">
+    <circle cx="12" cy="12" r="12" fill="#00247D" />
+    <g clipPath="url(#uk-circle)">
+      <path d="M0 0L24 24M24 0L0 24" stroke="#FFFFFF" strokeWidth="4.5" />
+      <path d="M0 0L24 24M24 0L0 24" stroke="#CF142B" strokeWidth="1.6" />
+      <path d="M12 0V24M0 12H24" stroke="#FFFFFF" strokeWidth="7" />
+      <path d="M12 0V24M0 12H24" stroke="#CF142B" strokeWidth="2.6" />
+    </g>
+    <defs>
+      <clipPath id="uk-circle">
+        <circle cx="12" cy="12" r="12" />
+      </clipPath>
+    </defs>
+  </svg>
+)
+
+const FlagCN = ({ className = 'w-5 h-5' }) => (
+  <svg className={`${className} rounded-full`} viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice">
+    <circle cx="12" cy="12" r="12" fill="#DE2910" />
+    <g fill="#FFDE00">
+      <path d="M6.2 4.4l.55 1.7h1.79l-1.45 1.05.55 1.7-1.44-1.05-1.45 1.05.55-1.7L3.86 6.1h1.8z" />
+      <path d="M11 3.3l.2.63h.66l-.53.39.2.62-.53-.38-.53.38.2-.62-.53-.39h.66z" />
+      <path d="M13 5.8l.2.63h.66l-.53.38.2.63-.53-.39-.53.39.2-.63-.53-.38h.66z" />
+      <path d="M13 8.9l.2.62h.66l-.53.39.2.62-.53-.38-.53.38.2-.62-.53-.39h.66z" />
+      <path d="M11 11.1l.2.63h.66l-.53.38.2.63-.53-.39-.53.39.2-.63-.53-.38h.66z" />
+    </g>
+  </svg>
+)
+
+const languageOptions = [
+  { code: 'EN', label: 'English', Flag: FlagUK },
+  { code: 'ZH', label: '中文', Flag: FlagCN },
+]
+
 const Navbar = () => {
   const { openSignup } = useContext(AppContext)
   const location = useLocation()
@@ -12,6 +48,8 @@ const Navbar = () => {
   const languageTriggerRef = useRef(null)
   const languageDropdownRef = useRef(null)
   const [languageDropdownPosition, setLanguageDropdownPosition] = useState({ top: 0, left: 0 })
+
+  const current = languageOptions.find((l) => l.code === selectedLanguage) ?? languageOptions[0]
 
   useEffect(() => {
     const onClickOutside = (e) => {
@@ -40,7 +78,7 @@ const Navbar = () => {
   useEffect(() => {
     if (showLanguageDropdown && languageTriggerRef.current) {
       const rect = languageTriggerRef.current.getBoundingClientRect()
-      setLanguageDropdownPosition({ top: rect.bottom + 8, left: rect.right - 144 })
+      setLanguageDropdownPosition({ top: rect.bottom + 8, left: rect.right - 176 })
     }
   }, [showLanguageDropdown])
 
@@ -54,7 +92,7 @@ const Navbar = () => {
         .animate-loc-in { animation: loc-in 0.18s ease both; }
       `}</style>
       <nav className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo - Left Side */}
           <div className="flex-shrink-0 flex items-center">
@@ -101,41 +139,66 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             {/* Language Dropdown */}
             <div className="relative" ref={languageTriggerRef}>
-              <button 
+              <button
                 onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
-                className="flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg border transition-colors duration-200 ${
+                  showLanguageDropdown
+                    ? 'border-gray-300 bg-gray-50'
+                    : 'border-transparent hover:border-gray-200 hover:bg-gray-50'
+                }`}
+                aria-haspopup="listbox"
+                aria-expanded={showLanguageDropdown}
               >
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-sm font-medium text-gray-700">{selectedLanguage}</span>
-                <svg className={`w-4 h-4 text-gray-500 transition-transform ${showLanguageDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <current.Flag className="w-5 h-5 flex-shrink-0" />
+                <span className="text-sm font-medium text-gray-700">{current.code}</span>
+                <svg
+                  className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${showLanguageDropdown ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              
+
               {showLanguageDropdown &&
                 createPortal(
                   <div
                     ref={languageDropdownRef}
-                    className="fixed w-36 bg-white rounded-xl shadow-2xl overflow-hidden text-left animate-loc-in z-40"
+                    role="listbox"
+                    className="fixed w-44 bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden text-left animate-loc-in z-40"
                     style={{ top: `${languageDropdownPosition.top}px`, left: `${languageDropdownPosition.left}px` }}
                   >
-                    <div className="py-2">
-                      <button 
-                        onClick={() => { setSelectedLanguage('EN'); setShowLanguageDropdown(false) }}
-                        className="w-full px-4 py-2.5 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
-                      >
-                        <span className="text-lg">🇬🇧</span>
-                        <span>English</span>
-                      </button>
-                      <button 
-                        onClick={() => { setSelectedLanguage('ZH'); setShowLanguageDropdown(false) }}
-                        className="w-full px-4 py-2.5 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
-                      >
-                        <span className="text-lg">🇨🇳</span>
-                        <span>中文</span>
-                      </button>
+                    <div className="px-4 pt-3 pb-2 text-[11px] font-semibold tracking-wide text-gray-400">
+                      Select language
+                    </div>
+                    <div className="pb-1.5">
+                      {languageOptions.map(({ code, label, Flag }) => {
+                        const active = selectedLanguage === code
+                        return (
+                          <button
+                            key={code}
+                            role="option"
+                            aria-selected={active}
+                            onClick={() => {
+                              setSelectedLanguage(code)
+                              setShowLanguageDropdown(false)
+                            }}
+                            className={`w-full px-4 py-2.5 flex items-center gap-3 text-sm transition-colors duration-150 ${
+                              active ? 'bg-red-50 text-[#F41703] font-medium' : 'text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            <Flag className="w-5 h-5 flex-shrink-0" />
+                            <span className="flex-1 text-left">{label}</span>
+                            {active && (
+                              <svg className="w-4 h-4 text-[#F41703]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>,
                   document.body
