@@ -10,11 +10,12 @@ const Home = () => {
   return (
     <div>
         <Header />
-        <WhatWeDo />
-        <Source />
-      <Process />  
-        
-        <Countries />
+        <div className="relative z-10 bg-white">
+          <WhatWeDo />
+          <Source />
+          <Process />  
+          <Countries />
+        </div>
     </div>
   )
 }
