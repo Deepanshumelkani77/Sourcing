@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useContext } from 'react'
 import { AppContext } from '../context/AppContext'
+import { AuthContext } from '../context/AuthProvider'
 import { createPortal } from 'react-dom'
 
 /* Inline SVG flags — crisper and more consistent across OS/browsers than emoji flags */
@@ -42,12 +43,17 @@ const languageOptions = [
 
 const Navbar = () => {
   const { openSignup } = useContext(AppContext)
+  const { user, logout } = useContext(AuthContext)
   const location = useLocation()
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false)
+  const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState('EN')
   const languageTriggerRef = useRef(null)
   const languageDropdownRef = useRef(null)
+  const userTriggerRef = useRef(null)
+  const userDropdownRef = useRef(null)
   const [languageDropdownPosition, setLanguageDropdownPosition] = useState({ top: 0, left: 0 })
+  const [userDropdownPosition, setUserDropdownPosition] = useState({ top: 0, left: 0 })
 
   const current = languageOptions.find((l) => l.code === selectedLanguage) ?? languageOptions[0]
 
@@ -61,10 +67,19 @@ const Navbar = () => {
       ) {
         setShowLanguageDropdown(false)
       }
+      if (
+        userTriggerRef.current &&
+        !userTriggerRef.current.contains(e.target) &&
+        userDropdownRef.current &&
+        !userDropdownRef.current.contains(e.target)
+      ) {
+        setShowUserDropdown(false)
+      }
     }
     const onEscape = (e) => {
       if (e.key === 'Escape') {
         setShowLanguageDropdown(false)
+        setShowUserDropdown(false)
       }
     }
     document.addEventListener('mousedown', onClickOutside)
@@ -82,6 +97,13 @@ const Navbar = () => {
     }
   }, [showLanguageDropdown])
 
+  useEffect(() => {
+    if (showUserDropdown && userTriggerRef.current) {
+      const rect = userTriggerRef.current.getBoundingClientRect()
+      setUserDropdownPosition({ top: rect.bottom + 8, left: rect.right - 160 })
+    }
+  }, [showUserDropdown])
+
   return (
     <>
       <style>{`
@@ -92,7 +114,7 @@ const Navbar = () => {
         .animate-loc-in { animation: loc-in 0.18s ease both; }
       `}</style>
       <nav className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
         <div className="flex justify-between items-center h-16">
           {/* Logo - Left Side */}
           <div className="flex-shrink-0 flex items-center">
@@ -105,31 +127,31 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <Link 
               to="/" 
-              className={`transition-colors duration-200 font-medium ${location.pathname === '/' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
+              className={`transition-colors  duration-200 text-lg font-medium ${location.pathname === '/' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
               Home
             </Link>
             <Link 
               to="/about" 
-              className={`transition-colors duration-200 font-medium ${location.pathname === '/about' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
+              className={`transition-colors duration-200 text-lg font-medium ${location.pathname === '/about' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
               About
             </Link>
             <Link 
               to="/blog" 
-              className={`transition-colors duration-200 font-medium ${location.pathname === '/blog' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
+              className={`transition-colors duration-200  text-lg font-medium ${location.pathname === '/blog' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
               Blog
             </Link>
             <Link 
               to="/contact" 
-              className={`transition-colors duration-200 font-medium ${location.pathname === '/contact' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
+              className={`transition-colors duration-200 text-lg font-medium ${location.pathname === '/contact' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
               Contact
             </Link>
             <Link 
               to="/career" 
-              className={`transition-colors duration-200 font-medium ${location.pathname === '/career' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
+              className={`transition-colors duration-200 text-lg font-medium ${location.pathname === '/career' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
               Career
             </Link>
@@ -205,10 +227,75 @@ const Navbar = () => {
                 )}
             </div>
 
-            {/* Sign In Button */}
-            <button onClick={openSignup} className="bg-[#F41703] text-white px-4 py-2 rounded-lg hover:bg-[#d10f02] transition-colors duration-200 font-medium shadow-sm hover:shadow-md">
-              Sign In
-            </button>
+            {/* Sign In Button / User Icon */}
+            {user ? (
+              <div className="relative" ref={userTriggerRef}>
+                <button
+                  onClick={() => setShowUserDropdown(!showUserDropdown)}
+                  className={`flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg border transition-colors duration-200 ${
+                    showUserDropdown
+                      ? 'border-gray-300 bg-gray-50'
+                      : 'border-transparent hover:border-gray-200 hover:bg-gray-50'
+                  }`}
+                  aria-haspopup="listbox"
+                  aria-expanded={showUserDropdown}
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#F41703] flex items-center justify-center text-white font-medium">
+                    {user.firstName ? user.firstName.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  <svg
+                    className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${showUserDropdown ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {showUserDropdown &&
+                  createPortal(
+                    <div
+                      ref={userDropdownRef}
+                      role="listbox"
+                      className="fixed w-40 bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden text-left animate-loc-in z-40"
+                      style={{ top: `${userDropdownPosition.top}px`, left: `${userDropdownPosition.left}px` }}
+                    >
+                      <div className="py-1.5">
+                        <Link
+                          to="/dashboard"
+                          onClick={() => setShowUserDropdown(false)}
+                          className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                          </svg>
+                          <span>Dashboard</span>
+                        </Link>
+                        <button
+                          onClick={async () => {
+                            await logout()
+                            setShowUserDropdown(false)
+                            window.location.reload()
+                          }}
+                          className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                          </svg>
+                          <span>Logout</span>
+                        </button>
+                      </div>
+                    </div>,
+                    document.body
+                  )}
+              </div>
+            ) : (
+              <button onClick={openSignup} className="bg-[#F41703] text-white px-4 py-2 rounded-lg hover:bg-[#d10f02] transition-colors duration-200 font-medium shadow-sm hover:shadow-md">
+                Sign In
+              </button>
+            )}
           </div>
         </div>
       </div>

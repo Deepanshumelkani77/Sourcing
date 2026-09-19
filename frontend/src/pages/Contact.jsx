@@ -13,7 +13,7 @@ const CONTACT_CARDS = [
   {
     icon: '✉️',
     title: 'Email Us',
-    lines: ['info@nestnbest.com'],
+    lines: ['info@indochinabridge.com'],
     note: 'We reply within 24 hours',
   },
   {

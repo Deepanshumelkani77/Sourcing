@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { AppContext } from '../context/AppContext'
+import {
+  sendSignupOTP,
+  verifySignupOTP,
+  signup,
+  login,
+  forgotPassword
+} from '../services/authApi'
 
 const Signup = () => {
   const { showSignup, signupMode, closeSignup, setSignupMode } = useContext(AppContext)
@@ -16,10 +23,9 @@ const Signup = () => {
   const [emailOtpSent, setEmailOtpSent] = useState(false)
   const [emailOtp, setEmailOtp] = useState('')
   const [emailOtpVerified, setEmailOtpVerified] = useState(false)
-  const [mobileOtpSent, setMobileOtpSent] = useState(false)
-  const [mobileOtp, setMobileOtp] = useState('')
-  const [mobileOtpVerified, setMobileOtpVerified] = useState(false)
   const [otpError, setOtpError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [otpLoading, setOtpLoading] = useState(false)
 
   const BRAND_COLOR = '#F41703'
   const SECONDARY_COLOR = '#F97316'
@@ -46,109 +52,198 @@ const Signup = () => {
 
   const close = () => closeSignup()
 
-  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value })
-  const handleSignupChange = (e) => setSignupData({ ...signupData, [e.target.name]: e.target.value })
+  const handleLoginChange = (e) => {
+    setLoginData({ ...loginData, [e.target.name]: e.target.value })
+    setError('')
+  }
 
-  const submitLogin = (e) => {
+  const handleSignupChange = (e) => {
+    const { name, value } = e.target
+    setSignupData({ ...signupData, [name]: value })
+    setError('')
+
+    if (name === 'email') {
+      setEmailOtpSent(false)
+      setEmailOtp('')
+      setEmailOtpVerified(false)
+      setOtpError('')
+    }
+  }
+
+  const submitLogin = async (e) => {
     e.preventDefault()
     setError('')
 
-    if (userCaptcha !== captcha) {
+    if (userCaptcha.trim().toLowerCase() !== captcha.trim().toLowerCase()) {
       setError('Please enter the correct CAPTCHA code')
       generateCaptcha()
       return
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    const phoneRegex = /^\+?[0-9]+$/
 
-    if (!emailRegex.test(loginData.email) && !phoneRegex.test(loginData.email)) {
-      setError('Please enter a valid email address or phone number')
+    if (!emailRegex.test(loginData.email)) {
+      setError('Please enter a valid email address')
       return
     }
 
-    console.log('login', loginData)
+    if (loginData.password.length < 8) {
+      setError('Password must be at least 8 characters')
+      return
+    }
+
+    try {
+      setLoading(true)
+      const result = await login(loginData.email, loginData.password)
+
+      if (result.success) {
+        close()
+        window.location.reload()
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleSocialLogin = (provider) => {
-    console.log('social login', provider)
-    close()
+    if (provider === 'google') {
+      window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`
+    } else {
+      console.log(`${provider} OAuth is not configured yet`)
+    }
   }
 
-  const submitSignup = (e) => {
+  const sendEmailOtp = async () => {
+    setOtpError('')
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if (!emailRegex.test(signupData.email)) {
+      setOtpError('Please enter a valid email address first')
+      return
+    }
+
+    try {
+      setOtpLoading(true)
+      const result = await sendSignupOTP(signupData.email)
+
+      if (result.success) {
+        setEmailOtpSent(true)
+        setEmailOtpVerified(false)
+        setEmailOtp('')
+      }
+    } catch (err) {
+      setOtpError(err.response?.data?.message || 'Unable to send OTP')
+    } finally {
+      setOtpLoading(false)
+    }
+  }
+
+  const verifyEmailOtp = async () => {
+    setOtpError('')
+
+    if (emailOtp.length !== 6) {
+      setOtpError('Please enter a valid 6-digit OTP')
+      return
+    }
+
+    try {
+      setOtpLoading(true)
+      const result = await verifySignupOTP(signupData.email, emailOtp)
+
+      if (result.success) {
+        setEmailOtpVerified(true)
+        setOtpError('')
+      }
+    } catch (err) {
+      setOtpError(err.response?.data?.message || 'Invalid OTP')
+    } finally {
+      setOtpLoading(false)
+    }
+  }
+
+  const submitSignup = async (e) => {
     e.preventDefault()
     setError('')
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const phoneRegex = /^\+?[0-9]{7,15}$/
+
+    if (!signupData.firstName.trim()) {
+      setError('Please enter your first name')
+      return
+    }
+
+    if (!signupData.lastName.trim()) {
+      setError('Please enter your last name')
+      return
+    }
+
     if (!emailRegex.test(signupData.email)) {
-      setError('Please enter a valid email address with @ and domain')
+      setError('Please enter a valid email address')
       return
     }
 
-    const phoneRegex = /^\+?[0-9]+$/
     if (!phoneRegex.test(signupData.phone)) {
-      setError('Please enter a valid phone number (numeric and + sign only)')
+      setError('Please enter a valid phone number')
       return
     }
 
-    console.log('signup', signupData)
+    if (signupData.password.length < 8) {
+      setError('Password must be at least 8 characters')
+      return
+    }
+
+    if (!emailOtpVerified) {
+      setError('Please verify your email before creating your account')
+      return
+    }
+
+    try {
+      setLoading(true)
+      const result = await signup({
+        firstName: signupData.firstName,
+        middleName: signupData.middleName,
+        lastName: signupData.lastName,
+        email: signupData.email,
+        phone: signupData.phone,
+        password: signupData.password,
+        emailVerified: true
+      })
+
+      if (result.success) {
+        close()
+        window.location.reload()
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Unable to create account')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleForgotPassword = (e) => {
+  const handleForgotPassword = async (e) => {
     e.preventDefault()
     setForgotError('')
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
     if (!emailRegex.test(forgotEmail)) {
       setForgotError('Please enter a valid email address')
       return
     }
 
-    console.log('Forgot password for:', forgotEmail)
-    setForgotSuccess(true)
-    setForgotEmail('')
-  }
-
-  const sendEmailOtp = () => {
-    setOtpError('')
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(signupData.email)) {
-      setOtpError('Please enter a valid email address first')
-      return
+    try {
+      setLoading(true)
+      await forgotPassword(forgotEmail)
+      setForgotSuccess(true)
+      setForgotEmail('')
+    } catch (err) {
+      setForgotError(err.response?.data?.message || 'Unable to send reset link')
+    } finally {
+      setLoading(false)
     }
-    console.log('Sending OTP to email:', signupData.email)
-    setEmailOtpSent(true)
-  }
-
-  const verifyEmailOtp = () => {
-    setOtpError('')
-    if (emailOtp.length !== 6) {
-      setOtpError('Please enter a valid 6-digit OTP')
-      return
-    }
-    console.log('Verifying email OTP:', emailOtp)
-    setEmailOtpVerified(true)
-  }
-
-  const sendMobileOtp = () => {
-    setOtpError('')
-    const phoneRegex = /^\+?[0-9]+$/
-    if (!phoneRegex.test(signupData.phone)) {
-      setOtpError('Please enter a valid phone number first')
-      return
-    }
-    console.log('Sending OTP to mobile:', signupData.phone)
-    setMobileOtpSent(true)
-  }
-
-  const verifyMobileOtp = () => {
-    setOtpError('')
-    if (mobileOtp.length !== 6) {
-      setOtpError('Please enter a valid 6-digit OTP')
-      return
-    }
-    console.log('Verifying mobile OTP:', mobileOtp)
-    setMobileOtpVerified(true)
   }
 
   return (
@@ -231,7 +326,9 @@ const Signup = () => {
                   </div>
                 </div>
                 {error && <div className="text-sm text-red-600">{error}</div>}
-                <button type="submit" className="w-full py-2 rounded-md bg-[#F41703] text-white font-semibold hover:bg-[#d31402] transition-colors">Login</button>
+                <button type="submit" disabled={loading} className="w-full py-2 rounded-md bg-[#F41703] text-white font-semibold hover:bg-[#d31402] disabled:opacity-60 transition-colors">
+                  {loading ? 'Logging in...' : 'Login'}
+                </button>
                 <div className="flex justify-between items-center text-sm text-gray-600">
                   <span>Don't have an account? <button type="button" onClick={() => setSignupMode('signup')} className="text-[#F41703] font-semibold">Sign up</button></span>
                   <button type="button" onClick={() => setShowForgotPassword(true)} className="text-[#F97316] hover:underline">Forgot password?</button>
@@ -279,8 +376,8 @@ const Signup = () => {
                   <div className="flex gap-2">
                     <input name="email" type="email" value={signupData.email} onChange={handleSignupChange} placeholder="Email address *" required className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400" />
                     {!emailOtpVerified && (
-                      <button type="button" onClick={sendEmailOtp} disabled={emailOtpSent} className="px-3 py-2 bg-[#F41703] text-white text-sm rounded-md hover:bg-[#d31402] disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap">
-                        {emailOtpSent ? 'OTP Sent' : 'Send OTP'}
+                      <button type="button" onClick={sendEmailOtp} disabled={emailOtpSent || otpLoading} className="px-3 py-2 bg-[#F41703] text-white text-sm rounded-md hover:bg-[#d31402] disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap">
+                        {otpLoading ? 'Sending...' : emailOtpSent ? 'OTP Sent' : 'Send OTP'}
                       </button>
                     )}
                     {emailOtpVerified && (
@@ -295,45 +392,24 @@ const Signup = () => {
                   {emailOtpSent && !emailOtpVerified && (
                     <div className="mt-2 flex gap-2">
                       <input type="text" value={emailOtp} onChange={(e) => setEmailOtp(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))} placeholder="Enter 6-digit OTP" maxLength={6} className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-sm" />
-                      <button type="button" onClick={verifyEmailOtp} className="px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 whitespace-nowrap">
-                        Verify
+                      <button type="button" onClick={verifyEmailOtp} disabled={otpLoading} className="px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 disabled:opacity-60 whitespace-nowrap">
+                        {otpLoading ? 'Checking...' : 'Verify'}
                       </button>
                     </div>
                   )}
                   {otpError && <div className="text-sm text-red-600">{otpError}</div>}
                 </div>
                 <div>
-                  <div className="flex gap-2">
-                    <input name="phone" value={signupData.phone} onChange={handleSignupChange} placeholder="Phone number *" required className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400" />
-                    {!mobileOtpVerified && (
-                      <button type="button" onClick={sendMobileOtp} disabled={mobileOtpSent} className="px-3 py-2 bg-[#F41703] text-white text-sm rounded-md hover:bg-[#d31402] disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap">
-                        {mobileOtpSent ? 'OTP Sent' : 'Send OTP'}
-                      </button>
-                    )}
-                    {mobileOtpVerified && (
-                      <div className="px-3 py-2 bg-green-100 text-green-700 text-sm rounded-md flex items-center gap-1 whitespace-nowrap">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Verified
-                      </div>
-                    )}
-                  </div>
-                  {mobileOtpSent && !mobileOtpVerified && (
-                    <div className="mt-2 flex gap-2">
-                      <input type="text" value={mobileOtp} onChange={(e) => setMobileOtp(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))} placeholder="Enter 6-digit OTP" maxLength={6} className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-sm" />
-                      <button type="button" onClick={verifyMobileOtp} className="px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 whitespace-nowrap">
-                        Verify
-                      </button>
-                    </div>
-                  )}
-                  {otpError && <div className="text-sm text-red-600">{otpError}</div>}
+                  <input name="phone" value={signupData.phone} onChange={handleSignupChange} placeholder="Phone number *" required className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400" />
+                  <p className="text-xs text-gray-400 mt-1">Phone verification will be added later.</p>
                 </div>
                 <div>
                   <input name="password" type={showPassword ? 'text' : 'password'} value={signupData.password} onChange={handleSignupChange} placeholder="Create a password" required className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400" />
                 </div>
                 {error && <div className="text-sm text-red-600">{error}</div>}
-                <button type="submit" className="w-full py-2 rounded-md bg-[#F41703] text-white font-semibold hover:bg-[#d31402] transition-colors">Create account</button>
+                <button type="submit" disabled={loading || !emailOtpVerified} className="w-full py-2 rounded-md bg-[#F41703] text-white font-semibold hover:bg-[#d31402] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
+                  {loading ? 'Creating account...' : 'Create account'}
+                </button>
                 <div className="text-center text-sm text-gray-600">Already have an account? <button type="button" onClick={() => setSignupMode('login')} className="text-[#F41703] font-semibold">Sign in</button></div>
 
                 <div className="mt-3">
@@ -392,8 +468,8 @@ const Signup = () => {
                   />
                 </div>
                 {forgotError && <div className="text-sm text-red-600">{forgotError}</div>}
-                <button type="submit" className="w-full py-3 rounded-lg bg-[#F41703] text-white font-semibold hover:bg-[#d31402] transition">
-                  Send Reset Link
+                <button type="submit" disabled={loading} className="w-full py-3 rounded-lg bg-[#F41703] text-white font-semibold hover:bg-[#d31402] disabled:opacity-60 transition">
+                  {loading ? 'Sending...' : 'Send Reset Link'}
                 </button>
                 <button type="button" onClick={() => setShowForgotPassword(false)} className="w-full py-2 text-sm text-gray-600 hover:text-gray-800 transition">
                   Back to Login
