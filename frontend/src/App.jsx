@@ -7,6 +7,8 @@ import About from './pages/About'
 import Blog from './pages/Blog'
 import Contact from './pages/Contact'
 import Career from './pages/Career'
+import ProductPage from './pages/ProductPage'
+import Dashboard from './pages/Dashboard'
 import { Routes, Route } from 'react-router-dom'
 import AppContextProvider from './context/AppContext'
 import { AuthProvider } from './context/AuthProvider'
@@ -28,6 +30,8 @@ const App = () => {
             <Route path="/blog" element={<Blog />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/career" element={<Career />} />
+            <Route path="/product/:slug" element={<ProductPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
           
            

@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { getActiveJobs } from '../services/jobApi'
 
 const BRAND_COLOR = '#F41703'
 
@@ -128,6 +129,9 @@ const VALUES = [
 ]
 
 const Career = () => {
+  const [jobs, setJobs] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [selectedJob, setSelectedJob] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [formData, setFormData] = useState({
@@ -139,6 +143,27 @@ const Career = () => {
     coverLetter: ''
   })
   const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => {
+    fetchJobs()
+  }, [])
+
+  const fetchJobs = async () => {
+    try {
+      setLoading(true)
+      const result = await getActiveJobs()
+      if (result.success) {
+        setJobs(result.jobs || [])
+        setError('')
+      } else {
+        setError(result.message || 'Failed to fetch jobs')
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to fetch jobs')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleChange = (field) => (e) => setFormData(prev => ({ ...prev, [field]: e.target.value }))
 
@@ -204,80 +229,184 @@ const Career = () => {
             </p>
           </div>
 
-          <div className="space-y-4">
-            {JOBS.map((job) => (
-              <div key={job.id} className="bg-white border border-gray-200 rounded-xl hover:shadow-lg transition-all duration-300">
-                <div className="p-6">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
-                      <div className="flex flex-wrap gap-3 text-sm text-gray-600">
-                        <span className="flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                          </svg>
-                          {job.department}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
-                          {job.location}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          {job.type}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                          </svg>
-                          {job.experience}
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setSelectedJob(selectedJob === job.id ? null : job.id)}
-                      className="px-6 py-2.5 rounded-lg font-medium transition-colors duration-300 whitespace-nowrap"
-                      style={{
-                        backgroundColor: selectedJob === job.id ? '#e5e7eb' : BRAND_COLOR,
-                        color: selectedJob === job.id ? '#374151' : 'white'
-                      }}
-                    >
-                      {selectedJob === job.id ? 'Close' : 'View Details'}
-                    </button>
-                  </div>
-
-                  {selectedJob === job.id && (
-                    <div className="mt-6 pt-6 border-t border-gray-200">
-                      <p className="text-gray-700 mb-4">{job.description}</p>
-                      <h4 className="font-semibold text-gray-900 mb-2">Requirements:</h4>
-                      <ul className="space-y-2">
-                        {job.requirements.map((req, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-gray-600">
-                            <svg className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: BRAND_COLOR }} viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0L3.3 9.7a1 1 0 111.4-1.4l3.8 3.8 6.8-6.8a1 1 0 011.4 0z" clipRule="evenodd" />
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F41703] mx-auto"></div>
+              <p className="text-gray-600 mt-4">Loading jobs...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-600">{error}</p>
+              <button
+                onClick={fetchJobs}
+                className="mt-4 px-4 py-2 bg-[#F41703] text-white rounded-lg"
+              >
+                Retry
+              </button>
+            </div>
+          ) : jobs.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No active job openings at the moment.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {jobs.map((job) => (
+                <div key={job._id} className="bg-white border border-gray-200 rounded-xl hover:shadow-lg transition-all duration-300">
+                  <div className="p-6">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
+                        <div className="flex flex-wrap gap-3 text-sm text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                             </svg>
-                            {req}
-                          </li>
-                        ))}
-                      </ul>
+                            {job.department}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            {job.location}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {job.employmentType}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                            </svg>
+                            {job.experienceLevel}
+                          </span>
+                          {job.salary && (
+                            <span className="flex items-center gap-1">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              {job.salary}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                       <button
-                        onClick={() => openModal(job.title)}
-                        className="mt-6 px-6 py-2.5 rounded-lg font-medium text-white transition-colors duration-300"
-                        style={{ backgroundColor: BRAND_COLOR }}
+                        onClick={() => setSelectedJob(selectedJob === job._id ? null : job._id)}
+                        className="px-6 py-2.5 rounded-lg font-medium transition-colors duration-300 whitespace-nowrap"
+                        style={{
+                          backgroundColor: selectedJob === job._id ? '#e5e7eb' : BRAND_COLOR,
+                          color: selectedJob === job._id ? '#374151' : 'white'
+                        }}
                       >
-                        Apply Now
+                        {selectedJob === job._id ? 'Close' : 'View Details'}
                       </button>
                     </div>
-                  )}
+
+                    {selectedJob === job._id && (
+                      <div className="mt-6 pt-6 border-t border-gray-200">
+                        <p className="text-gray-700 mb-4">{job.description}</p>
+                        
+                        {job.requirements && job.requirements.length > 0 && (
+                          <>
+                            <h4 className="font-semibold text-gray-900 mb-2">Requirements:</h4>
+                            <ul className="space-y-2 mb-4">
+                              {job.requirements.map((req, idx) => (
+                                <li key={idx} className="flex items-start gap-2 text-gray-600">
+                                  <svg className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: BRAND_COLOR }} viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0L3.3 9.7a1 1 0 111.4-1.4l3.8 3.8 6.8-6.8a1 1 0 011.4 0z" clipRule="evenodd" />
+                                  </svg>
+                                  {req}
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        )}
+
+                        {job.responsibilities && job.responsibilities.length > 0 && (
+                          <>
+                            <h4 className="font-semibold text-gray-900 mb-2">Responsibilities:</h4>
+                            <ul className="space-y-2 mb-4">
+                              {job.responsibilities.map((resp, idx) => (
+                                <li key={idx} className="flex items-start gap-2 text-gray-600">
+                                  <svg className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: BRAND_COLOR }} viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0L3.3 9.7a1 1 0 111.4-1.4l3.8 3.8 6.8-6.8a1 1 0 011.4 0z" clipRule="evenodd" />
+                                  </svg>
+                                  {resp}
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        )}
+
+                        {job.benefits && job.benefits.length > 0 && (
+                          <>
+                            <h4 className="font-semibold text-gray-900 mb-2">Benefits:</h4>
+                            <ul className="space-y-2 mb-4">
+                              {job.benefits.map((benefit, idx) => (
+                                <li key={idx} className="flex items-start gap-2 text-gray-600">
+                                  <svg className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: BRAND_COLOR }} viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0L3.3 9.7a1 1 0 111.4-1.4l3.8 3.8 6.8-6.8a1 1 0 011.4 0z" clipRule="evenodd" />
+                                  </svg>
+                                  {benefit}
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        )}
+
+                        {job.skills && job.skills.length > 0 && (
+                          <>
+                            <h4 className="font-semibold text-gray-900 mb-2">Skills:</h4>
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {job.skills.map((skill, idx) => (
+                                <span key={idx} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          </>
+                        )}
+
+                        {job.applicationDeadline && (
+                          <p className="text-sm text-gray-600 mb-4">
+                            <strong>Application Deadline:</strong> {new Date(job.applicationDeadline).toLocaleDateString()}
+                          </p>
+                        )}
+
+                        {job.applicationEmail || job.applicationUrl ? (
+                          <button
+                            onClick={() => {
+                              if (job.applicationUrl) {
+                                window.open(job.applicationUrl, '_blank')
+                              } else if (job.applicationEmail) {
+                                window.open(`mailto:${job.applicationEmail}?subject=Application for ${job.title}`, '_blank')
+                              } else {
+                                openModal(job.title)
+                              }
+                            }}
+                            className="mt-6 px-6 py-2.5 rounded-lg font-medium text-white transition-colors duration-300"
+                            style={{ backgroundColor: BRAND_COLOR }}
+                          >
+                            {job.applicationUrl ? 'Apply via Website' : job.applicationEmail ? 'Apply via Email' : 'Apply Now'}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => openModal(job.title)}
+                            className="mt-6 px-6 py-2.5 rounded-lg font-medium text-white transition-colors duration-300"
+                            style={{ backgroundColor: BRAND_COLOR }}
+                          >
+                            Apply Now
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -372,8 +501,8 @@ const Career = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition text-sm"
                     >
                       <option value="">Select a position</option>
-                      {JOBS.map(job => (
-                        <option key={job.id} value={job.title}>{job.title}</option>
+                      {jobs.map(job => (
+                        <option key={job._id} value={job.title}>{job.title}</option>
                       ))}
                       <option value="General Application">General Application</option>
                     </select>

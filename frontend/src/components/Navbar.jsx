@@ -4,6 +4,7 @@ import { useContext } from 'react'
 import { AppContext } from '../context/AppContext'
 import { AuthContext } from '../context/AuthProvider'
 import { createPortal } from 'react-dom'
+import { getAllProducts } from '../services/productApi'
 
 /* Inline SVG flags — crisper and more consistent across OS/browsers than emoji flags */
 const FlagUK = ({ className = 'w-5 h-5' }) => (
@@ -47,13 +48,19 @@ const Navbar = () => {
   const location = useLocation()
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
+  const [showProductsDropdown, setShowProductsDropdown] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState('EN')
+  const [products, setProducts] = useState([])
   const languageTriggerRef = useRef(null)
   const languageDropdownRef = useRef(null)
   const userTriggerRef = useRef(null)
   const userDropdownRef = useRef(null)
+  const productsTriggerRef = useRef(null)
+  const productsDropdownRef = useRef(null)
+  const productsTimeoutRef = useRef(null)
   const [languageDropdownPosition, setLanguageDropdownPosition] = useState({ top: 0, left: 0 })
   const [userDropdownPosition, setUserDropdownPosition] = useState({ top: 0, left: 0 })
+  const [productsDropdownPosition, setProductsDropdownPosition] = useState({ top: 0, left: 0 })
 
   const current = languageOptions.find((l) => l.code === selectedLanguage) ?? languageOptions[0]
 
@@ -75,11 +82,20 @@ const Navbar = () => {
       ) {
         setShowUserDropdown(false)
       }
+      if (
+        productsTriggerRef.current &&
+        !productsTriggerRef.current.contains(e.target) &&
+        productsDropdownRef.current &&
+        !productsDropdownRef.current.contains(e.target)
+      ) {
+        setShowProductsDropdown(false)
+      }
     }
     const onEscape = (e) => {
       if (e.key === 'Escape') {
         setShowLanguageDropdown(false)
         setShowUserDropdown(false)
+        setShowProductsDropdown(false)
       }
     }
     document.addEventListener('mousedown', onClickOutside)
@@ -104,6 +120,36 @@ const Navbar = () => {
     }
   }, [showUserDropdown])
 
+  useEffect(() => {
+    if (showProductsDropdown && productsTriggerRef.current) {
+      const rect = productsTriggerRef.current.getBoundingClientRect()
+      const dropdownWidth = 1200
+      const viewportWidth = window.innerWidth
+      const left = (viewportWidth - dropdownWidth) / 2
+      setProductsDropdownPosition({ top: rect.bottom + 8, left: Math.max(20, left) })
+    }
+  }, [showProductsDropdown])
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const result = await getAllProducts()
+        if (result.success) {
+          setProducts(result.products)
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      }
+    }
+    fetchProducts()
+
+    return () => {
+      if (productsTimeoutRef.current) {
+        clearTimeout(productsTimeoutRef.current)
+      }
+    }
+  }, [])
+
   return (
     <>
       <style>{`
@@ -125,32 +171,127 @@ const Navbar = () => {
 
           {/* Navigation Links - Center */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className={`transition-colors  duration-200 text-lg font-medium ${location.pathname === '/' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
               Home
             </Link>
-            <Link 
-              to="/about" 
+            <Link
+              to="/about"
               className={`transition-colors duration-200 text-lg font-medium ${location.pathname === '/about' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
               About
             </Link>
-            <Link 
-              to="/blog" 
+            <div
+              className="relative"
+              ref={productsTriggerRef}
+              onMouseEnter={() => {
+                if (productsTimeoutRef.current) {
+                  clearTimeout(productsTimeoutRef.current)
+                }
+                setShowProductsDropdown(true)
+              }}
+              onMouseLeave={() => {
+                productsTimeoutRef.current = setTimeout(() => {
+                  setShowProductsDropdown(false)
+                }, 200)
+              }}
+            >
+              <button
+                className={`transition-colors duration-200 text-lg font-medium flex items-center gap-1 ${location.pathname.startsWith('/product') ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
+              >
+                Products
+                <svg
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${showProductsDropdown ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showProductsDropdown &&
+                createPortal(
+                  <div
+                    ref={productsDropdownRef}
+                    className="fixed w-[1200px] bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden text-left animate-loc-in z-40 max-h-[500px] overflow-y-auto"
+                    style={{ top: `${productsDropdownPosition.top}px`, left: `${productsDropdownPosition.left}px` }}
+                    onMouseEnter={() => {
+                      if (productsTimeoutRef.current) {
+                        clearTimeout(productsTimeoutRef.current)
+                      }
+                      setShowProductsDropdown(true)
+                    }}
+                    onMouseLeave={() => {
+                      productsTimeoutRef.current = setTimeout(() => {
+                        setShowProductsDropdown(false)
+                      }, 200)
+                    }}
+                  >
+                    <div className="py-1.5">
+                      {products.length > 0 ? (
+                        (() => {
+                          // Group products by category
+                          const grouped = products.reduce((acc, product) => {
+                            const category = product.category || 'Uncategorized'
+                            if (!acc[category]) {
+                              acc[category] = []
+                            }
+                            acc[category].push(product)
+                            return acc
+                          }, {})
+
+                          const categories = Object.entries(grouped)
+
+                          return (
+                            <div className="grid grid-cols-5 gap-0">
+                              {categories.map(([category, categoryProducts]) => (
+                                <div key={category} className="border-r border-gray-100 last:border-r-0">
+                                  <div className="px-4 py-2.5 bg-gradient-to-r from-gray-50 to-white font-semibold text-sm text-gray-800 uppercase tracking-wide border-b border-gray-100">
+                                    {category}
+                                  </div>
+                                  {categoryProducts.map((product) => (
+                                    <Link
+                                      key={product._id}
+                                      to={`/product/${product.slug}`}
+                                      onClick={() => setShowProductsDropdown(false)}
+                                      className="w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-[#F41703] transition-colors duration-150 block"
+                                    >
+                                      {product.productName}
+                                    </Link>
+                                  ))}
+                                </div>
+                              ))}
+                            </div>
+                          )
+                        })()
+                      ) : (
+                        <div className="px-4 py-2.5 text-sm text-gray-500">
+                          No products available
+                        </div>
+                      )}
+                    </div>
+                  </div>,
+                  document.body
+                )}
+            </div>
+            <Link
+              to="/blog"
               className={`transition-colors duration-200  text-lg font-medium ${location.pathname === '/blog' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
               Blog
             </Link>
-            <Link 
-              to="/contact" 
+            <Link
+              to="/contact"
               className={`transition-colors duration-200 text-lg font-medium ${location.pathname === '/contact' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
               Contact
             </Link>
-            <Link 
-              to="/career" 
+            <Link
+              to="/career"
               className={`transition-colors duration-200 text-lg font-medium ${location.pathname === '/career' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
               Career

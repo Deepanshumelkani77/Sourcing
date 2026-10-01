@@ -109,7 +109,7 @@ const Signup = () => {
 
   const handleSocialLogin = (provider) => {
     if (provider === 'google') {
-      window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`
+      window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`
     } else {
       console.log(`${provider} OAuth is not configured yet`)
     }
@@ -213,8 +213,14 @@ const Signup = () => {
       })
 
       if (result.success) {
-        close()
-        window.location.reload()
+        // Switch to login mode after successful signup
+        setSignupMode('login')
+        setLoginData({ email: signupData.email, password: '' })
+        setSignupData({ firstName: '', middleName: '', lastName: '', email: '', phone: '', password: '' })
+        setEmailOtpSent(false)
+        setEmailOtpVerified(false)
+        setEmailOtp('')
+        setError('')
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Unable to create account')

@@ -3,6 +3,15 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const User = require("../models/User");
 
+// Disable session support since we're using JWT tokens
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
+
 passport.use(
   new GoogleStrategy(
     {

@@ -1,5 +1,6 @@
 import React, {
   createContext,
+  useContext,
   useEffect,
   useState
 } from 'react'
@@ -12,6 +13,8 @@ import {
 
 export const AuthContext =
   createContext(null)
+
+export const useAuth = () => useContext(AuthContext)
 
 
 export const AuthProvider = ({

@@ -31,11 +31,12 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
- phone: {
-  type: String,
-  default: "",
-  trim: true,
-},
+    phone: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
     password: {
       type: String,
       default: null,
@@ -57,12 +58,6 @@ const userSchema = new mongoose.Schema(
       default: "local",
     },
 
-    role: {
-      type: String,
-      enum: ["customer", "admin"],
-      default: "customer",
-    },
-
     resetPasswordToken: {
       type: String,
       default: null,
@@ -71,6 +66,16 @@ const userSchema = new mongoose.Schema(
     resetPasswordExpires: {
       type: Date,
       default: null,
+    },
+
+    totalOrders: {
+      type: Number,
+      default: 0,
+    },
+
+    totalSpent: {
+      type: Number,
+      default: 0,
     },
   },
   {

@@ -1,10 +1,10 @@
 import axios from 'axios'
 
 const API_URL =
-  import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+  import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const authApi = axios.create({
-  baseURL: API_URL,
+  baseURL: `${API_URL}/api/user/auth`,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
@@ -14,7 +14,7 @@ const authApi = axios.create({
 
 export const sendSignupOTP = async (email) => {
   const response = await authApi.post(
-    '/auth/send-signup-otp',
+    '/send-signup-otp',
     {
       email
     }
@@ -29,7 +29,7 @@ export const verifySignupOTP = async (
   otp
 ) => {
   const response = await authApi.post(
-    '/auth/verify-signup-otp',
+    '/verify-signup-otp',
     {
       email,
       otp
@@ -42,7 +42,7 @@ export const verifySignupOTP = async (
 
 export const signup = async (data) => {
   const response = await authApi.post(
-    '/auth/signup',
+    '/signup',
     data
   )
 
@@ -55,7 +55,7 @@ export const login = async (
   password
 ) => {
   const response = await authApi.post(
-    '/auth/login',
+    '/login',
     {
       email,
       password
@@ -68,7 +68,7 @@ export const login = async (
 
 export const logout = async () => {
   const response = await authApi.post(
-    '/auth/logout'
+    '/logout'
   )
 
   return response.data
@@ -77,7 +77,7 @@ export const logout = async () => {
 
 export const getMe = async () => {
   const response = await authApi.get(
-    '/auth/me'
+    '/me'
   )
 
   return response.data
@@ -88,7 +88,7 @@ export const forgotPassword = async (
   email
 ) => {
   const response = await authApi.post(
-    '/auth/forgot-password',
+    '/forgot-password',
     {
       email
     }
@@ -103,7 +103,7 @@ export const resetPassword = async (
   password
 ) => {
   const response = await authApi.post(
-    `/auth/reset-password/${token}`,
+    `/reset-password/${token}`,
     {
       password
     }
