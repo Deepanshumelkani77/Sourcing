@@ -10,6 +10,7 @@ const {
   forgotPassword,
   resetPassword,
   googleCallback,
+  facebookCallback,
 } = require("../controllers/userAuthController");
 const { protectUser } = require("../middleware/authMiddleware");
 
@@ -33,6 +34,17 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login", session: false }),
   googleCallback
+);
+
+router.get(
+  "/facebook",
+  passport.authenticate("facebook", { scope: ["email"], session: false })
+);
+
+router.get(
+  "/facebook/callback",
+  passport.authenticate("facebook", { failureRedirect: "/login", session: false }),
+  facebookCallback
 );
 
 module.exports = router;

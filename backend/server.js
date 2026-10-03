@@ -14,7 +14,7 @@ const userRoutes = require("./routes/userRoutes");
 const issueRoutes = require("./routes/issueRoutes");
 const jobRoutes = require("./routes/jobRoutes");
 const passport = require("./config/passport");
-const { googleCallback } = require("./controllers/userAuthController");
+const { googleCallback, facebookCallback } = require("./controllers/userAuthController");
 
 dotenv.config();
 
@@ -99,6 +99,18 @@ app.get(
   "/api/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login", session: false }),
   googleCallback
+);
+
+// Legacy Facebook OAuth routes for backward compatibility
+app.get(
+  "/api/auth/facebook",
+  passport.authenticate("facebook", { scope: ["email"], session: false })
+);
+
+app.get(
+  "/api/auth/facebook/callback",
+  passport.authenticate("facebook", { failureRedirect: "/login", session: false }),
+  facebookCallback
 );
 
 app.use(

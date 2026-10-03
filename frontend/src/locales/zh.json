@@ -1,0 +1,80 @@
+{
+  "nav": {
+    "home": "首页",
+    "about": "关于我们",
+    "blog": "博客",
+    "contact": "联系我们",
+    "career": "职业发展",
+    "login": "登录",
+    "signup": "注册"
+  },
+  "home": {
+    "hero": {
+      "title": "您值得信赖的中国采购合作伙伴",
+      "subtitle": "连接全球企业与优质制造商。我们负责采购、质量控制、物流以及中间的一切事务。",
+      "cta": "开始使用",
+      "learnMore": "了解更多"
+    },
+    "features": {
+      "title": "为什么选择我们",
+      "subtitle": "我们简化从中国采购的复杂流程",
+      "sourcing": {
+        "title": "专业采购",
+        "description": "访问我们跨各行业经过验证的制造商网络"
+      },
+      "quality": {
+        "title": "质量控制",
+        "description": "严格的检验流程确保产品卓越品质"
+      },
+      "logistics": {
+        "title": "无缝物流",
+        "description": "端到端运输和海关处理，确保顺利交付"
+      }
+    }
+  },
+  "about": {
+    "title": "关于我们",
+    "subtitle": "了解我们的使命和价值观"
+  },
+  "contact": {
+    "title": "联系我们",
+    "subtitle": "与我们的团队取得联系"
+  },
+  "career": {
+    "title": "与我们一起构建您的职业生涯",
+    "subtitle": "加入一个连接全球企业与优质制造业的动态团队。在国际贸易和采购领域发展您的职业生涯。",
+    "openPositions": "开放职位",
+    "currentOpenings": "当前职位空缺",
+    "exploreOpportunities": "探索我们当前的机会，找到适合您的理想职位。",
+    "viewDetails": "查看详情",
+    "close": "关闭",
+    "applyNow": "立即申请",
+    "requirements": "要求",
+    "responsibilities": "职责",
+    "benefits": "福利",
+    "skills": "技能",
+    "applicationDeadline": "申请截止日期",
+    "applyViaWebsite": "通过网站申请",
+    "applyViaEmail": "通过邮件申请",
+    "noJobs": "目前没有活跃的职位空缺。",
+    "loading": "加载职位中...",
+    "applyForm": {
+      "title": "申请职位",
+      "subtitle": "填写以下表格，我们将在48小时内回复您。",
+      "fullName": "全名",
+      "email": "电子邮件",
+      "phone": "电话号码",
+      "position": "职位",
+      "selectPosition": "选择职位",
+      "experience": "工作经验（年）",
+      "coverLetter": "求职信",
+      "submit": "提交申请",
+      "success": "谢谢！您的申请已成功提交。我们将审核并尽快回复您。"
+    }
+  },
+  "common": {
+    "language": "语言",
+    "english": "English",
+    "chinese": "中文"
+  }
+}

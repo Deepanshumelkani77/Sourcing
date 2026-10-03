@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { getActiveJobs } from '../services/jobApi'
+import { useTranslation } from 'react-i18next'
 
 const BRAND_COLOR = '#F41703'
 
@@ -129,6 +130,7 @@ const VALUES = [
 ]
 
 const Career = () => {
+  const { t } = useTranslation()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -200,15 +202,15 @@ const Career = () => {
 
         <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
           <div className="flex items-center gap-2 text-sm text-white/70 mb-4">
-            <span>Home</span>
+            <span>{t('nav.home')}</span>
             <ChevronDivider />
-            <span className="text-white font-medium">Careers</span>
+            <span className="text-white font-medium">{t('nav.career')}</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold text-white max-w-xl leading-tight">
-            Build Your Career with Us
+            {t('career.title')}
           </h1>
           <p className="text-white/85 text-base sm:text-lg mt-4 max-w-xl leading-relaxed">
-            Join a dynamic team connecting global businesses with quality manufacturing. Grow your career in international trade and sourcing.
+            {t('career.subtitle')}
           </p>
         </div>
       </div>
@@ -219,20 +221,20 @@ const Career = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <span className="inline-block text-sm font-semibold mb-3" style={{ color: BRAND_COLOR }}>
-              Open Positions
+              {t('career.openPositions')}
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Current Job Openings
+              {t('career.currentOpenings')}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Explore our current opportunities and find the perfect role to advance your career.
+              {t('career.exploreOpportunities')}
             </p>
           </div>
 
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F41703] mx-auto"></div>
-              <p className="text-gray-600 mt-4">Loading jobs...</p>
+              <p className="text-gray-600 mt-4">{t('career.loading')}</p>
             </div>
           ) : error ? (
             <div className="text-center py-12">
@@ -246,7 +248,7 @@ const Career = () => {
             </div>
           ) : jobs.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600">No active job openings at the moment.</p>
+              <p className="text-gray-600">{t('career.noJobs')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -300,7 +302,7 @@ const Career = () => {
                           color: selectedJob === job._id ? '#374151' : 'white'
                         }}
                       >
-                        {selectedJob === job._id ? 'Close' : 'View Details'}
+                        {selectedJob === job._id ? t('career.close') : t('career.viewDetails')}
                       </button>
                     </div>
 
@@ -310,7 +312,7 @@ const Career = () => {
                         
                         {job.requirements && job.requirements.length > 0 && (
                           <>
-                            <h4 className="font-semibold text-gray-900 mb-2">Requirements:</h4>
+                            <h4 className="font-semibold text-gray-900 mb-2">{t('career.requirements')}:</h4>
                             <ul className="space-y-2 mb-4">
                               {job.requirements.map((req, idx) => (
                                 <li key={idx} className="flex items-start gap-2 text-gray-600">
@@ -326,7 +328,7 @@ const Career = () => {
 
                         {job.responsibilities && job.responsibilities.length > 0 && (
                           <>
-                            <h4 className="font-semibold text-gray-900 mb-2">Responsibilities:</h4>
+                            <h4 className="font-semibold text-gray-900 mb-2">{t('career.responsibilities')}:</h4>
                             <ul className="space-y-2 mb-4">
                               {job.responsibilities.map((resp, idx) => (
                                 <li key={idx} className="flex items-start gap-2 text-gray-600">
@@ -342,7 +344,7 @@ const Career = () => {
 
                         {job.benefits && job.benefits.length > 0 && (
                           <>
-                            <h4 className="font-semibold text-gray-900 mb-2">Benefits:</h4>
+                            <h4 className="font-semibold text-gray-900 mb-2">{t('career.benefits')}:</h4>
                             <ul className="space-y-2 mb-4">
                               {job.benefits.map((benefit, idx) => (
                                 <li key={idx} className="flex items-start gap-2 text-gray-600">
@@ -358,7 +360,7 @@ const Career = () => {
 
                         {job.skills && job.skills.length > 0 && (
                           <>
-                            <h4 className="font-semibold text-gray-900 mb-2">Skills:</h4>
+                            <h4 className="font-semibold text-gray-900 mb-2">{t('career.skills')}:</h4>
                             <div className="flex flex-wrap gap-2 mb-4">
                               {job.skills.map((skill, idx) => (
                                 <span key={idx} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
@@ -371,7 +373,7 @@ const Career = () => {
 
                         {job.applicationDeadline && (
                           <p className="text-sm text-gray-600 mb-4">
-                            <strong>Application Deadline:</strong> {new Date(job.applicationDeadline).toLocaleDateString()}
+                            <strong>{t('career.applicationDeadline')}:</strong> {new Date(job.applicationDeadline).toLocaleDateString()}
                           </p>
                         )}
 
@@ -389,7 +391,7 @@ const Career = () => {
                             className="mt-6 px-6 py-2.5 rounded-lg font-medium text-white transition-colors duration-300"
                             style={{ backgroundColor: BRAND_COLOR }}
                           >
-                            {job.applicationUrl ? 'Apply via Website' : job.applicationEmail ? 'Apply via Email' : 'Apply Now'}
+                            {job.applicationUrl ? t('career.applyViaWebsite') : job.applicationEmail ? t('career.applyViaEmail') : t('career.applyNow')}
                           </button>
                         ) : (
                           <button
@@ -397,7 +399,7 @@ const Career = () => {
                             className="mt-6 px-6 py-2.5 rounded-lg font-medium text-white transition-colors duration-300"
                             style={{ backgroundColor: BRAND_COLOR }}
                           >
-                            Apply Now
+                            {t('career.applyNow')}
                           </button>
                         )}
                       </div>
@@ -433,23 +435,23 @@ const Career = () => {
             <div className="p-8">
               <div className="text-center mb-6">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                  Apply for Position
+                  {t('career.applyForm.title')}
                 </h2>
                 <p className="text-gray-600">
-                  Fill out the form below and we'll get back to you within 48 hours.
+                  {t('career.applyForm.subtitle')}
                 </p>
               </div>
 
               {submitted && (
                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-green-800 font-medium">Thank you! Your application has been submitted successfully. We'll review it and get back to you soon.</p>
+                  <p className="text-green-800 font-medium">{t('career.applyForm.success')}</p>
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">{t('career.applyForm.fullName')} *</label>
                     <input
                       type="text"
                       id="name"
@@ -462,7 +464,7 @@ const Career = () => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{t('career.applyForm.email')} *</label>
                     <input
                       type="email"
                       id="email"
@@ -478,7 +480,7 @@ const Career = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">{t('career.applyForm.phone')} *</label>
                     <input
                       type="tel"
                       id="phone"
@@ -491,7 +493,7 @@ const Career = () => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-1">Position *</label>
+                    <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-1">{t('career.applyForm.position')} *</label>
                     <select
                       id="position"
                       name="position"
@@ -500,7 +502,7 @@ const Career = () => {
                       onChange={handleChange('position')}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition text-sm"
                     >
-                      <option value="">Select a position</option>
+                      <option value="">{t('career.applyForm.selectPosition')}</option>
                       {jobs.map(job => (
                         <option key={job._id} value={job.title}>{job.title}</option>
                       ))}
@@ -510,7 +512,7 @@ const Career = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-1">Years of Experience *</label>
+                  <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-1">{t('career.applyForm.experience')} *</label>
                   <input
                     type="text"
                     id="experience"
@@ -524,7 +526,7 @@ const Career = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="coverLetter" className="block text-sm font-medium text-gray-700 mb-1">Cover Letter *</label>
+                  <label htmlFor="coverLetter" className="block text-sm font-medium text-gray-700 mb-1">{t('career.applyForm.coverLetter')} *</label>
                   <textarea
                     id="coverLetter"
                     name="coverLetter"
@@ -542,7 +544,7 @@ const Career = () => {
                   className="w-full text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-300 shadow-md hover:shadow-lg text-sm"
                   style={{ backgroundColor: BRAND_COLOR }}
                 >
-                  Submit Application
+                  {t('career.applyForm.submit')}
                 </button>
               </form>
             </div>

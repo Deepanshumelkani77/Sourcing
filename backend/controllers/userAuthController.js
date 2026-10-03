@@ -452,6 +452,26 @@ const googleCallback = async (req, res) => {
   }
 };
 
+const facebookCallback = async (req, res) => {
+  try {
+    // Passport puts the user in req.user after successful authentication
+    // We don't use req.login() since we're using JWT tokens, not sessions
+    const user = req.user;
+
+    if (!user) {
+      return res.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_failed`);
+    }
+
+    const token = createToken(user._id);
+    setAuthCookie(res, token);
+
+    return res.redirect(`${process.env.FRONTEND_URL}/`);
+  } catch (error) {
+    console.error("facebookCallback:", error);
+    return res.redirect(`${process.env.FRONTEND_URL}/login?error=server_error`);
+  }
+};
+
 module.exports = {
   sendSignupOTP,
   verifySignupOTP,
@@ -462,4 +482,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   googleCallback,
+  facebookCallback,
 };

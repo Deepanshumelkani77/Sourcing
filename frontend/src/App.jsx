@@ -9,9 +9,12 @@ import Contact from './pages/Contact'
 import Career from './pages/Career'
 import ProductPage from './pages/ProductPage'
 import Dashboard from './pages/Dashboard'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import DataDeletion from './pages/DataDeletion'
 import { Routes, Route } from 'react-router-dom'
 import AppContextProvider from './context/AppContext'
 import { AuthProvider } from './context/AuthProvider'
+import './i18n'
 
 const App = () => {
   return (
@@ -32,6 +35,8 @@ const App = () => {
             <Route path="/career" element={<Career />} />
             <Route path="/product/:slug" element={<ProductPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/data-deletion" element={<DataDeletion />} />
           </Routes>
           
            

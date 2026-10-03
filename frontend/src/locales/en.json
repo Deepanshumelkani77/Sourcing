@@ -1,0 +1,80 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "blog": "Blog",
+    "contact": "Contact",
+    "career": "Careers",
+    "login": "Login",
+    "signup": "Sign Up"
+  },
+  "home": {
+    "hero": {
+      "title": "Your Trusted Partner for Sourcing from China",
+      "subtitle": "Connecting global businesses with quality manufacturers. We handle sourcing, quality control, logistics, and everything in between.",
+      "cta": "Get Started",
+      "learnMore": "Learn More"
+    },
+    "features": {
+      "title": "Why Choose Us",
+      "subtitle": "We simplify the complex process of sourcing from China",
+      "sourcing": {
+        "title": "Expert Sourcing",
+        "description": "Access our network of verified manufacturers across various industries"
+      },
+      "quality": {
+        "title": "Quality Control",
+        "description": "Rigorous inspection processes to ensure product excellence"
+      },
+      "logistics": {
+        "title": "Seamless Logistics",
+        "description": "End-to-end shipping and customs handling for smooth delivery"
+      }
+    }
+  },
+  "about": {
+    "title": "About Us",
+    "subtitle": "Learn about our mission and values"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Get in touch with our team"
+  },
+  "career": {
+    "title": "Build Your Career with Us",
+    "subtitle": "Join a dynamic team connecting global businesses with quality manufacturing. Grow your career in international trade and sourcing.",
+    "openPositions": "Open Positions",
+    "currentOpenings": "Current Job Openings",
+    "exploreOpportunities": "Explore our current opportunities and find the perfect role to advance your career.",
+    "viewDetails": "View Details",
+    "close": "Close",
+    "applyNow": "Apply Now",
+    "requirements": "Requirements",
+    "responsibilities": "Responsibilities",
+    "benefits": "Benefits",
+    "skills": "Skills",
+    "applicationDeadline": "Application Deadline",
+    "applyViaWebsite": "Apply via Website",
+    "applyViaEmail": "Apply via Email",
+    "noJobs": "No active job openings at the moment.",
+    "loading": "Loading jobs...",
+    "applyForm": {
+      "title": "Apply for Position",
+      "subtitle": "Fill out the form below and we'll get back to you within 48 hours.",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "position": "Position",
+      "selectPosition": "Select a position",
+      "experience": "Years of Experience",
+      "coverLetter": "Cover Letter",
+      "submit": "Submit Application",
+      "success": "Thank you! Your application has been submitted successfully. We'll review it and get back to you soon."
+    }
+  },
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "chinese": "中文"
+  }
+}

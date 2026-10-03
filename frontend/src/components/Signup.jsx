@@ -110,6 +110,8 @@ const Signup = () => {
   const handleSocialLogin = (provider) => {
     if (provider === 'google') {
       window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`
+    } else if (provider === 'facebook') {
+      window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/facebook`
     } else {
       console.log(`${provider} OAuth is not configured yet`)
     }

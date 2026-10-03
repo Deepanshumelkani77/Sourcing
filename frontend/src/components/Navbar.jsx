@@ -5,6 +5,7 @@ import { AppContext } from '../context/AppContext'
 import { AuthContext } from '../context/AuthProvider'
 import { createPortal } from 'react-dom'
 import { getAllProducts } from '../services/productApi'
+import { useTranslation } from 'react-i18next'
 
 /* Inline SVG flags — crisper and more consistent across OS/browsers than emoji flags */
 const FlagUK = ({ className = 'w-5 h-5' }) => (
@@ -45,11 +46,11 @@ const languageOptions = [
 const Navbar = () => {
   const { openSignup } = useContext(AppContext)
   const { user, logout } = useContext(AuthContext)
+  const { t, i18n } = useTranslation()
   const location = useLocation()
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [showProductsDropdown, setShowProductsDropdown] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState('EN')
   const [products, setProducts] = useState([])
   const languageTriggerRef = useRef(null)
   const languageDropdownRef = useRef(null)
@@ -62,7 +63,7 @@ const Navbar = () => {
   const [userDropdownPosition, setUserDropdownPosition] = useState({ top: 0, left: 0 })
   const [productsDropdownPosition, setProductsDropdownPosition] = useState({ top: 0, left: 0 })
 
-  const current = languageOptions.find((l) => l.code === selectedLanguage) ?? languageOptions[0]
+  const current = languageOptions.find((l) => l.code === (i18n.language === 'zh' ? 'ZH' : 'EN')) ?? languageOptions[0]
 
   useEffect(() => {
     const onClickOutside = (e) => {
@@ -175,13 +176,13 @@ const Navbar = () => {
               to="/"
               className={`transition-colors  duration-200 text-lg font-medium ${location.pathname === '/' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
-              Home
+              {t('nav.home')}
             </Link>
             <Link
               to="/about"
               className={`transition-colors duration-200 text-lg font-medium ${location.pathname === '/about' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
-              About
+              {t('nav.about')}
             </Link>
             <div
               className="relative"
@@ -282,19 +283,19 @@ const Navbar = () => {
               to="/blog"
               className={`transition-colors duration-200  text-lg font-medium ${location.pathname === '/blog' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
-              Blog
+              {t('nav.blog')}
             </Link>
             <Link
               to="/contact"
               className={`transition-colors duration-200 text-lg font-medium ${location.pathname === '/contact' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
-              Contact
+              {t('nav.contact')}
             </Link>
             <Link
               to="/career"
               className={`transition-colors duration-200 text-lg font-medium ${location.pathname === '/career' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
-              Career
+              {t('nav.career')}
             </Link>
           </div>
 
@@ -338,14 +339,14 @@ const Navbar = () => {
                     </div>
                     <div className="pb-1.5">
                       {languageOptions.map(({ code, label, Flag }) => {
-                        const active = selectedLanguage === code
+                        const active = i18n.language === (code === 'ZH' ? 'zh' : 'en')
                         return (
                           <button
                             key={code}
                             role="option"
                             aria-selected={active}
                             onClick={() => {
-                              setSelectedLanguage(code)
+                              i18n.changeLanguage(code === 'ZH' ? 'zh' : 'en')
                               setShowLanguageDropdown(false)
                             }}
                             className={`w-full px-4 py-2.5 flex items-center gap-3 text-sm transition-colors duration-150 ${
