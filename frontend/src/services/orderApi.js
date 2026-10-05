@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.API_URL ;
 
 // Get auth token from cookies
 const getAuthHeader = () => {
