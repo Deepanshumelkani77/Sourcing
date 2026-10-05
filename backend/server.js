@@ -41,7 +41,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174","https://www.indochinabridge.com/"],
+    origin: ["http://localhost:5173", "http://localhost:5174", "https://www.indochinabridge.com", "https://indochinabridge.com"],
     credentials: true,
   })
 );
