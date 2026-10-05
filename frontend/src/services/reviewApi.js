@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.API_URL;
+const API_URL = "https://sourcing-x379.onrender.com";
 
 // Submit review
 export const submitReview = async (reviewData) => {

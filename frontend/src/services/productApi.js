@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.API_URL ;
+const API_URL = "https://sourcing-x379.onrender.com";
 
 export const getAllProducts = async () => {
   try {
