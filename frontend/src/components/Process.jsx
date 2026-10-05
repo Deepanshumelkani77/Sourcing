@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 /* ---------------- Icons (one per step, same stroke style used across the site) ---------------- */
 const IconClipboard = (p) => (
@@ -41,17 +42,34 @@ const IconTruck = (p) => (
     <circle cx="17.5" cy="18" r="1.6" />
   </svg>
 )
+const IconFactory = (p) => (
+  <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 20h20" />
+    <path d="M5 20V10l7-7 7 7v10" />
+    <path d="M9 20v-6h6v6" />
+  </svg>
+)
+const IconBox = (p) => (
+  <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+    <line x1="12" y1="22.08" x2="12" y2="12" />
+  </svg>
+)
 
 const steps = [
-  { num: '01', title: 'Requirement', body: 'You tell us what you need — spec, quantity, budget, and timeline.', Icon: IconClipboard },
-  { num: '02', title: 'Supplier Search', body: 'We identify and shortlist suitable suppliers and manufacturers.', Icon: IconSearch },
-  { num: '03', title: 'Quotation', body: 'You compare pricing, specifications, and options side by side.', Icon: IconQuote },
-  { num: '04', title: 'Sample / Verification', body: 'We verify product or machinery specs against what was agreed.', Icon: IconSample },
-  { num: '05', title: 'Quality Inspection', body: 'Products are inspected before shipment wherever applicable.', Icon: IconShield },
-  { num: '06', title: 'Shipping', body: 'We coordinate logistics and delivery through to your door.', Icon: IconTruck },
+  { num: '01', titleKey: 'process.steps.requirement.title', bodyKey: 'process.steps.requirement.body', Icon: IconClipboard },
+  { num: '02', titleKey: 'process.steps.supplierSearch.title', bodyKey: 'process.steps.supplierSearch.body', Icon: IconSearch },
+  { num: '03', titleKey: 'process.steps.quotation.title', bodyKey: 'process.steps.quotation.body', Icon: IconQuote },
+  { num: '04', titleKey: 'process.steps.sampleVerification.title', bodyKey: 'process.steps.sampleVerification.body', Icon: IconSample },
+  { num: '05', titleKey: 'process.steps.production.title', bodyKey: 'process.steps.production.body', Icon: IconFactory },
+  { num: '06', titleKey: 'process.steps.qualityInspection.title', bodyKey: 'process.steps.qualityInspection.body', Icon: IconShield },
+  { num: '07', titleKey: 'process.steps.shipping.title', bodyKey: 'process.steps.shipping.body', Icon: IconTruck },
+  { num: '08', titleKey: 'process.steps.delivery.title', bodyKey: 'process.steps.delivery.body', Icon: IconBox },
 ]
 
 const Process = () => {
+  const { t } = useTranslation()
   const [activeIndexes, setActiveIndexes] = useState(() => new Set())
   const itemRefs = useRef([])
 
@@ -87,10 +105,10 @@ const Process = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <span className="inline-block text-sm font-semibold text-[#F41703] mb-3">
-              How it works
+              {t('process.subtitle')}
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Our Sourcing Process
+              {t('process.title')}
             </h2>
           </div>
 
@@ -108,7 +126,7 @@ const Process = () => {
               {steps.map((step, idx) => {
                 const isActive = activeIndexes.has(idx)
                 const reached = idx <= maxActive
-                const { Icon } = step
+                const { Icon, titleKey, bodyKey } = step
                 return (
                   <div
                     key={step.num}
@@ -139,8 +157,8 @@ const Process = () => {
 
                     {/* Card */}
                     <div className="flex-1 bg-white rounded-xl border border-gray-100 shadow-sm px-6 py-5 hover:shadow-md hover:-translate-y-0.5 hover:border-gray-200 transition-all duration-300">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-1.5">{step.title}</h3>
-                      <p className="text-gray-600 leading-relaxed">{step.body}</p>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-1.5">{t(titleKey)}</h3>
+                      <p className="text-gray-600 leading-relaxed">{t(bodyKey)}</p>
                     </div>
                   </div>
                 )
@@ -148,21 +166,7 @@ const Process = () => {
             </div>
           </div>
 
-          {/* Flow summary strip */}
-          <div className="mt-16 flex flex-wrap items-center justify-center gap-x-2 gap-y-3">
-            {['Requirement', 'Sourcing', 'Verification', 'Quality', 'Shipping', 'Delivery'].map((label, i, arr) => (
-              <React.Fragment key={label}>
-                <span className="text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-full px-4 py-1.5">
-                  {label}
-                </span>
-                {i < arr.length - 1 && (
-                  <svg className="w-4 h-4 text-gray-300 flex-shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 4.5L13 10l-5.5 5.5" />
-                  </svg>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
+        
         </div>
       </section>
     </div>

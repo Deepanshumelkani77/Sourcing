@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const ChevronDivider = () => (
   <svg
@@ -18,9 +19,17 @@ const ChevronDivider = () => (
 const BLOG_HERO_IMAGE = 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600&h=800&fit=crop'
 
 const Blog = () => {
+  const { t } = useTranslation()
   const [selectedCategory, setSelectedCategory] = useState('All')
 
-  const categories = ['All', 'Sourcing Tips', 'Industry News', 'Case Studies', 'Logistics', 'Quality Control']
+  const categories = [
+    { key: 'blog.categories.all', label: 'All' },
+    { key: 'blog.categories.sourcingTips', label: 'Sourcing Tips' },
+    { key: 'blog.categories.industryNews', label: 'Industry News' },
+    { key: 'blog.categories.caseStudies', label: 'Case Studies' },
+    { key: 'blog.categories.logistics', label: 'Logistics' },
+    { key: 'blog.categories.qualityControl', label: 'Quality Control' }
+  ]
 
   const blogPosts = [
     {
@@ -85,15 +94,15 @@ const Blog = () => {
     }
   ]
 
-  const filteredPosts = selectedCategory === 'All' 
-    ? blogPosts 
+  const filteredPosts = selectedCategory === 'All'
+    ? blogPosts
     : blogPosts.filter(post => post.category === selectedCategory)
 
   const BlogCard = ({ post }) => (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
       <div className="relative h-48 overflow-hidden">
-        <img 
-          src={post.image} 
+        <img
+          src={post.image}
           alt={post.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
@@ -123,7 +132,7 @@ const Blog = () => {
             <span className="ml-2 text-sm text-gray-700">{post.author}</span>
           </div>
           <button className="text-[#F41703] font-medium hover:underline text-sm">
-            Read More →
+            {t('blog.readMore')}
           </button>
         </div>
       </div>
@@ -148,35 +157,35 @@ const Blog = () => {
 
         <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
           <div className="flex items-center gap-2 text-sm text-white/70 mb-4">
-            <span>Home</span>
+            <span>{t('nav.home')}</span>
             <ChevronDivider />
-            <span className="text-white font-medium">Blog</span>
+            <span className="text-white font-medium">{t('nav.blog')}</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold text-white max-w-xl leading-tight">
-            Insights, tips, and industry news to help you succeed in global sourcing
+            {t('blog.hero.title')}
           </h1>
           <p className="text-white/85 text-base sm:text-lg mt-4 max-w-xl leading-relaxed">
-            Stay updated with the latest sourcing strategies, industry trends, and expert insights from our team.
+            {t('blog.hero.subtitle')}
           </p>
         </div>
       </div>
 
-   
+
       {/* Category Filter */}
       <section className="py-8 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap justify-center gap-3">
             {categories.map((category) => (
               <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
+                key={category.key}
+                onClick={() => setSelectedCategory(category.label)}
                 className={`px-6 py-2 rounded-full font-medium transition-all duration-200 ${
-                  selectedCategory === category
+                  selectedCategory === category.label
                     ? 'bg-[#F41703] text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                {category}
+                {t(category.key)}
               </button>
             ))}
           </div>

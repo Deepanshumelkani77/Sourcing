@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { AppContext } from '../context/AppContext'
 
 /* ---------------- Icons (same stroke style used across the site) ---------------- */
@@ -45,20 +46,19 @@ const IconArrowUpRight = (p) => (
 )
 
 const quickLinks = [
-  { to: '/', label: 'Home' },
-  { to: '/about', label: 'About' },
-  { to: '/blog', label: 'Blog' },
-  { to: '/contact', label: 'Contact' },
-  { to: '/career', label: 'Career' },
+  { to: '/', labelKey: 'nav.home' },
+  { to: '/about', labelKey: 'nav.about' },
+  { to: '/blog', labelKey: 'nav.blog' },
+  { to: '/contact', labelKey: 'nav.contact' },
+  { to: '/career', labelKey: 'nav.career' },
 ]
 
 const services = [
- 
-  'Product Sourcing',
-  'Supplier Identification',
-  'Quality Inspection',
-  'Logistics & Shipping',
-  'End-to-End Sourcing',
+  'footer.productSourcing',
+  'footer.supplierIdentification',
+  'footer.qualityInspection',
+  'footer.logisticsShipping',
+  'footer.endToEndSourcing',
 ]
 
 const socials = [
@@ -135,6 +135,7 @@ const socials = [
 ]
 
 const Footer = () => {
+  const { t } = useTranslation()
   const { openSignup } = useContext(AppContext)
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
@@ -160,8 +161,7 @@ const Footer = () => {
               <img src="/assets/final_logo.png" alt="IndoChinaBridge" className="h-9 w-auto" />
             </Link>
             <p className="text-gray-400 leading-relaxed mb-6 max-w-sm">
-              Your trusted partner in sourcing machinery, products, and manufacturing
-              solutions from verified Chinese suppliers to global markets.
+              {t('footer.brandDescription')}
             </p>
             <div className="flex items-center gap-3">
               {socials.map(({ label, href, hoverColor, icon }) => (
@@ -182,12 +182,12 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="lg:col-span-2">
-            <h4 className="text-white font-semibold mb-5">Quick Links</h4>
+            <h4 className="text-white font-semibold mb-5">{t('footer.quickLinks')}</h4>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.to}>
                   <Link to={link.to} className="text-gray-400 hover:text-white transition-colors duration-200">
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -196,12 +196,12 @@ const Footer = () => {
 
           {/* Services */}
           <div className="lg:col-span-3">
-            <h4 className="text-white font-semibold mb-5">Our Services</h4>
+            <h4 className="text-white font-semibold mb-5">{t('footer.ourServices')}</h4>
             <ul className="space-y-3">
               {services.map((service) => (
                 <li key={service}>
                   <Link to="/contact" className="text-gray-400 hover:text-white transition-colors duration-200">
-                    {service}
+                    {t(service)}
                   </Link>
                 </li>
               ))}
@@ -210,11 +210,11 @@ const Footer = () => {
 
           {/* Contact + Newsletter */}
           <div className="lg:col-span-3">
-            <h4 className="text-white font-semibold mb-5">Get in Touch</h4>
+            <h4 className="text-white font-semibold mb-5">{t('footer.getInTouch')}</h4>
             <ul className="space-y-3 mb-7">
               <li className="flex items-start gap-3">
                 <IconPin className="w-5 h-5 text-[#F41703] mt-0.5 flex-shrink-0" />
-                <span className="text-gray-400">FF 05, Rise Retailia 1, Plot No. SC 01, Sector 1, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh - 201306 India</span>
+                <span className="text-gray-400">{t('footer.address')}</span>
               </li>
               <li className="flex items-center gap-3">
                 <IconMail className="w-5 h-5 text-[#F41703] flex-shrink-0" />
@@ -239,17 +239,17 @@ const Footer = () => {
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-500 text-center sm:text-left">
-            © {year} IndoChinaBridge. All rights reserved.
+            © {year} IndoChinaBridge. {t('footer.allRightsReserved')}
           </p>
           <div className="flex items-center gap-6 text-sm text-gray-500">
             <Link to="/privacy-policy" className="hover:text-white transition-colors duration-200">
-              Privacy Policy
+              {t('footer.privacyPolicy')}
             </Link>
             <Link to="/data-deletion" className="hover:text-white transition-colors duration-200">
-              Data Deletion
+              {t('footer.dataDeletion')}
             </Link>
             <Link to="/terms" className="hover:text-white transition-colors duration-200">
-              Terms of Service
+              {t('footer.termsOfService')}
             </Link>
           </div>
         </div>

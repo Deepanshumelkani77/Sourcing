@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { getProductBySlug } from '../services/productApi'
 import QuoteModal from '../components/QuoteModal'
+import { useAuth } from '../context/AuthProvider'
 
 const ProductPage = () => {
   const { slug } = useParams()
+  const navigate = useNavigate()
+  const { user } = useAuth()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -226,7 +229,13 @@ const ProductPage = () => {
             {/* Enquiry Button */}
             {product.enquiry?.enabled && (
               <button
-                onClick={() => setShowQuoteModal(true)}
+                onClick={() => {
+                  if (!user) {
+                    navigate('/login')
+                  } else {
+                    setShowQuoteModal(true)
+                  }
+                }}
                 className="bg-[#F41703] text-white px-6 py-3 rounded-lg hover:bg-[#d10f02] transition-colors font-semibold"
               >
                 {product.enquiry.buttonText || 'Request a Quote'}
@@ -343,7 +352,7 @@ const ProductPage = () => {
       <QuoteModal
         isOpen={showQuoteModal}
         onClose={() => setShowQuoteModal(false)}
-        productName={product.productName}
+        product={product}
       />
     </div>
   )

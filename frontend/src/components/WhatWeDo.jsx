@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 /* ---------------- Icons (same stroke style used across the site) ---------------- */
 const IconFactory = (p) => (
@@ -43,18 +44,19 @@ const IconLink = (p) => (
   </svg>
 )
 
-const services = [
-  { Icon: IconFactory, title: 'Machinery Sourcing', body: 'Industrial machinery, manufacturing equipment and specialized machines.' },
-  { Icon: IconPackage, title: 'Product Sourcing', body: 'Source products according to your specifications, quantity and budget.' },
-  { Icon: IconTarget, title: 'Supplier Identification', body: 'Find and evaluate suitable manufacturers and suppliers.' },
-  { Icon: IconShieldCheck, title: 'Quality Inspection', body: 'Quality checks and inspection carried out before shipment.' },
-  { Icon: IconShip, title: 'Logistics & Shipping', body: 'Coordinate transportation from China to your destination.' },
-  { Icon: IconLink, title: 'End-to-End Sourcing', body: 'From requirement to supplier, production, inspection and shipping.' },
-]
-
 const WhatWeDo = () => {
+  const { t } = useTranslation()
   const [visible, setVisible] = useState(() => new Set())
   const cardRefs = useRef([])
+
+  const services = [
+    { Icon: IconFactory, titleKey: 'whatWeDo.machinerySourcing.title', bodyKey: 'whatWeDo.machinerySourcing.body' },
+    { Icon: IconPackage, titleKey: 'whatWeDo.productSourcing.title', bodyKey: 'whatWeDo.productSourcing.body' },
+    { Icon: IconTarget, titleKey: 'whatWeDo.supplierIdentification.title', bodyKey: 'whatWeDo.supplierIdentification.body' },
+    { Icon: IconShieldCheck, titleKey: 'whatWeDo.qualityInspection.title', bodyKey: 'whatWeDo.qualityInspection.body' },
+    { Icon: IconShip, titleKey: 'whatWeDo.logisticsShipping.title', bodyKey: 'whatWeDo.logisticsShipping.body' },
+    { Icon: IconLink, titleKey: 'whatWeDo.endToEndSourcing.title', bodyKey: 'whatWeDo.endToEndSourcing.body' },
+  ]
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -79,17 +81,17 @@ const WhatWeDo = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14">
             <span className="inline-block text-sm font-semibold text-[#F41703] mb-3">
-              Our Services
+              {t('whatWeDo.subtitle')}
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">What We Do</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">{t('whatWeDo.title')}</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map(({ Icon, title, body }, idx) => {
+            {services.map(({ Icon, titleKey, bodyKey }, idx) => {
               const isVisible = visible.has(idx)
               return (
                 <div
-                  key={title}
+                  key={titleKey}
                   ref={(el) => (cardRefs.current[idx] = el)}
                   data-idx={idx}
                   className={`group relative bg-white p-7 rounded-xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-red-100 transition-all duration-300 ease-out ${
@@ -100,8 +102,8 @@ const WhatWeDo = () => {
                   <div className="w-[52px] h-[52px] rounded-lg bg-red-50 text-[#F41703] flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110 group-hover:bg-[#F41703] group-hover:text-white">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{body}</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{t(titleKey)}</h3>
+                  <p className="text-gray-600 leading-relaxed">{t(bodyKey)}</p>
 
                   <span className="absolute bottom-0 left-7 right-7 h-[2px] bg-[#F41703] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 rounded-full" />
                 </div>

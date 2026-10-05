@@ -32,10 +32,6 @@
       }
     }
   },
-  "about": {
-    "title": "关于我们",
-    "subtitle": "了解我们的使命和价值观"
-  },
   "contact": {
     "title": "联系我们",
     "subtitle": "与我们的团队取得联系"
@@ -71,6 +67,264 @@
       "submit": "提交申请",
       "success": "谢谢！您的申请已成功提交。我们将审核并尽快回复您。"
     }
+  },
+  "whatWeDo": {
+    "title": "我们的服务",
+    "subtitle": "我们的服务",
+    "machinerySourcing": {
+      "title": "机械设备采购",
+      "body": "工业机械、制造设备和专用机器。"
+    },
+    "productSourcing": {
+      "title": "产品采购",
+      "body": "根据您的规格、数量和预算采购产品。"
+    },
+    "supplierIdentification": {
+      "title": "供应商识别",
+      "body": "寻找和评估合适的制造商和供应商。"
+    },
+    "qualityInspection": {
+      "title": "质量检验",
+      "body": "发货前进行质量检查和检验。"
+    },
+    "logisticsShipping": {
+      "title": "物流与运输",
+      "body": "协调从中国到您目的地的运输。"
+    },
+    "endToEndSourcing": {
+      "title": "端到端采购",
+      "body": "从需求到供应商、生产、检验和运输。"
+    }
+  },
+  "source": {
+    "title": "我们可以采购什么？",
+    "subtitle": "从重型机械到成品消费品——我们寻找、评估并交付。",
+    "machinery": {
+      "label": "机械",
+      "headline": "为生产而制造的机器",
+      "description": "在离开工厂车间之前进行采购和检验。",
+      "industrialMachinery": {
+        "title": "工业机械",
+        "desc": "用于生产线和大规模运营的重型机器。"
+      },
+      "manufacturingEquipment": {
+        "title": "制造设备",
+        "desc": "用于大规模装配、制造和加工的设备。"
+      },
+      "packagingMachinery": {
+        "title": "包装机械",
+        "desc": "适用于任何产品线的灌装、密封、贴标和包装机器。"
+      },
+      "cncAutomation": {
+        "title": "数控/自动化设备",
+        "desc": "精密数控系统和自动化设备，用于可重复的输出。"
+      },
+      "specializedMachinery": {
+        "title": "专用机械",
+        "desc": "根据您的确切规格定制或小众机械。"
+      }
+    },
+    "products": {
+      "label": "产品",
+      "headline": "准备销售的商品",
+      "description": "根据您的规格采购的消费品和工业产品。",
+      "homeKitchen": {
+        "title": "家居与厨房",
+        "desc": "批量采购的炊具、电器和家居用品。"
+      },
+      "industrialProducts": {
+        "title": "工业产品",
+        "desc": "为工业和商业用途制造的组件和用品。"
+      },
+      "consumerProducts": {
+        "title": "消费品",
+        "desc": "涵盖广泛类别的零售就绪商品。"
+      },
+      "electricalElectronics": {
+        "title": "电气/电子",
+        "desc": "经过测试和认证的电气零件和电子设备。"
+      },
+      "customProducts": {
+        "title": "定制产品",
+        "desc": "根据您自己的设计、材料或品牌制造的产品。"
+      }
+    }
+  },
+  "process": {
+    "subtitle": "工作原理",
+    "title": "我们的采购流程",
+    "steps": {
+      "requirement": {
+        "title": "需求",
+        "body": "您告诉我们您的需求——规格、数量、预算和时间表。"
+      },
+      "supplierSearch": {
+        "title": "供应商搜索",
+        "body": "我们识别并筛选合适的供应商和制造商。"
+      },
+      "quotation": {
+        "title": "报价",
+        "body": "您可以并排比较价格、规格和选项。"
+      },
+      "sampleVerification": {
+        "title": "样品/验证",
+        "body": "我们根据协议验证产品或机械规格。"
+      },
+      "production": {
+        "title": "生产",
+        "body": "制造开始，在生产每个阶段都进行质量检查。"
+      },
+      "qualityInspection": {
+        "title": "质量检验",
+        "body": "在适用的情况下，产品在发货前进行检验。"
+      },
+      "shipping": {
+        "title": "运输",
+        "body": "我们协调物流并直接交付到您门口。"
+      },
+      "delivery": {
+        "title": "交付",
+        "body": "您的订单到达您的地点，准备好使用或分销。"
+      }
+    },
+    "flow": {
+      "requirement": "需求",
+      "supplierSearch": "供应商搜索",
+      "quotation": "报价",
+      "sampleVerification": "样品/验证",
+      "production": "生产",
+      "qualityInspection": "质量检验",
+      "shipping": "运输",
+      "delivery": "交付"
+    }
+  },
+  "countries": {
+    "title": "从中国到您的企业",
+    "subtitle": "全球采购能力，将您与世界各地的市场连接起来",
+    "tagline": "一个采购合作伙伴。多个市场。",
+    "china": {
+      "name": "中国",
+      "description": "从中国各地的制造中心和供应商采购。"
+    },
+    "india": {
+      "name": "印度",
+      "description": "通过简化的物流将产品交付到印度市场。"
+    },
+    "middleEast": {
+      "name": "中东",
+      "description": "扩大您在中东市场的影响力。"
+    },
+    "southeastAsia": {
+      "name": "东南亚",
+      "description": "与东南亚不断增长的市场建立联系。"
+    },
+    "europe": {
+      "name": "欧洲",
+      "description": "通过可靠的采购服务进入欧洲市场。"
+    }
+  },
+  "footer": {
+    "brandDescription": "您值得信赖的合作伙伴，从经过验证的中国供应商为全球市场采购机械、产品和制造解决方案。",
+    "quickLinks": "快速链接",
+    "ourServices": "我们的服务",
+    "getInTouch": "联系我们",
+    "productSourcing": "产品采购",
+    "supplierIdentification": "供应商识别",
+    "qualityInspection": "质量检验",
+    "logisticsShipping": "物流与运输",
+    "endToEndSourcing": "端到端采购",
+    "address": "FF 05, Rise Retailia 1, Plot No. SC 01, Sector 1, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh - 201306 India",
+    "allRightsReserved": "版权所有。",
+    "privacyPolicy": "隐私政策",
+    "dataDeletion": "数据删除",
+    "termsOfService": "服务条款"
+  },
+  "about": {
+    "hero": {
+      "title": "从中国采购，无需猜测。",
+      "subtitle": "十多年来，IndoChinaBridge 帮助企业从经过验证的中国工厂采购机械和产品——没有未经审查的供应商，没有隐藏的利润，只是在发货前进行质量检查。"
+    },
+    "stats": {
+      "clients": "服务客户",
+      "products": "采购产品",
+      "countries": "覆盖国家",
+      "delivery": "准时交付"
+    },
+    "story": {
+      "label": "我们的故事",
+      "title": "为消除采购风险而建立",
+      "paragraph1": "IndoChinaBridge 成立旨在弥合中国制造业与全球商业需求之间的差距。我们一次又一次地看到同样的问题——语言障碍、无法从国外验证的质量，以及在关键时刻崩溃的物流。",
+      "paragraph2": "因此我们围绕这些问题建立了流程：可以在工厂车间行走的人员、发货前的检验，以及在需要变更时响应的联系人。",
+      "point1": "覆盖主要制造中心的经过验证的供应商网络",
+      "point2": "每个订单的发货前检验",
+      "point3": "透明的定价，无隐藏利润"
+    },
+    "mission": {
+      "label": "我们的使命",
+      "title": "无需二次猜测的采购",
+      "subtitle": "我们希望每个客户都能获得他们指定的产品，以他们同意的价格，在他们承诺的日期。",
+      "qualityFirst": {
+        "title": "质量第一",
+        "body": "每个产品在发货前都经过检查和验证，因此您订购的就是您收到的。"
+      },
+      "trustTransparency": {
+        "title": "信任与透明",
+        "body": "诚实的沟通和公平的定价，提前分享完整的成本明细。"
+      },
+      "globalReach": {
+        "title": "全球覆盖",
+        "body": "高效的物流将中国工厂与世界各地的仓库和商店连接起来。"
+      }
+    },
+    "whyChooseUs": {
+      "label": "为什么选择我们",
+      "title": "与我们合作的实际体验",
+      "subtitle": "客户告诉我们产生最大影响的优势。",
+      "expertKnowledge": {
+        "title": "专业知识",
+        "body": "对中国制造业、供应商网络以及价格实际运作方式的深入了解。"
+      },
+      "qualityAssurance": {
+        "title": "质量保证",
+        "body": "在每个阶段都内置了检验和质量控制，而不是在最后附加。"
+      },
+      "costEfficiency": {
+        "title": "成本效率",
+        "body": "直接的供应商关系和优化的供应链使您的落地成本具有竞争力。"
+      },
+      "endToEndService": {
+        "title": "端到端服务",
+        "body": "从您的第一份规格表到托盘到达门口，只有一个联系人。"
+      },
+      "riskManagement": {
+        "title": "风险管理",
+        "body": "我们及早标记供应商和运输风险，并在其成为您的问题之前处理它。"
+      },
+      "support": {
+        "title": "24/7 支持",
+        "body": "无论何时需要关注运输，都有人可以全天候、跨时区联系。"
+      }
+    },
+    "cta": {
+      "title": "准备好开始您的采购之旅了吗？",
+      "subtitle": "告诉我们您需要什么，我们将为您提供供应商、样品和真实的落地成本。",
+      "button": "获取免费咨询"
+    }
+  },
+  "blog": {
+    "hero": {
+      "title": "帮助您在全球采购中成功的见解、技巧和行业新闻",
+      "subtitle": "通过我们团队的最新采购策略、行业趋势和专家见解保持更新。"
+    },
+    "categories": {
+      "all": "全部",
+      "sourcingTips": "采购技巧",
+      "industryNews": "行业新闻",
+      "caseStudies": "案例研究",
+      "logistics": "物流",
+      "qualityControl": "质量控制"
+    },
+    "readMore": "阅读更多 →"
   },
   "common": {
     "language": "语言",

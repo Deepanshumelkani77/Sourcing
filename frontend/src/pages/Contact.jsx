@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from 'axios'
 
 const BRAND_COLOR = '#F41703'
 const SECONDARY_COLOR = '#F97316'
@@ -81,10 +82,19 @@ const Contact = () => {
 
   const handleChange = (field) => (e) => setFormData((prev) => ({ ...prev, [field]: e.target.value }))
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 3000)
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/contact/submit`, formData)
+      if (response.data.success) {
+        setSubmitted(true)
+        setFormData({ firstName: '', middleName: '', lastName: '', email: '', subject: '', message: '' })
+        setTimeout(() => setSubmitted(false), 3000)
+      }
+    } catch (error) {
+      console.error('Error submitting contact form:', error)
+      alert('Failed to submit form. Please try again.')
+    }
   }
 
   return (
@@ -149,28 +159,28 @@ const Contact = () => {
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <label htmlFor="firstName" className="block text-base font-medium text-gray-700 mb-2">First Name *</label>
-                  <input type="text" id="firstName" name="firstName" required value={formData.firstName} onChange={handleChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="First name" />
+                  <input type="text" id="firstName" name="firstName" required value={formData.firstName} onChange={handleChange('firstName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="First name" />
                 </div>
                 <div>
                   <label htmlFor="middleName" className="block text-base font-medium text-gray-700 mb-2">Middle Name</label>
-                  <input type="text" id="middleName" name="middleName" value={formData.middleName} onChange={handleChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="Middle name" />
+                  <input type="text" id="middleName" name="middleName" value={formData.middleName} onChange={handleChange('middleName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="Middle name" />
                 </div>
                 <div>
                   <label htmlFor="lastName" className="block text-base font-medium text-gray-700 mb-2">Last Name *</label>
-                  <input type="text" id="lastName" name="lastName" required value={formData.lastName} onChange={handleChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="Last name" />
+                  <input type="text" id="lastName" name="lastName" required value={formData.lastName} onChange={handleChange('lastName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="Last name" />
                 </div>
               </div>
 
               <div>
                 <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">Email Address *</label>
-                <input type="email" id="email" name="email" required value={formData.email} onChange={handleChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="Enter your email address" />
+                <input type="email" id="email" name="email" required value={formData.email} onChange={handleChange('email')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="Enter your email address" />
               </div>
 
-            
+
 
               <div>
                 <label htmlFor="subject" className="block text-base font-medium text-gray-700 mb-2">Subject *</label>
-                <select id="subject" name="subject" required value={formData.subject} onChange={handleChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base">
+                <select id="subject" name="subject" required value={formData.subject} onChange={handleChange('subject')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base">
                   <option value="">Select a subject</option>
                   <option value="Sourcing Quote">Sourcing Quote</option>
                   <option value="Machinery Sourcing">Machinery Sourcing</option>
@@ -184,7 +194,7 @@ const Contact = () => {
 
               <div>
                 <label htmlFor="message" className="block text-base font-medium text-gray-700 mb-2">Message *</label>
-                <textarea id="message" name="message" required rows={2} value={formData.message} onChange={handleChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition resize-none text-base" placeholder="Write your message here..."></textarea>
+                <textarea id="message" name="message" required rows={2} value={formData.message} onChange={handleChange('message')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition resize-none text-base" placeholder="Write your message here..."></textarea>
               </div>
 
               <button type="submit" className="w-full bg-[#F41703] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#F41703] transition-colors duration-300 shadow-md hover:shadow-lg text-base">Send Message</button>

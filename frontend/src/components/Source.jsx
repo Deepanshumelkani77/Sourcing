@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const Icon = ({ path, className = '' }) => (
   <svg
@@ -75,32 +76,32 @@ const machineryItems = [
   {
     image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     icon: 'gear',
-    title: 'Industrial Machinery',
-    desc: 'Heavy-duty machines for production lines and large-scale operations.',
+    titleKey: 'source.machinery.industrialMachinery.title',
+    descKey: 'source.machinery.industrialMachinery.desc',
   },
   {
     image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     icon: 'factory',
-    title: 'Manufacturing Equipment',
-    desc: 'Equipment for assembly, fabrication, and processing at scale.',
+    titleKey: 'source.machinery.manufacturingEquipment.title',
+    descKey: 'source.machinery.manufacturingEquipment.desc',
   },
   {
     image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     icon: 'box',
-    title: 'Packaging Machinery',
-    desc: 'Filling, sealing, labeling, and wrapping machines for any product line.',
+    titleKey: 'source.machinery.packagingMachinery.title',
+    descKey: 'source.machinery.packagingMachinery.desc',
   },
   {
     image: 'https://images.unsplash.com/photo-1563770095-39d468f95742?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     icon: 'cnc',
-    title: 'CNC / Automation Equipment',
-    desc: 'Precision CNC systems and automated equipment for repeatable output.',
+    titleKey: 'source.machinery.cncAutomation.title',
+    descKey: 'source.machinery.cncAutomation.desc',
   },
   {
     image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     icon: 'wrench',
-    title: 'Specialized Machinery',
-    desc: 'Custom-built or niche machinery matched to your exact spec.',
+    titleKey: 'source.machinery.specializedMachinery.title',
+    descKey: 'source.machinery.specializedMachinery.desc',
   },
 ]
 
@@ -108,36 +109,36 @@ const productItems = [
   {
     image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     icon: 'kitchen',
-    title: 'Home & Kitchen',
-    desc: 'Cookware, appliances, and household goods sourced at volume.',
+    titleKey: 'source.products.homeKitchen.title',
+    descKey: 'source.products.homeKitchen.desc',
   },
   {
     image: 'https://images.unsplash.com/photo-1563770095-39d468f95742?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     icon: 'bolt',
-    title: 'Industrial Products',
-    desc: 'Components and supplies built for industrial and commercial use.',
+    titleKey: 'source.products.industrialProducts.title',
+    descKey: 'source.products.industrialProducts.desc',
   },
   {
     image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     icon: 'bag',
-    title: 'Consumer Products',
-    desc: 'Retail-ready goods across a wide range of categories.',
+    titleKey: 'source.products.consumerProducts.title',
+    descKey: 'source.products.consumerProducts.desc',
   },
   {
     image: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     icon: 'plug',
-    title: 'Electrical / Electronics',
-    desc: 'Electrical parts and electronic devices, tested and certified.',
+    titleKey: 'source.products.electricalElectronics.title',
+    descKey: 'source.products.electricalElectronics.desc',
   },
   {
     image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     icon: 'puzzle',
-    title: 'Custom Products',
-    desc: 'Products built to your own design, materials, or branding.',
+    titleKey: 'source.products.customProducts.title',
+    descKey: 'source.products.customProducts.desc',
   },
 ]
 
-const Card = ({ image, icon, title, desc }) => {
+const Card = ({ image, icon, titleKey, descKey, t }) => {
   const [imgFailed, setImgFailed] = useState(false)
 
   return (
@@ -146,7 +147,7 @@ const Card = ({ image, icon, title, desc }) => {
         {!imgFailed ? (
           <img
             src={image}
-            alt={title}
+            alt={t(titleKey)}
             loading="lazy"
             onError={() => setImgFailed(true)}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -162,39 +163,41 @@ const Card = ({ image, icon, title, desc }) => {
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <h4 className="text-white font-semibold text-base leading-tight">
-            {title}
+            {t(titleKey)}
           </h4>
         </div>
       </div>
       <div className="p-4">
-        <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+        <p className="text-sm text-gray-500 leading-relaxed">{t(descKey)}</p>
       </div>
     </div>
   )
 }
 
-const CategoryBlock = ({ label, headline, description, items }) => (
+const CategoryBlock = ({ labelKey, headlineKey, descriptionKey, items, t }) => (
   <div>
     <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-8">
       <div>
         <span className="text-xs font-semibold text-[#F41703] tracking-wide">
-          {label}
+          {t(labelKey)}
         </span>
         <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mt-1">
-          {headline}
+          {t(headlineKey)}
         </h3>
       </div>
-      <p className="text-sm text-gray-500 max-w-sm">{description}</p>
+      <p className="text-sm text-gray-500 max-w-sm">{t(descriptionKey)}</p>
     </div>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
       {items.map((item) => (
-        <Card key={item.title} {...item} />
+        <Card key={item.titleKey} {...item} t={t} />
       ))}
     </div>
   </div>
 )
 
 const Source = () => {
+  const { t } = useTranslation()
+
   return (
     <div>
       {/* What Can We Source Section */}
@@ -202,26 +205,27 @@ const Source = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-              What can we source?
+              {t('source.title')}
             </h2>
             <p className="text-gray-500 max-w-xl mx-auto">
-              From heavy machinery to finished consumer goods — we find, vet,
-              and deliver.
+              {t('source.subtitle')}
             </p>
           </div>
 
           <div className="space-y-16">
             <CategoryBlock
-              label="MACHINERY"
-              headline="Machines built for production"
-              description="Sourced and inspected before they ever leave the factory floor."
+              labelKey="source.machinery.label"
+              headlineKey="source.machinery.headline"
+              descriptionKey="source.machinery.description"
               items={machineryItems}
+              t={t}
             />
             <CategoryBlock
-              label="PRODUCTS"
-              headline="Goods ready to sell"
-              description="Consumer and industrial products, sourced to your spec."
+              labelKey="source.products.label"
+              headlineKey="source.products.headline"
+              descriptionKey="source.products.description"
               items={productItems}
+              t={t}
             />
           </div>
         </div>

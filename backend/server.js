@@ -13,6 +13,9 @@ const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoutes");
 const issueRoutes = require("./routes/issueRoutes");
 const jobRoutes = require("./routes/jobRoutes");
+const contactRoutes = require("./routes/contactRoutes");
+const quotationRoutes = require("./routes/quotationRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 const passport = require("./config/passport");
 const { googleCallback, facebookCallback } = require("./controllers/userAuthController");
 
@@ -141,6 +144,21 @@ app.use(
 app.use(
   "/api/jobs",
   jobRoutes
+);
+
+app.use(
+  "/api/contact",
+  contactRoutes
+);
+
+app.use(
+  "/api/quotations",
+  quotationRoutes
+);
+
+app.use(
+  "/api/reviews",
+  reviewRoutes
 );
 
 

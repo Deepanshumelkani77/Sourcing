@@ -4,6 +4,7 @@ import { getUserOrders } from '../services/orderApi'
 import { getUserContainers } from '../services/containerApi'
 import OrderTracking from '../components/OrderTracking'
 import ReportIssue from '../components/ReportIssue'
+import ReviewModal from '../components/ReviewModal'
 
 const REFRESH_MS = 30000 // silent refresh so status changes appear live
 
@@ -351,6 +352,8 @@ const Dashboard = () => {
   const [containers, setContainers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [selectedOrder, setSelectedOrder] = useState(null)
+  const [showReviewModal, setShowReviewModal] = useState(false)
 
   const fetchData = useCallback(async (silent = false) => {
     try {
@@ -393,6 +396,11 @@ const Dashboard = () => {
       counts,
     }
   }, [orders, containers])
+
+  const handleReviewClick = (order) => {
+    setSelectedOrder(order)
+    setShowReviewModal(true)
+  }
 
   // Active shipments first, delivered ones after
   const sortedContainers = useMemo(
@@ -565,7 +573,19 @@ const Dashboard = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <ReportIssue order={order} user={user} />
+                          {order.status === 'Delivered' ? (
+                            <div className="flex gap-2">
+                              <ReportIssue order={order} user={user} />
+                              <button
+                                onClick={() => handleReviewClick(order)}
+                                className="text-sm font-medium text-[#F41703] hover:text-[#d10f02] px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors"
+                              >
+                                Review
+                              </button>
+                            </div>
+                          ) : (
+                            <ReportIssue order={order} user={user} />
+                          )}
                         </td>
                         <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">
                           {formatDate(order.createdAt)}
@@ -610,6 +630,18 @@ const Dashboard = () => {
           )}
         </section>
       </div>
+
+      {/* Review Modal */}
+      {showReviewModal && selectedOrder && (
+        <ReviewModal
+          isOpen={showReviewModal}
+          onClose={() => {
+            setShowReviewModal(false)
+            setSelectedOrder(null)
+          }}
+          order={selectedOrder}
+        />
+      )}
     </div>
   )
 }

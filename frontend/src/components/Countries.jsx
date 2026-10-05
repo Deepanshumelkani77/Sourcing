@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 const CountryCard = ({ name, flag, image, description }) => {
   return (
@@ -21,36 +22,38 @@ const CountryCard = ({ name, flag, image, description }) => {
 }
 
 const Countries = () => {
+  const { t } = useTranslation()
+
   const countries = [
     {
-      name: 'China',
+      nameKey: 'countries.china.name',
       flag: '🇨🇳',
       image: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      description: 'Source from manufacturing hubs and suppliers across China.'
+      descriptionKey: 'countries.china.description'
     },
     {
-      name: 'India',
+      nameKey: 'countries.india.name',
       flag: '🇮🇳',
       image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      description: 'Deliver to Indian markets with streamlined logistics.'
+      descriptionKey: 'countries.india.description'
     },
     {
-      name: 'Middle East',
+      nameKey: 'countries.middleEast.name',
       flag: '🌍',
       image: 'https://images.unsplash.com/photo-1548013146-72479768bada?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      description: 'Expand your reach across Middle Eastern markets.'
+      descriptionKey: 'countries.middleEast.description'
     },
     {
-      name: 'Southeast Asia',
+      nameKey: 'countries.southeastAsia.name',
       flag: '🌏',
       image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      description: 'Connect with growing markets in Southeast Asia.'
+      descriptionKey: 'countries.southeastAsia.description'
     },
     {
-      name: 'Europe',
+      nameKey: 'countries.europe.name',
       flag: '🇪🇺',
       image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      description: 'Reach European markets with reliable sourcing.'
+      descriptionKey: 'countries.europe.description'
     }
   ]
 
@@ -60,22 +63,28 @@ const Countries = () => {
         <section className="py-20 px-4 bg-gradient-to-r from-red-50 to-orange-100 text-gray-900">
           <div className="max-w-7xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
-              From China to Your Business
+              {t('countries.title')}
             </h2>
             <p className="text-lg md:text-xl mb-12 text-gray-700 max-w-2xl mx-auto">
-              Global sourcing capabilities that connect you to markets worldwide
+              {t('countries.subtitle')}
             </p>
-            
+
             {/* Country Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
               {countries.map((country, index) => (
-                <CountryCard key={index} {...country} />
+                <CountryCard 
+                  key={index} 
+                  name={t(country.nameKey)}
+                  flag={country.flag}
+                  image={country.image}
+                  description={t(country.descriptionKey)}
+                />
               ))}
             </div>
 
             <div className="bg-white shadow-lg rounded-2xl p-8 inline-block">
               <p className="text-xl md:text-2xl font-medium text-gray-900">
-                One sourcing partner. Multiple markets.
+                {t('countries.tagline')}
               </p>
             </div>
           </div>

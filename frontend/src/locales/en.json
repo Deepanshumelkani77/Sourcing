@@ -32,10 +32,6 @@
       }
     }
   },
-  "about": {
-    "title": "About Us",
-    "subtitle": "Learn about our mission and values"
-  },
   "contact": {
     "title": "Contact Us",
     "subtitle": "Get in touch with our team"
@@ -71,6 +67,264 @@
       "submit": "Submit Application",
       "success": "Thank you! Your application has been submitted successfully. We'll review it and get back to you soon."
     }
+  },
+  "whatWeDo": {
+    "title": "What We Do",
+    "subtitle": "Our Services",
+    "machinerySourcing": {
+      "title": "Machinery Sourcing",
+      "body": "Industrial machinery, manufacturing equipment and specialized machines."
+    },
+    "productSourcing": {
+      "title": "Product Sourcing",
+      "body": "Source products according to your specifications, quantity and budget."
+    },
+    "supplierIdentification": {
+      "title": "Supplier Identification",
+      "body": "Find and evaluate suitable manufacturers and suppliers."
+    },
+    "qualityInspection": {
+      "title": "Quality Inspection",
+      "body": "Quality checks and inspection carried out before shipment."
+    },
+    "logisticsShipping": {
+      "title": "Logistics & Shipping",
+      "body": "Coordinate transportation from China to your destination."
+    },
+    "endToEndSourcing": {
+      "title": "End-to-End Sourcing",
+      "body": "From requirement to supplier, production, inspection and shipping."
+    }
+  },
+  "source": {
+    "title": "What can we source?",
+    "subtitle": "From heavy machinery to finished consumer goods — we find, vet, and deliver.",
+    "machinery": {
+      "label": "MACHINERY",
+      "headline": "Machines built for production",
+      "description": "Sourced and inspected before they ever leave the factory floor.",
+      "industrialMachinery": {
+        "title": "Industrial Machinery",
+        "desc": "Heavy-duty machines for production lines and large-scale operations."
+      },
+      "manufacturingEquipment": {
+        "title": "Manufacturing Equipment",
+        "desc": "Equipment for assembly, fabrication, and processing at scale."
+      },
+      "packagingMachinery": {
+        "title": "Packaging Machinery",
+        "desc": "Filling, sealing, labeling, and wrapping machines for any product line."
+      },
+      "cncAutomation": {
+        "title": "CNC / Automation Equipment",
+        "desc": "Precision CNC systems and automated equipment for repeatable output."
+      },
+      "specializedMachinery": {
+        "title": "Specialized Machinery",
+        "desc": "Custom-built or niche machinery matched to your exact spec."
+      }
+    },
+    "products": {
+      "label": "PRODUCTS",
+      "headline": "Goods ready to sell",
+      "description": "Consumer and industrial products, sourced to your spec.",
+      "homeKitchen": {
+        "title": "Home & Kitchen",
+        "desc": "Cookware, appliances, and household goods sourced at volume."
+      },
+      "industrialProducts": {
+        "title": "Industrial Products",
+        "desc": "Components and supplies built for industrial and commercial use."
+      },
+      "consumerProducts": {
+        "title": "Consumer Products",
+        "desc": "Retail-ready goods across a wide range of categories."
+      },
+      "electricalElectronics": {
+        "title": "Electrical / Electronics",
+        "desc": "Electrical parts and electronic devices, tested and certified."
+      },
+      "customProducts": {
+        "title": "Custom Products",
+        "desc": "Products built to your own design, materials, or branding."
+      }
+    }
+  },
+  "process": {
+    "subtitle": "How it works",
+    "title": "Our Sourcing Process",
+    "steps": {
+      "requirement": {
+        "title": "Requirement",
+        "body": "You tell us what you need — spec, quantity, budget, and timeline."
+      },
+      "supplierSearch": {
+        "title": "Supplier Search",
+        "body": "We identify and shortlist suitable suppliers and manufacturers."
+      },
+      "quotation": {
+        "title": "Quotation",
+        "body": "You compare pricing, specifications, and options side by side."
+      },
+      "sampleVerification": {
+        "title": "Sample / Verification",
+        "body": "We verify product or machinery specs against what was agreed."
+      },
+      "production": {
+        "title": "Production",
+        "body": "Manufacturing begins with quality checks at every stage of production."
+      },
+      "qualityInspection": {
+        "title": "Quality Inspection",
+        "body": "Products are inspected before shipment wherever applicable."
+      },
+      "shipping": {
+        "title": "Shipping",
+        "body": "We coordinate logistics and delivery through to your door."
+      },
+      "delivery": {
+        "title": "Delivery",
+        "body": "Your order arrives at your location, ready for use or distribution."
+      }
+    },
+    "flow": {
+      "requirement": "Requirement",
+      "supplierSearch": "Supplier Search",
+      "quotation": "Quotation",
+      "sampleVerification": "Sample / Verification",
+      "production": "Production",
+      "qualityInspection": "Quality Inspection",
+      "shipping": "Shipping",
+      "delivery": "Delivery"
+    }
+  },
+  "countries": {
+    "title": "From China to Your Business",
+    "subtitle": "Global sourcing capabilities that connect you to markets worldwide",
+    "tagline": "One sourcing partner. Multiple markets.",
+    "china": {
+      "name": "China",
+      "description": "Source from manufacturing hubs and suppliers across China."
+    },
+    "india": {
+      "name": "India",
+      "description": "Deliver to Indian markets with streamlined logistics."
+    },
+    "middleEast": {
+      "name": "Middle East",
+      "description": "Expand your reach across Middle Eastern markets."
+    },
+    "southeastAsia": {
+      "name": "Southeast Asia",
+      "description": "Connect with growing markets in Southeast Asia."
+    },
+    "europe": {
+      "name": "Europe",
+      "description": "Reach European markets with reliable sourcing."
+    }
+  },
+  "footer": {
+    "brandDescription": "Your trusted partner in sourcing machinery, products, and manufacturing solutions from verified Chinese suppliers to global markets.",
+    "quickLinks": "Quick Links",
+    "ourServices": "Our Services",
+    "getInTouch": "Get in Touch",
+    "productSourcing": "Product Sourcing",
+    "supplierIdentification": "Supplier Identification",
+    "qualityInspection": "Quality Inspection",
+    "logisticsShipping": "Logistics & Shipping",
+    "endToEndSourcing": "End-to-End Sourcing",
+    "address": "FF 05, Rise Retailia 1, Plot No. SC 01, Sector 1, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh - 201306 India",
+    "allRightsReserved": "All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "dataDeletion": "Data Deletion",
+    "termsOfService": "Terms of Service"
+  },
+  "about": {
+    "hero": {
+      "title": "Sourcing from China, without the guesswork.",
+      "subtitle": "For over a decade, IndoChinaBridge has helped businesses source machinery and products from verified Chinese factories — no unvetted suppliers, no hidden margins, just quality checked before it ships."
+    },
+    "stats": {
+      "clients": "Clients served",
+      "products": "Products sourced",
+      "countries": "Countries reached",
+      "delivery": "On-time delivery"
+    },
+    "story": {
+      "label": "Our Story",
+      "title": "Built to remove the risk from sourcing",
+      "paragraph1": "IndoChinaBridge was founded to close the gap between Chinese manufacturing and global business needs. We saw the same problems again and again — language barriers, quality that's impossible to verify from abroad, and logistics that break down at the worst moment.",
+      "paragraph2": "So we built a process around them: people on the ground who can walk a factory floor, inspections before anything ships, and one point of contact who answers when something needs to change.",
+      "point1": "Verified supplier network across major manufacturing hubs",
+      "point2": "Pre-shipment inspection on every order",
+      "point3": "Transparent pricing with no hidden margins"
+    },
+    "mission": {
+      "label": "Our Mission",
+      "title": "Sourcing you don't have to second-guess",
+      "subtitle": "We want every client to get the product they specified, at the price they agreed, on the date they were promised.",
+      "qualityFirst": {
+        "title": "Quality first",
+        "body": "Every product is inspected and verified before shipment, so what you ordered is what arrives."
+      },
+      "trustTransparency": {
+        "title": "Trust & transparency",
+        "body": "Honest communication and fair pricing, with the full cost breakdown shared up front."
+      },
+      "globalReach": {
+        "title": "Global reach",
+        "body": "Efficient logistics connecting Chinese factories to warehouses and storefronts worldwide."
+      }
+    },
+    "whyChooseUs": {
+      "label": "Why Choose Us",
+      "title": "What working with us actually looks like",
+      "subtitle": "The advantages our clients tell us make the biggest difference.",
+      "expertKnowledge": {
+        "title": "Expert knowledge",
+        "body": "A working understanding of Chinese manufacturing, supplier networks, and how pricing really moves."
+      },
+      "qualityAssurance": {
+        "title": "Quality assurance",
+        "body": "Inspection and quality control built into every stage, not bolted on at the end."
+      },
+      "costEfficiency": {
+        "title": "Cost efficiency",
+        "body": "Direct supplier relationships and optimized supply chains keep your landed cost competitive."
+      },
+      "endToEndService": {
+        "title": "End-to-end service",
+        "body": "One point of contact from your first spec sheet to the pallet arriving at your door."
+      },
+      "riskManagement": {
+        "title": "Risk management",
+        "body": "We flag supplier and shipment risk early and handle it before it becomes your problem."
+      },
+      "support": {
+        "title": "24/7 support",
+        "body": "Someone is reachable around the clock, across time zones, whenever a shipment needs attention."
+      }
+    },
+    "cta": {
+      "title": "Ready to start your sourcing journey?",
+      "subtitle": "Tell us what you need made, and we'll come back with suppliers, samples, and a real landed cost.",
+      "button": "Get a free consultation"
+    }
+  },
+  "blog": {
+    "hero": {
+      "title": "Insights, tips, and industry news to help you succeed in global sourcing",
+      "subtitle": "Stay updated with the latest sourcing strategies, industry trends, and expert insights from our team."
+    },
+    "categories": {
+      "all": "All",
+      "sourcingTips": "Sourcing Tips",
+      "industryNews": "Industry News",
+      "caseStudies": "Case Studies",
+      "logistics": "Logistics",
+      "qualityControl": "Quality Control"
+    },
+    "readMore": "Read More →"
   },
   "common": {
     "language": "Language",

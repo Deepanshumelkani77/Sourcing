@@ -10,6 +10,9 @@ import AdminCustomers from './pages/AdminCustomers'
 import AdminTracking from './pages/AdminTracking'
 import AdminIssues from './pages/AdminIssues'
 import AdminJobs from './pages/AdminJobs'
+import AdminContactSubmissions from './pages/AdminContactSubmissions'
+import AdminQuotations from './pages/AdminQuotations'
+import AdminReviews from './pages/AdminReviews'
 import Login from './pages/Login'
 
 // Protected Route Component
@@ -49,6 +52,9 @@ const App = () => {
                 <Route path="/issues" element={<AdminIssues />} />
                 <Route path="/jobs" element={<AdminJobs />} />
                 <Route path="/tracking" element={<AdminTracking />} />
+                <Route path="/contact-submissions" element={<AdminContactSubmissions />} />
+                <Route path="/quotations" element={<AdminQuotations />} />
+                <Route path="/reviews" element={<AdminReviews />} />
               </Routes>
             </ProtectedRoute>
           }
