@@ -63,6 +63,7 @@ export const AuthProvider = ({
     try {
 
       await apiLogout()
+      localStorage.removeItem('auth_token')
 
     } finally {
 

@@ -2,10 +2,11 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Admin = require("../models/Admin");
 
-// User-specific protection - only checks token cookie
+// User-specific protection - checks token cookie and Authorization header
 const protectUser = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    // Try to get token from cookie first, then from Authorization header
+    const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
 
     if (!token) {
       return res.status(401).json({
