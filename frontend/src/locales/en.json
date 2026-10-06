@@ -6,7 +6,9 @@
     "contact": "Contact",
     "career": "Careers",
     "login": "Login",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+    "products": "Products",
+    "reviews": "Reviews"
   },
   "home": {
     "hero": {
@@ -34,7 +36,56 @@
   },
   "contact": {
     "title": "Contact Us",
-    "subtitle": "Get in touch with our team"
+    "subtitle": "Get in touch with our team",
+    "hero": {
+      "breadcrumb": "Home",
+      "title": "Get in Touch",
+      "subtitle": "Questions about sourcing machinery, products, or manufacturing solutions from China? Our team is here to help — reach out any way that's convenient."
+    },
+    "cards": {
+      "call": {
+        "title": "Call Us",
+        "note": "Mon–Sat, 9 AM – 8 PM IST"
+      },
+      "email": {
+        "title": "Email Us",
+        "note": "We reply within 24 hours"
+      },
+      "visit": {
+        "title": "Visit Us",
+        "note": ""
+      },
+      "hours": {
+        "title": "Working Hours",
+        "lines": ["Monday – Saturday", "9:00 AM – 8:00 PM"],
+        "note": "Sunday: By appointment"
+      }
+    },
+    "form": {
+      "title": "Send us a Message",
+      "firstName": "First Name",
+      "middleName": "Middle Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "subject": "Subject",
+      "selectSubject": "Select a subject",
+      "message": "Message",
+      "submit": "Send Message",
+      "success": "Thank you! Your message has been sent successfully. We'll get back to you soon.",
+      "subjects": {
+        "sourcingQuote": "Sourcing Quote",
+        "machinerySourcing": "Machinery Sourcing",
+        "productSourcing": "Product Sourcing",
+        "qualityInspection": "Quality Inspection",
+        "logisticsInquiry": "Logistics Inquiry",
+        "partnership": "Partnership",
+        "generalInquiry": "General Inquiry"
+      }
+    },
+    "map": {
+      "title": "Our Location",
+      "openInMaps": "Open in Maps"
+    }
   },
   "career": {
     "title": "Build Your Career with Us",
@@ -325,6 +376,18 @@
       "qualityControl": "Quality Control"
     },
     "readMore": "Read More →"
+  },
+  "reviews": {
+    "title": "Customer Reviews",
+    "subtitle": "See what our customers say about their experience with us",
+    "loading": "Loading reviews...",
+    "noReviews": {
+      "title": "No reviews yet",
+      "subtitle": "Be the first to share your experience with us!"
+    },
+    "order": "Order #",
+    "adminResponse": "Admin Response:",
+    "helpful": "helpful"
   },
   "common": {
     "language": "Language",

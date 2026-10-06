@@ -6,7 +6,9 @@
     "contact": "联系我们",
     "career": "职业发展",
     "login": "登录",
-    "signup": "注册"
+    "signup": "注册",
+    "products": "产品",
+    "reviews": "评论"
   },
   "home": {
     "hero": {
@@ -34,7 +36,56 @@
   },
   "contact": {
     "title": "联系我们",
-    "subtitle": "与我们的团队取得联系"
+    "subtitle": "与我们的团队取得联系",
+    "hero": {
+      "breadcrumb": "首页",
+      "title": "联系我们",
+      "subtitle": "关于从中国采购机械、产品或制造解决方案的问题？我们的团队随时为您提供帮助——通过任何方便的方式联系我们。"
+    },
+    "cards": {
+      "call": {
+        "title": "致电我们",
+        "note": "周一至周六，上午9点 – 晚上8点（印度标准时间）"
+      },
+      "email": {
+        "title": "发送邮件",
+        "note": "我们会在24小时内回复"
+      },
+      "visit": {
+        "title": "访问我们",
+        "note": ""
+      },
+      "hours": {
+        "title": "工作时间",
+        "lines": ["周一至周六", "上午9:00 – 晚上8:00"],
+        "note": "周日：需预约"
+      }
+    },
+    "form": {
+      "title": "给我们留言",
+      "firstName": "名字",
+      "middleName": "中间名",
+      "lastName": "姓氏",
+      "email": "电子邮件地址",
+      "subject": "主题",
+      "selectSubject": "选择主题",
+      "message": "留言",
+      "submit": "发送留言",
+      "success": "谢谢！您的留言已成功发送。我们会尽快回复您。",
+      "subjects": {
+        "sourcingQuote": "采购报价",
+        "machinerySourcing": "机械采购",
+        "productSourcing": "产品采购",
+        "qualityInspection": "质量检验",
+        "logisticsInquiry": "物流咨询",
+        "partnership": "合作",
+        "generalInquiry": "一般咨询"
+      }
+    },
+    "map": {
+      "title": "我们的位置",
+      "openInMaps": "在地图中打开"
+    }
   },
   "career": {
     "title": "与我们一起构建您的职业生涯",
@@ -325,6 +376,18 @@
       "qualityControl": "质量控制"
     },
     "readMore": "阅读更多 →"
+  },
+  "reviews": {
+    "title": "客户评论",
+    "subtitle": "看看我们的客户对我们服务的评价",
+    "loading": "加载评论中...",
+    "noReviews": {
+      "title": "暂无评论",
+      "subtitle": "成为第一个分享您体验的人！"
+    },
+    "order": "订单 #",
+    "adminResponse": "管理员回复：",
+    "helpful": "有用"
   },
   "common": {
     "language": "语言",

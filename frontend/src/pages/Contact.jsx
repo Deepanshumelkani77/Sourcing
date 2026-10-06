@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import { useTranslation } from 'react-i18next'
 
 const BRAND_COLOR = '#F41703'
 const SECONDARY_COLOR = '#F97316'
@@ -7,27 +8,27 @@ const SECONDARY_COLOR = '#F97316'
 const CONTACT_CARDS = [
   {
     icon: '📞',
-    title: 'Call Us',
+    titleKey: 'contact.cards.call.title',
+    noteKey: 'contact.cards.call.note',
     lines: ['+91 9999-122-522'],
-    note: 'Mon–Sat, 9 AM – 8 PM IST',
   },
   {
     icon: '✉️',
-    title: 'Email Us',
+    titleKey: 'contact.cards.email.title',
+    noteKey: 'contact.cards.email.note',
     lines: ['info@indochinabridge.com'],
-    note: 'We reply within 24 hours',
   },
   {
     icon: '📍',
-    title: 'Visit Us',
+    titleKey: 'contact.cards.visit.title',
+    noteKey: 'contact.cards.visit.note',
     lines: ['FF 05, Rise Retailia 1, Plot No. SC 01, Sector 1, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh - 201306'],
-    note: '',
   },
   {
     icon: '🕐',
-    title: 'Working Hours',
-    lines: ['Monday – Saturday', '9:00 AM – 8:00 PM'],
-    note: 'Sunday: By appointment',
+    titleKey: 'contact.cards.hours.title',
+    noteKey: 'contact.cards.hours.note',
+    linesKey: 'contact.cards.hours.lines',
   },
 ]
 
@@ -76,6 +77,7 @@ const FaqItem = ({ q, a, isOpen, onToggle }) => (
 )
 
 const Contact = () => {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState({ firstName: '', middleName: '', lastName: '', email: '', subject: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
   const [openFaq, setOpenFaq] = useState(0)
@@ -110,15 +112,15 @@ const Contact = () => {
 
         <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
           <div className="flex items-center gap-2 text-sm text-white/70 mb-4">
-            <span>Home</span>
+            <span>{t('contact.hero.breadcrumb')}</span>
             <ChevronDivider />
-            <span className="text-white font-medium">Contact Us</span>
+            <span className="text-white font-medium">{t('contact.hero.title')}</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold text-white max-w-xl leading-tight">
-            Get in Touch
+            {t('contact.hero.title')}
           </h1>
           <p className="text-white/85 text-base sm:text-lg mt-4 max-w-xl leading-relaxed">
-            Questions about sourcing machinery, products, or manufacturing solutions from China? Our team is here to help — reach out any way that's convenient.
+            {t('contact.hero.subtitle')}
           </p>
         </div>
       </div>
@@ -126,20 +128,22 @@ const Contact = () => {
       {/* ---- Contact info cards — overlaps hero edge ---- */}
       <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 -translate-y-10">
-          {CONTACT_CARDS.map(({ icon, title, lines, note }) => (
-            <div key={title} className="bg-white flex rounded-2xl shadow-xl border border-gray-100 p-6">
+          {CONTACT_CARDS.map(({ icon, titleKey, noteKey, lines, linesKey }) => (
+            <div key={titleKey} className="bg-white flex rounded-2xl shadow-xl border border-gray-100 p-6">
               <span className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 text-2xl" style={{ backgroundColor: 'rgba(244,23,3,0.1)' }}>
                 {icon}
               </span>
-              
-              <div className="ml-5"> 
-                <h3 className="font-bold text-sm mb-2" style={{ color: BRAND_COLOR }}>{title}</h3>
-                {lines.map((line) => (
-                  <p key={line} className="text-gray-600 text-sm leading-snug">{line}</p>
+
+              <div className="ml-5">
+                <h3 className="font-bold text-sm mb-2" style={{ color: BRAND_COLOR }}>{t(titleKey)}</h3>
+                {linesKey ? t(linesKey, { returnObjects: true }).map((line, i) => (
+                  <p key={i} className="text-gray-600 text-sm leading-snug">{line}</p>
+                )) : lines.map((line, i) => (
+                  <p key={i} className="text-gray-600 text-sm leading-snug">{line}</p>
                 ))}
-                <p className="text-gray-400 text-xs mt-2">{note}</p>
+                <p className="text-gray-400 text-xs mt-2">{t(noteKey)}</p>
               </div>
-            
+
             </div>
           ))}
         </div>
@@ -149,72 +153,72 @@ const Contact = () => {
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 mb-4">
           {/* Left: Contact Form */}
           <div className="bg-white rounded-xl shadow-lg p-8 pt-3">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Send us a Message</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('contact.form.title')}</h2>
             {submitted && (
               <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-green-800 font-medium">Thank you! Your message has been sent successfully. We'll get back to you soon.</p>
+                <p className="text-green-800 font-medium">{t('contact.form.success')}</p>
               </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-2">
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label htmlFor="firstName" className="block text-base font-medium text-gray-700 mb-2">First Name *</label>
-                  <input type="text" id="firstName" name="firstName" required value={formData.firstName} onChange={handleChange('firstName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="First name" />
+                  <label htmlFor="firstName" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.firstName')} *</label>
+                  <input type="text" id="firstName" name="firstName" required value={formData.firstName} onChange={handleChange('firstName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder={t('contact.form.firstName')} />
                 </div>
                 <div>
-                  <label htmlFor="middleName" className="block text-base font-medium text-gray-700 mb-2">Middle Name</label>
-                  <input type="text" id="middleName" name="middleName" value={formData.middleName} onChange={handleChange('middleName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="Middle name" />
+                  <label htmlFor="middleName" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.middleName')}</label>
+                  <input type="text" id="middleName" name="middleName" value={formData.middleName} onChange={handleChange('middleName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder={t('contact.form.middleName')} />
                 </div>
                 <div>
-                  <label htmlFor="lastName" className="block text-base font-medium text-gray-700 mb-2">Last Name *</label>
-                  <input type="text" id="lastName" name="lastName" required value={formData.lastName} onChange={handleChange('lastName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="Last name" />
+                  <label htmlFor="lastName" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.lastName')} *</label>
+                  <input type="text" id="lastName" name="lastName" required value={formData.lastName} onChange={handleChange('lastName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder={t('contact.form.lastName')} />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">Email Address *</label>
-                <input type="email" id="email" name="email" required value={formData.email} onChange={handleChange('email')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder="Enter your email address" />
+                <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.email')} *</label>
+                <input type="email" id="email" name="email" required value={formData.email} onChange={handleChange('email')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder={t('contact.form.email')} />
               </div>
 
 
 
               <div>
-                <label htmlFor="subject" className="block text-base font-medium text-gray-700 mb-2">Subject *</label>
+                <label htmlFor="subject" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.subject')} *</label>
                 <select id="subject" name="subject" required value={formData.subject} onChange={handleChange('subject')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base">
-                  <option value="">Select a subject</option>
-                  <option value="Sourcing Quote">Sourcing Quote</option>
-                  <option value="Machinery Sourcing">Machinery Sourcing</option>
-                  <option value="Product Sourcing">Product Sourcing</option>
-                  <option value="Quality Inspection">Quality Inspection</option>
-                  <option value="Logistics Inquiry">Logistics Inquiry</option>
-                  <option value="Partnership">Partnership</option>
-                  <option value="General Inquiry">General Inquiry</option>
+                  <option value="">{t('contact.form.selectSubject')}</option>
+                  <option value="Sourcing Quote">{t('contact.form.subjects.sourcingQuote')}</option>
+                  <option value="Machinery Sourcing">{t('contact.form.subjects.machinerySourcing')}</option>
+                  <option value="Product Sourcing">{t('contact.form.subjects.productSourcing')}</option>
+                  <option value="Quality Inspection">{t('contact.form.subjects.qualityInspection')}</option>
+                  <option value="Logistics Inquiry">{t('contact.form.subjects.logisticsInquiry')}</option>
+                  <option value="Partnership">{t('contact.form.subjects.partnership')}</option>
+                  <option value="General Inquiry">{t('contact.form.subjects.generalInquiry')}</option>
                 </select>
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-base font-medium text-gray-700 mb-2">Message *</label>
-                <textarea id="message" name="message" required rows={2} value={formData.message} onChange={handleChange('message')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition resize-none text-base" placeholder="Write your message here..."></textarea>
+                <label htmlFor="message" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.message')} *</label>
+                <textarea id="message" name="message" required rows={2} value={formData.message} onChange={handleChange('message')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition resize-none text-base" placeholder={t('contact.form.message')}></textarea>
               </div>
 
-              <button type="submit" className="w-full bg-[#F41703] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#F41703] transition-colors duration-300 shadow-md hover:shadow-lg text-base">Send Message</button>
+              <button type="submit" className="w-full bg-[#F41703] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#F41703] transition-colors duration-300 shadow-md hover:shadow-lg text-base">{t('contact.form.submit')}</button>
             </form>
           </div>
 
           {/* Right: Map */}
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="p-4 bg-white flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-black">Our Location</h3>
-              <a 
-                href="https://www.google.com/maps?q=28.5807941,77.4282933&z=17" 
-                target="_blank" 
+              <h3 className="text-xl font-semibold text-black">{t('contact.map.title')}</h3>
+              <a
+                href="https://www.google.com/maps?q=28.5807941,77.4282933&z=17"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2 bg-[#F41703] text-white rounded-lg hover:bg-[#F41703] transition-colors text-sm font-medium"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
-                Open in Maps
+                {t('contact.map.openInMaps')}
               </a>
             </div>
             <div className="h-120">

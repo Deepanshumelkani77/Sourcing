@@ -249,7 +249,7 @@ const Navbar = () => {
               <button
                 className={`transition-colors duration-200 text-lg font-medium flex items-center gap-1 ${location.pathname.startsWith('/product') ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
               >
-                Products
+                {t('nav.products')}
                 <svg
                   className={`w-3.5 h-3.5 transition-transform duration-200 ${showProductsDropdown ? 'rotate-180' : ''}`}
                   fill="none"
@@ -348,7 +348,7 @@ const Navbar = () => {
               to="/reviews"
               className={`transition-colors duration-200 text-lg font-medium ${location.pathname === '/reviews' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
             >
-              Reviews
+              {t('nav.reviews')}
             </Link>
           </div>
 
@@ -657,7 +657,7 @@ const Navbar = () => {
               onClick={() => setShowMobileMenu(false)}
               className={`block px-4 py-2 rounded-lg text-lg font-medium ${location.pathname === '/reviews' ? 'text-[#F41703] bg-red-50' : 'text-gray-700 hover:bg-gray-50'}`}
             >
-              Reviews
+              {t('nav.reviews')}
             </Link>
             {!user && (
               <button
