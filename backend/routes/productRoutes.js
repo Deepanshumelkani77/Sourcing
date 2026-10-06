@@ -6,7 +6,7 @@ const router = express.Router();
 // Get all active products with search
 router.get("/", async (req, res) => {
   try {
-    const { search, category } = req.query;
+    const { search, category, lang = "en" } = req.query;
     const query = { status: "active" };
 
     if (search) {
@@ -21,11 +21,17 @@ router.get("/", async (req, res) => {
     }
 
     const products = await Product.find(query)
+      .populate("translations")
       .sort({ createdAt: -1 });
+
+    // Return localized data for each product
+    const localizedProducts = products.map(product => 
+      product.getLocalizedData(lang)
+    );
 
     return res.status(200).json({
       success: true,
-      products,
+      products: localizedProducts,
     });
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -40,14 +46,14 @@ router.get("/", async (req, res) => {
 router.get("/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
-    const { includeAll } = req.query;
+    const { includeAll, lang = "en" } = req.query;
 
     const query = { slug };
     if (!includeAll) {
       query.status = "active";
     }
 
-    const product = await Product.findOne(query);
+    const product = await Product.findOne(query).populate("translations");
 
     if (!product) {
       return res.status(404).json({
@@ -58,7 +64,7 @@ router.get("/:slug", async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      product,
+      product: product.getLocalizedData(lang),
     });
   } catch (error) {
     console.error("Error fetching product:", error);

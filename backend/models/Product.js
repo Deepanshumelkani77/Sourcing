@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const ProductTranslation = require("./ProductTranslation");
 
 const specificationSchema = new mongoose.Schema(
   {
@@ -279,5 +280,65 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Virtual to get translations for a specific language
+productSchema.virtual("translations", {
+  ref: "ProductTranslation",
+  localField: "_id",
+  foreignField: "product",
+});
+
+// Method to get product data in a specific language
+productSchema.methods.getLocalizedData = function (language = "en") {
+  const translation = this.translations?.find((t) => t.language === language);
+  
+  if (translation) {
+    return {
+      ...this.toObject(),
+      productName: translation.productName,
+      shortDescription: translation.shortDescription,
+      description: translation.description,
+      category: translation.category,
+      subCategory: translation.subCategory,
+      features: translation.features,
+      specifications: translation.specifications,
+      applications: translation.applications,
+      packageContents: translation.packageContents,
+      customization: {
+        ...this.customization.toObject(),
+        details: translation.customization.details,
+      },
+      sourcing: {
+        ...this.sourcing.toObject(),
+        country: translation.sourcing.country,
+        destination: translation.sourcing.destination,
+        moq: translation.sourcing.moq,
+      },
+      landingPage: {
+        ...this.landingPage.toObject(),
+        heroTitle: translation.landingPage.heroTitle,
+        heroSubtitle: translation.landingPage.heroSubtitle,
+        keyBenefits: translation.landingPage.keyBenefits,
+      },
+      enquiry: {
+        ...this.enquiry.toObject(),
+        buttonText: translation.enquiry.buttonText,
+      },
+      seo: {
+        ...this.seo.toObject(),
+        metaTitle: translation.seo.metaTitle,
+        metaDescription: translation.seo.metaDescription,
+        keywords: translation.seo.keywords,
+      },
+    };
+  }
+  
+  // Return original data if no translation found
+  return this.toObject();
+};
+
+// Ensure virtuals are included in JSON
+productSchema.set("toJSON", { virtuals: true });
+productSchema.set("toObject", { virtuals: true });
 
 module.exports = mongoose.model("Product", productSchema);

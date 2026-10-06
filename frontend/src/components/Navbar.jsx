@@ -180,7 +180,8 @@ const Navbar = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const result = await getAllProducts()
+        const lang = i18n.language === 'zh' ? 'zh' : 'en'
+        const result = await getAllProducts(lang)
         if (result.success) {
           setProducts(result.products)
         }
@@ -195,7 +196,7 @@ const Navbar = () => {
         clearTimeout(productsTimeoutRef.current)
       }
     }
-  }, [])
+  }, [i18n.language])
 
   return (
     <>

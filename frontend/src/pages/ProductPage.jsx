@@ -3,11 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { getProductBySlug } from '../services/productApi'
 import QuoteModal from '../components/QuoteModal'
 import { useAuth } from '../context/AuthProvider'
+import { useTranslation } from 'react-i18next'
 
 const ProductPage = () => {
   const { slug } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { i18n } = useTranslation()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -32,7 +34,8 @@ const ProductPage = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true)
-        const result = await getProductBySlug(slug)
+        const lang = i18n.language === 'zh' ? 'zh' : 'en'
+        const result = await getProductBySlug(slug, lang)
         if (result.success) {
           setProduct(result.product)
         } else {
@@ -45,7 +48,7 @@ const ProductPage = () => {
       }
     }
     fetchProduct()
-  }, [slug])
+  }, [slug, i18n.language])
 
   if (loading) {
     return (
