@@ -29,10 +29,11 @@ const createToken = (userId) => {
 const setAuthCookie = (res, token) => {
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: true,
+    sameSite: "none",
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000,
+    domain: process.env.COOKIE_DOMAIN || undefined,
   });
 };
 
@@ -282,9 +283,10 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: true,
+    sameSite: "none",
     path: "/",
+    domain: process.env.COOKIE_DOMAIN || undefined,
   });
 
   return res.status(200).json({
@@ -445,7 +447,8 @@ const googleCallback = async (req, res) => {
     const token = createToken(user._id);
     setAuthCookie(res, token);
 
-    return res.redirect(`${process.env.FRONTEND_URL}/`);
+    // Redirect with token in URL for cross-domain cookie handling
+    return res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
   } catch (error) {
     console.error("googleCallback:", error);
     return res.redirect(`${process.env.FRONTEND_URL}/login?error=server_error`);
@@ -465,7 +468,8 @@ const facebookCallback = async (req, res) => {
     const token = createToken(user._id);
     setAuthCookie(res, token);
 
-    return res.redirect(`${process.env.FRONTEND_URL}/`);
+    // Redirect with token in URL for cross-domain cookie handling
+    return res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
   } catch (error) {
     console.error("facebookCallback:", error);
     return res.redirect(`${process.env.FRONTEND_URL}/login?error=server_error`);

@@ -13,6 +13,7 @@ import Dashboard from './pages/Dashboard'
 import Reviews from './pages/Reviews'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import DataDeletion from './pages/DataDeletion'
+import AuthCallback from './pages/AuthCallback'
 import { Routes, Route } from 'react-router-dom'
 import AppContextProvider from './context/AppContext'
 import { AuthProvider } from './context/AuthProvider'
@@ -51,6 +52,7 @@ const App = () => {
             <Route path="/reviews" element={<Reviews />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/data-deletion" element={<DataDeletion />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
           </Routes>
 
 
