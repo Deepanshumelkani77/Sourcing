@@ -55,6 +55,7 @@ const Navbar = () => {
   const [showProductsDropdown, setShowProductsDropdown] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [products, setProducts] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState(null)
   const languageTriggerRef = useRef(null)
   const languageDropdownRef = useRef(null)
   const mobileLanguageTriggerRef = useRef(null)
@@ -292,27 +293,94 @@ const Navbar = () => {
                             return acc
                           }, {})
 
-                          const categories = Object.entries(grouped)
+                          const categories = Object.keys(grouped)
+                          const selectedProducts = selectedCategory ? grouped[selectedCategory] : []
 
                           return (
-                            <div className="grid grid-cols-5 gap-0">
-                              {categories.map(([category, categoryProducts]) => (
-                                <div key={category} className="border-r border-gray-100 last:border-r-0">
-                                  <div className="px-4 py-2.5 bg-gradient-to-r from-gray-50 to-white font-semibold text-sm text-gray-800 uppercase tracking-wide border-b border-gray-100">
-                                    {category}
-                                  </div>
-                                  {categoryProducts.map((product) => (
-                                    <Link
-                                      key={product._id}
-                                      to={`/product/${product.slug}`}
-                                      onClick={() => setShowProductsDropdown(false)}
-                                      className="w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-[#F41703] transition-colors duration-150 block"
+                            <div className="grid grid-cols-4 gap-0 h-full">
+                              {/* Column 1: Categories */}
+                              <div className="border-r border-gray-100 w-64 bg-gray-50">
+                                <div className="px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-50 font-semibold text-sm text-gray-800 uppercase tracking-wide border-b border-gray-200">
+                                  Categories
+                                </div>
+                                <div className="py-2">
+                                  {categories.map((category) => (
+                                    <button
+                                      key={category}
+                                      onClick={() => setSelectedCategory(category)}
+                                      className={`w-full px-4 py-2.5 text-sm text-left transition-colors duration-150 block ${
+                                        selectedCategory === category
+                                          ? 'bg-[#F41703] text-white font-medium'
+                                          : 'text-gray-700 hover:bg-red-50 hover:text-[#F41703]'
+                                      }`}
                                     >
-                                      {product.productName}
-                                    </Link>
+                                      {category}
+                                    </button>
                                   ))}
                                 </div>
-                              ))}
+                              </div>
+
+                              {/* Column 2: Products for selected category */}
+                              <div className="border-r border-gray-100 flex-1">
+                                <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-white font-semibold text-sm text-gray-800 uppercase tracking-wide border-b border-gray-100">
+                                  {selectedCategory || 'Select a Category'}
+                                </div>
+                                <div className="py-2 max-h-[400px] overflow-y-auto">
+                                  {selectedProducts.length > 0 ? (
+                                    selectedProducts.map((product) => (
+                                      <Link
+                                        key={product._id}
+                                        to={`/product/${product.slug}`}
+                                        onClick={() => {
+                                          setShowProductsDropdown(false)
+                                          setSelectedCategory(null)
+                                        }}
+                                        className="w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-[#F41703] transition-colors duration-150 block"
+                                      >
+                                        {product.productName}
+                                      </Link>
+                                    ))
+                                  ) : (
+                                    <div className="px-4 py-8 text-sm text-gray-500 text-center">
+                                      {selectedCategory ? 'No products in this category' : 'Select a category to view products'}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Column 3: Ad placeholder */}
+                              <div className="border-r border-gray-100 w-64">
+                                <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-white font-semibold text-sm text-gray-800 uppercase tracking-wide border-b border-gray-100">
+                                  Featured
+                                </div>
+                                <div className="p-4 flex items-center justify-center h-full min-h-[200px]">
+                                  <div className="text-center text-gray-400">
+                                    <div className="w-16 h-16 mx-auto mb-2 bg-gray-100 rounded-lg flex items-center justify-center">
+                                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                                      </svg>
+                                    </div>
+                                    <p className="text-sm">Ad Space</p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Column 4: Ad placeholder */}
+                              <div className="w-64">
+                                <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-white font-semibold text-sm text-gray-800 uppercase tracking-wide border-b border-gray-100">
+                                  Promotions
+                                </div>
+                                <div className="p-4 flex items-center justify-center h-full min-h-[200px]">
+                                  <div className="text-center text-gray-400">
+                                    <div className="w-16 h-16 mx-auto mb-2 bg-gray-100 rounded-lg flex items-center justify-center">
+                                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                    </div>
+                                    <p className="text-sm">Ad Space</p>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           )
                         })()
