@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import axios from 'axios'
 import { useTranslation } from 'react-i18next'
+import { AppContext } from '../context/AppContext'
 
 const BRAND_COLOR = '#F41703'
 const SECONDARY_COLOR = '#F97316'
@@ -78,6 +79,7 @@ const FaqItem = ({ q, a, isOpen, onToggle }) => (
 
 const Contact = () => {
   const { t } = useTranslation()
+  const { user, openSignup } = useContext(AppContext)
   const [formData, setFormData] = useState({ firstName: '', middleName: '', lastName: '', email: '', subject: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
   const [openFaq, setOpenFaq] = useState(0)
@@ -86,6 +88,13 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    // Check if user is logged in
+    if (!user) {
+      openSignup()
+      return
+    }
+
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/contact/submit`, formData)
       if (response.data.success) {

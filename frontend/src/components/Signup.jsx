@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
 import {
   sendSignupOTP,
@@ -9,6 +10,7 @@ import {
 } from '../services/authApi'
 
 const Signup = () => {
+  const navigate = useNavigate()
   const { showSignup, signupMode, closeSignup, setSignupMode } = useContext(AppContext)
   const [loginData, setLoginData] = useState({ email: '', password: '' })
   const [signupData, setSignupData] = useState({ firstName: '', middleName: '', lastName: '', email: '', phone: '', password: '' })
@@ -282,7 +284,15 @@ const Signup = () => {
                 <p className="text-[10px] font-semibold tracking-wide text-yellow-300 uppercase mb-0.5">Exclusive Offer</p>
                 <p className="text-sm font-semibold leading-snug">Get free sourcing<br />consultation today</p>
               </div>
-              <span className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-full bg-[#F97316]">Get Started</span>
+              <button
+                onClick={() => {
+                  close()
+                  navigate('/contact')
+                }}
+                className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-full bg-[#F97316] hover:bg-[#e86a15] transition-colors cursor-pointer"
+              >
+                Get Started
+              </button>
             </div>
           </div>
 

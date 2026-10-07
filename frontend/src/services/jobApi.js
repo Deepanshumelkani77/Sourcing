@@ -1,4 +1,4 @@
-const API_BASE = "https://sourcing-x379.onrender.com";
+const API_BASE = "https://sourcing-x379.onrender.com/api";
 
 const getActiveJobs = async () => {
   try {
