@@ -214,7 +214,14 @@ const Footer = () => {
             <ul className="space-y-3 mb-7">
               <li className="flex items-start gap-3">
                 <IconPin className="w-5 h-5 text-[#F41703] mt-0.5 flex-shrink-0" />
-                <span className="text-gray-400">{t('footer.address')}</span>
+                <a
+                  href="https://www.google.com/maps?q=FF+05,+Rise+Retailia+1,+Plot+No.+SC+01,+Sector+1,+Greater+Noida+West,+Gautam+Buddha+Nagar,+Uttar+Pradesh,+India+PIN+201306"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 text-left leading-relaxed hover:text-white transition-colors duration-200"
+                >
+                  {t('footer.address')}
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <IconMail className="w-5 h-5 text-[#F41703] flex-shrink-0" />
@@ -224,8 +231,8 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-3">
                 <IconPhone className="w-5 h-5 text-[#F41703] flex-shrink-0" />
-                <a href="tel:+919355544553" className="text-gray-400 hover:text-white transition-colors duration-200">
-                  +91 9355544553
+                <a href="tel:+919999122522" className="text-gray-400 hover:text-white transition-colors duration-200">
+                  +91 9999122522
                 </a>
               </li>
             </ul>
