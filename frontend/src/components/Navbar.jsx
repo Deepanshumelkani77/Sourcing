@@ -179,6 +179,28 @@ const Navbar = () => {
   }, [showProductsDropdown])
 
   useEffect(() => {
+    if (showProductsDropdown && products.length > 0 && !selectedCategory) {
+      // Auto-select first category when dropdown opens
+      const grouped = products.reduce((acc, product) => {
+        const category = product.category || 'Uncategorized'
+        if (!acc[category]) {
+          acc[category] = []
+        }
+        acc[category].push(product)
+        return acc
+      }, {})
+      const categories = Object.keys(grouped)
+      if (categories.length > 0) {
+        setSelectedCategory(categories[0])
+      }
+    }
+    // Reset selected category when dropdown closes
+    if (!showProductsDropdown) {
+      setSelectedCategory(null)
+    }
+  }, [showProductsDropdown, products, selectedCategory])
+
+  useEffect(() => {
     const fetchProducts = async () => {
       try {
         const lang = i18n.language === 'zh' ? 'zh' : 'en'
@@ -350,9 +372,6 @@ const Navbar = () => {
 
                               {/* Column 3: Ad space - empty for now */}
                               <div className="border-r border-gray-100 w-64">
-                                <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-white font-semibold text-sm text-gray-800 uppercase tracking-wide border-b border-gray-100">
-                                  Featured
-                                </div>
                                 <div className="p-4 h-full min-h-[200px]">
                                   {/* Add your ad content here */}
                                 </div>
@@ -360,9 +379,6 @@ const Navbar = () => {
 
                               {/* Column 4: Ad space - empty for now */}
                               <div className="w-64">
-                                <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-white font-semibold text-sm text-gray-800 uppercase tracking-wide border-b border-gray-100">
-                                  Promotions
-                                </div>
                                 <div className="p-4 h-full min-h-[200px]">
                                   {/* Add your ad content here */}
                                 </div>
