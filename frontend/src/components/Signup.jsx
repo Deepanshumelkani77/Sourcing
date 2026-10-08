@@ -408,11 +408,60 @@ const Signup = () => {
                     )}
                   </div>
                   {emailOtpSent && !emailOtpVerified && (
-                    <div className="mt-2 flex gap-2">
-                      <input type="text" value={emailOtp} onChange={(e) => setEmailOtp(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))} placeholder="Enter 6-digit OTP" maxLength={6} className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-sm" />
-                      <button type="button" onClick={verifyEmailOtp} disabled={otpLoading} className="px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 disabled:opacity-60 whitespace-nowrap">
-                        {otpLoading ? 'Checking...' : 'Verify'}
-                      </button>
+                    <div className="mt-2">
+                      <div className="flex gap-2 justify-between">
+                        {[0, 1, 2, 3, 4, 5].map((index) => (
+                          <input
+                            key={index}
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={1}
+                            value={emailOtp[index] || ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/[^0-9]/g, '');
+                              if (value) {
+                                const newOtp = emailOtp.split('');
+                                newOtp[index] = value;
+                                setEmailOtp(newOtp.join(''));
+                                // Auto-focus next input
+                                const nextInput = e.target.nextElementSibling;
+                                if (nextInput && index < 5) {
+                                  nextInput.focus();
+                                }
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Backspace' && !emailOtp[index] && index > 0) {
+                                const prevInput = e.target.previousElementSibling;
+                                if (prevInput) {
+                                  prevInput.focus();
+                                }
+                              }
+                            }}
+                            onPaste={(e) => {
+                              e.preventDefault();
+                              const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+                              if (pastedData) {
+                                setEmailOtp(pastedData);
+                                // Focus the last filled input
+                                const inputs = e.target.parentElement.querySelectorAll('input');
+                                const lastIndex = Math.min(pastedData.length - 1, 5);
+                                inputs[lastIndex].focus();
+                              }
+                            }}
+                            className="w-10 h-12 text-center text-xl font-semibold border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none placeholder-gray-300"
+                            placeholder="•"
+                          />
+                        ))}
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <button type="button" onClick={verifyEmailOtp} disabled={otpLoading || emailOtp.length !== 6} className="flex-1 px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap">
+                          {otpLoading ? 'Checking...' : 'Verify OTP'}
+                        </button>
+                        <button type="button" onClick={sendEmailOtp} disabled={otpLoading} className="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 disabled:opacity-60 whitespace-nowrap">
+                          Resend OTP
+                        </button>
+                      </div>
                     </div>
                   )}
                   {otpError && <div className="text-sm text-red-600">{otpError}</div>}
