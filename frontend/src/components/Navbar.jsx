@@ -797,7 +797,7 @@ const Navbar = () => {
               </button>
               
               {showMobileProductsDropdown && (
-                <div className="mt-2 ml-4 space-y-2">
+                <div className="mt-3 ml-2 space-y-1">
                   {products.length > 0 ? (
                     (() => {
                       const groupedByMain = products.reduce((acc, product) => {
@@ -818,7 +818,7 @@ const Navbar = () => {
                       return (
                         <>
                           {mainCategories.map((mainCat) => (
-                            <div key={mainCat}>
+                            <div key={mainCat} className="border border-gray-200 rounded-lg overflow-hidden">
                               <button
                                 onClick={() => {
                                   if (mobileSelectedMainCategory === mainCat) {
@@ -829,15 +829,20 @@ const Navbar = () => {
                                     setMobileSelectedCategory(null)
                                   }
                                 }}
-                                className={`w-full flex items-center justify-between px-3 py-2 rounded text-sm font-medium ${
+                                className={`w-full flex items-center justify-between px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                                   mobileSelectedMainCategory === mainCat
                                     ? 'bg-[#F41703] text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    : 'bg-white text-gray-700 hover:bg-gray-50'
                                 }`}
                               >
-                                <span>{mainCat}</span>
+                                <span className="flex items-center gap-2">
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                                  </svg>
+                                  {mainCat}
+                                </span>
                                 <svg
-                                  className={`w-3.5 h-3.5 transition-transform duration-200 ${mobileSelectedMainCategory === mainCat ? 'rotate-180' : ''}`}
+                                  className={`w-4 h-4 transition-transform duration-200 ${mobileSelectedMainCategory === mainCat ? 'rotate-180' : ''}`}
                                   fill="none"
                                   stroke="currentColor"
                                   strokeWidth={2}
@@ -848,9 +853,9 @@ const Navbar = () => {
                               </button>
                               
                               {mobileSelectedMainCategory === mainCat && (
-                                <div className="mt-2 ml-4 space-y-1">
+                                <div className="bg-gray-50 border-t border-gray-200">
                                   {Object.keys(groupedByMain[mainCat]).map((category) => (
-                                    <div key={category}>
+                                    <div key={category} className="border-b border-gray-200 last:border-b-0">
                                       <button
                                         onClick={() => {
                                           if (mobileSelectedCategory === category) {
@@ -859,15 +864,20 @@ const Navbar = () => {
                                             setMobileSelectedCategory(category)
                                           }
                                         }}
-                                        className={`w-full flex items-center justify-between px-3 py-2 rounded text-sm ${
+                                        className={`w-full flex items-center justify-between px-5 py-3 text-sm font-medium transition-all duration-200 ${
                                           mobileSelectedCategory === category
-                                            ? 'bg-[#F41703] text-white font-medium'
-                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                            ? 'bg-red-50 text-[#F41703]'
+                                            : 'bg-transparent text-gray-600 hover:bg-gray-100'
                                         }`}
                                       >
-                                        <span>{category}</span>
+                                        <span className="flex items-center gap-2">
+                                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                          </svg>
+                                          {category}
+                                        </span>
                                         <svg
-                                          className={`w-3 h-3 transition-transform duration-200 ${mobileSelectedCategory === category ? 'rotate-180' : ''}`}
+                                          className={`w-3.5 h-3.5 transition-transform duration-200 ${mobileSelectedCategory === category ? 'rotate-180' : ''}`}
                                           fill="none"
                                           stroke="currentColor"
                                           strokeWidth={2}
@@ -878,7 +888,7 @@ const Navbar = () => {
                                       </button>
                                       
                                       {mobileSelectedCategory === category && (
-                                        <div className="mt-2 ml-4 space-y-1">
+                                        <div className="bg-white border-t border-gray-200">
                                           {groupedByMain[mainCat][category].map((product) => (
                                             <Link
                                               key={product._id}
@@ -889,7 +899,7 @@ const Navbar = () => {
                                                 setMobileSelectedMainCategory(null)
                                                 setMobileSelectedCategory(null)
                                               }}
-                                              className="block px-3 py-2 text-sm text-gray-600 hover:text-[#F41703] hover:bg-gray-50 rounded"
+                                              className="block px-6 py-3 text-sm text-gray-700 hover:text-[#F41703] hover:bg-red-50 transition-colors duration-150 border-b border-gray-100 last:border-b-0"
                                             >
                                               {product.productName}
                                             </Link>
@@ -906,7 +916,7 @@ const Navbar = () => {
                       )
                     })()
                   ) : (
-                    <div className="px-3 py-2 text-sm text-gray-500">
+                    <div className="px-4 py-3 text-sm text-gray-500 bg-gray-50 rounded-lg border border-gray-200">
                       No products available
                     </div>
                   )}
