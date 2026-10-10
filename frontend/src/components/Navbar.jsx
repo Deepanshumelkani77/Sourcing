@@ -274,6 +274,12 @@ const Navbar = () => {
             >
               {t('nav.about')}
             </Link>
+            <Link
+              to="/services"
+              className={`transition-colors duration-200 text-lg font-medium ${location.pathname === '/services' ? 'text-[#F41703] border-b-2 border-[#F41703]' : 'text-gray-700 hover:text-[#F41703]'}`}
+            >
+              {t('nav.services')}
+            </Link>
             <div
               className="relative"
               ref={productsTriggerRef}
@@ -777,7 +783,19 @@ const Navbar = () => {
             >
               {t('nav.about')}
             </Link>
-            
+            <Link
+              to="/services"
+              onClick={() => {
+                setShowMobileMenu(false)
+                setShowMobileProductsDropdown(false)
+                setMobileSelectedMainCategory(null)
+                setMobileSelectedCategory(null)
+              }}
+              className={`block px-4 py-2 rounded-lg text-lg font-medium ${location.pathname === '/services' ? 'text-[#F41703] bg-red-50' : 'text-gray-700 hover:bg-gray-50'}`}
+            >
+              {t('nav.services')}
+            </Link>
+
             {/* Products Dropdown for Mobile */}
             <div>
               <button
