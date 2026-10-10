@@ -3,7 +3,7 @@ import Header from '../components/Header'
 import WhatWeDo from '../components/WhatWeDo'
 import Process from '../components/Process'
 import Source from '../components/Source'
-import Countries from '../components/Countries'
+import Countries from '../components/Countrie'
 
 
 const Home = () => {

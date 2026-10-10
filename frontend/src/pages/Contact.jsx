@@ -23,7 +23,7 @@ const CONTACT_CARDS = [
     icon: '📍',
     titleKey: 'contact.cards.visit.title',
     noteKey: 'contact.cards.visit.note',
-    lines: ['FF 05, Rise Retailia 1, Plot No. SC 01, Sector 1, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh - 201306'],
+    lines: ['FF 05, Rise Retailia 1, Plot No. SC 01, Sector 1, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh, India PIN 201306'],
   },
   {
     icon: '🕐',
