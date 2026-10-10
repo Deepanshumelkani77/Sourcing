@@ -54,6 +54,8 @@ const Navbar = () => {
   const [showMobileUserDropdown, setShowMobileUserDropdown] = useState(false)
   const [showProductsDropdown, setShowProductsDropdown] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [showMobileProductsDropdown, setShowMobileProductsDropdown] = useState(false)
+  const [mobileSelectedCategory, setMobileSelectedCategory] = useState(null)
   const [products, setProducts] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
   const languageTriggerRef = useRef(null)
@@ -121,6 +123,7 @@ const Navbar = () => {
       ) {
         setShowProductsDropdown(false)
       }
+      // Mobile products dropdown close is handled by the menu button
     }
     const onEscape = (e) => {
       if (e.key === 'Escape') {
@@ -130,6 +133,8 @@ const Navbar = () => {
         setShowMobileUserDropdown(false)
         setShowProductsDropdown(false)
         setShowMobileMenu(false)
+        setShowMobileProductsDropdown(false)
+        setMobileSelectedCategory(null)
       }
     }
     document.addEventListener('mousedown', onClickOutside)
@@ -641,11 +646,13 @@ const Navbar = () => {
                           onClick={() => {
                             setShowMobileUserDropdown(false)
                             setShowMobileMenu(false)
+                            setShowMobileProductsDropdown(false)
+                            setMobileSelectedCategory(null)
                           }}
                           className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1w-4 h-4v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                           </svg>
                           <span>Dashboard</span>
                         </Link>
@@ -654,6 +661,8 @@ const Navbar = () => {
                             await logout()
                             setShowMobileUserDropdown(false)
                             setShowMobileMenu(false)
+                            setShowMobileProductsDropdown(false)
+                            setMobileSelectedCategory(null)
                             window.location.reload()
                           }}
                           className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
@@ -689,42 +698,156 @@ const Navbar = () => {
           <div className="px-4 py-4 space-y-3">
             <Link
               to="/"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                setShowMobileProductsDropdown(false)
+                setMobileSelectedCategory(null)
+              }}
               className={`block px-4 py-2 rounded-lg text-lg font-medium ${location.pathname === '/' ? 'text-[#F41703] bg-red-50' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               {t('nav.home')}
             </Link>
             <Link
               to="/about"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                setShowMobileProductsDropdown(false)
+                setMobileSelectedCategory(null)
+              }}
               className={`block px-4 py-2 rounded-lg text-lg font-medium ${location.pathname === '/about' ? 'text-[#F41703] bg-red-50' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               {t('nav.about')}
             </Link>
+            
+            {/* Products Dropdown for Mobile */}
+            <div>
+              <button
+                onClick={() => setShowMobileProductsDropdown(!showMobileProductsDropdown)}
+                className={`w-full flex items-center justify-between px-4 py-2 rounded-lg text-lg font-medium ${location.pathname.startsWith('/product') ? 'text-[#F41703] bg-red-50' : 'text-gray-700 hover:bg-gray-50'}`}
+              >
+                {t('nav.products')}
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${showMobileProductsDropdown ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {showMobileProductsDropdown && (
+                <div className="mt-2 ml-4 space-y-2">
+                  {products.length > 0 ? (
+                    (() => {
+                      const grouped = products.reduce((acc, product) => {
+                        const category = product.category || 'Uncategorized'
+                        if (!acc[category]) {
+                          acc[category] = []
+                        }
+                        acc[category].push(product)
+                        return acc
+                      }, {})
+                      
+                      const categories = Object.keys(grouped)
+                      
+                      return (
+                        <>
+                          {categories.map((category) => (
+                            <div key={category}>
+                              <button
+                                onClick={() => setMobileSelectedCategory(mobileSelectedCategory === category ? null : category)}
+                                className={`w-full flex items-center justify-between px-3 py-2 rounded text-sm font-medium ${
+                                  mobileSelectedCategory === category
+                                    ? 'bg-[#F41703] text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                              >
+                                {category}
+                                <svg
+                                  className={`w-3 h-3 transition-transform duration-200 ${mobileSelectedCategory === category ? 'rotate-180' : ''}`}
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth={2}
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </button>
+                              
+                              {mobileSelectedCategory === category && (
+                                <div className="mt-2 ml-4 space-y-1">
+                                  {grouped[category].map((product) => (
+                                    <Link
+                                      key={product._id}
+                                      to={`/product/${product.slug}`}
+                                      onClick={() => {
+                                        setShowMobileMenu(false)
+                                        setShowMobileProductsDropdown(false)
+                                        setMobileSelectedCategory(null)
+                                      }}
+                                      className="block px-3 py-2 text-sm text-gray-600 hover:text-[#F41703] hover:bg-gray-50 rounded"
+                                    >
+                                      {product.productName}
+                                    </Link>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </>
+                      )
+                    })()
+                  ) : (
+                    <div className="px-3 py-2 text-sm text-gray-500">
+                      No products available
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
             <Link
               to="/blog"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                setShowMobileProductsDropdown(false)
+                setMobileSelectedCategory(null)
+              }}
               className={`block px-4 py-2 rounded-lg text-lg font-medium ${location.pathname === '/blog' ? 'text-[#F41703] bg-red-50' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               {t('nav.blog')}
             </Link>
             <Link
               to="/contact"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                setShowMobileProductsDropdown(false)
+                setMobileSelectedCategory(null)
+              }}
               className={`block px-4 py-2 rounded-lg text-lg font-medium ${location.pathname === '/contact' ? 'text-[#F41703] bg-red-50' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               {t('nav.contact')}
             </Link>
             <Link
               to="/career"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                setShowMobileProductsDropdown(false)
+                setMobileSelectedCategory(null)
+              }}
               className={`block px-4 py-2 rounded-lg text-lg font-medium ${location.pathname === '/career' ? 'text-[#F41703] bg-red-50' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               {t('nav.career')}
             </Link>
             <Link
               to="/reviews"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                setShowMobileProductsDropdown(false)
+                setMobileSelectedCategory(null)
+              }}
               className={`block px-4 py-2 rounded-lg text-lg font-medium ${location.pathname === '/reviews' ? 'text-[#F41703] bg-red-50' : 'text-gray-700 hover:bg-gray-50'}`}
             >
               {t('nav.reviews')}
@@ -734,6 +857,8 @@ const Navbar = () => {
                 onClick={() => {
                   openSignup()
                   setShowMobileMenu(false)
+                  setShowMobileProductsDropdown(false)
+                  setMobileSelectedCategory(null)
                 }}
                 className="w-full bg-[#F41703] text-white px-4 py-2 rounded-lg hover:bg-[#d10f02] transition-colors duration-200 font-medium"
               >
