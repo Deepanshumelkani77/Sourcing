@@ -11,7 +11,7 @@ const CONTACT_CARDS = [
     icon: '📞',
     titleKey: 'contact.cards.call.title',
     noteKey: 'contact.cards.call.note',
-    lines: ['+91 9999-122-522'],
+    lines: ['+91 9355544553'],
   },
   {
     icon: '✉️',
