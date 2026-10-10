@@ -59,7 +59,7 @@ const Navbar = () => {
   const [mobileSelectedCategory, setMobileSelectedCategory] = useState(null)
   const [products, setProducts] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
-  const [selectedMainCategory, setSelectedMainCategory] = useState(null)
+  const [expandedMainCategory, setExpandedMainCategory] = useState(null)
   const languageTriggerRef = useRef(null)
   const languageDropdownRef = useRef(null)
   const mobileLanguageTriggerRef = useRef(null)
@@ -138,7 +138,7 @@ const Navbar = () => {
         setShowMobileProductsDropdown(false)
         setMobileSelectedMainCategory(null)
         setMobileSelectedCategory(null)
-        setSelectedMainCategory(null)
+        setExpandedMainCategory(null)
         setSelectedCategory(null)
       }
     }
@@ -181,7 +181,7 @@ const Navbar = () => {
   useEffect(() => {
     if (showProductsDropdown && productsTriggerRef.current) {
       const rect = productsTriggerRef.current.getBoundingClientRect()
-      const dropdownWidth = 1200
+      const dropdownWidth = 1000
       const viewportWidth = window.innerWidth
       const left = (viewportWidth - dropdownWidth) / 2
       setProductsDropdownPosition({ top: rect.bottom + 8, left: Math.max(20, left) })
@@ -189,29 +189,25 @@ const Navbar = () => {
   }, [showProductsDropdown])
 
   useEffect(() => {
-    if (showProductsDropdown && products.length > 0 && !selectedMainCategory) {
-      // Auto-select first main category when dropdown opens
+    if (showProductsDropdown && products.length > 0 && !expandedMainCategory) {
+      // Auto-expand first main category when dropdown opens
       const groupedByMain = products.reduce((acc, product) => {
         const mainCategory = product.mainCategory || 'Uncategorized'
         if (!acc[mainCategory]) {
-          acc[mainCategory] = []
+          acc[mainCategory] = {}
         }
-        acc[mainCategory].push(product)
+        const category = product.category || 'Uncategorized'
+        if (!acc[mainCategory][category]) {
+          acc[mainCategory][category] = []
+        }
+        acc[mainCategory][category].push(product)
         return acc
       }, {})
       const mainCategories = Object.keys(groupedByMain)
       if (mainCategories.length > 0) {
-        setSelectedMainCategory(mainCategories[0])
+        setExpandedMainCategory(mainCategories[0])
         // Auto-select first category under that main category
-        const groupedByCategory = products.reduce((acc, product) => {
-          const category = product.category || 'Uncategorized'
-          if (!acc[category]) {
-            acc[category] = []
-          }
-          acc[category].push(product)
-          return acc
-        }, {})
-        const categories = Object.keys(groupedByCategory)
+        const categories = Object.keys(groupedByMain[mainCategories[0]])
         if (categories.length > 0) {
           setSelectedCategory(categories[0])
         }
@@ -219,10 +215,10 @@ const Navbar = () => {
     }
     // Reset selections when dropdown closes
     if (!showProductsDropdown) {
-      setSelectedMainCategory(null)
+      setExpandedMainCategory(null)
       setSelectedCategory(null)
     }
-  }, [showProductsDropdown, products, selectedMainCategory, selectedCategory])
+  }, [showProductsDropdown, products, expandedMainCategory, selectedCategory])
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -312,7 +308,7 @@ const Navbar = () => {
                 createPortal(
                   <div
                     ref={productsDropdownRef}
-                    className="fixed w-[1200px] bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden text-left animate-loc-in z-40 max-h-[500px] overflow-y-auto"
+                    className="fixed w-[1000px] bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden text-left animate-loc-in z-40 max-h-[500px] overflow-y-auto"
                     style={{ top: `${productsDropdownPosition.top}px`, left: `${productsDropdownPosition.left}px` }}
                     onMouseEnter={() => {
                       if (productsTimeoutRef.current) {
@@ -344,13 +340,13 @@ const Navbar = () => {
                           }, {})
 
                           const mainCategories = Object.keys(groupedByMain)
-                          const categories = selectedMainCategory ? Object.keys(groupedByMain[selectedMainCategory]) : []
-                          const selectedProducts = selectedCategory ? groupedByMain[selectedMainCategory]?.[selectedCategory] || [] : []
+                          const categories = expandedMainCategory ? Object.keys(groupedByMain[expandedMainCategory]) : []
+                          const selectedProducts = selectedCategory ? groupedByMain[expandedMainCategory]?.[selectedCategory] || [] : []
 
                           return (
-                            <div className="grid grid-cols-4 gap-0 h-full">
-                              {/* Column 1: Main Categories */}
-                              <div className="border-r border-gray-100 w-56 bg-gray-50">
+                            <div className="grid grid-cols-3 gap-0 h-full">
+                              {/* Column 1: Main Categories with inline expansion */}
+                              <div className="border-r border-gray-100 w-80 bg-gray-50">
                                 <div className="px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-50 font-semibold text-sm text-gray-800 uppercase tracking-wide border-b border-gray-200">
                                   Main Categories
                                 </div>
@@ -359,22 +355,27 @@ const Navbar = () => {
                                     <div key={mainCat}>
                                       <button
                                         onClick={() => {
-                                          setSelectedMainCategory(mainCat)
-                                          // Auto-select first category under this main category
-                                          const cats = Object.keys(groupedByMain[mainCat])
-                                          if (cats.length > 0) {
-                                            setSelectedCategory(cats[0])
+                                          if (expandedMainCategory === mainCat) {
+                                            setExpandedMainCategory(null)
+                                            setSelectedCategory(null)
+                                          } else {
+                                            setExpandedMainCategory(mainCat)
+                                            // Auto-select first category under this main category
+                                            const cats = Object.keys(groupedByMain[mainCat])
+                                            if (cats.length > 0) {
+                                              setSelectedCategory(cats[0])
+                                            }
                                           }
                                         }}
                                         className={`w-full px-4 py-2.5 text-sm text-left transition-colors duration-150 flex items-center justify-between ${
-                                          selectedMainCategory === mainCat
+                                          expandedMainCategory === mainCat
                                             ? 'bg-[#F41703] text-white font-medium'
                                             : 'text-gray-700 hover:bg-red-50 hover:text-[#F41703]'
                                         }`}
                                       >
                                         <span>{mainCat}</span>
                                         <svg
-                                          className={`w-3.5 h-3.5 transition-transform duration-200 ${selectedMainCategory === mainCat ? 'rotate-180' : ''}`}
+                                          className={`w-3.5 h-3.5 transition-transform duration-200 ${expandedMainCategory === mainCat ? 'rotate-180' : ''}`}
                                           fill="none"
                                           stroke="currentColor"
                                           strokeWidth={2}
@@ -383,40 +384,31 @@ const Navbar = () => {
                                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                                         </svg>
                                       </button>
+                                      
+                                      {/* Expanded categories shown inline */}
+                                      {expandedMainCategory === mainCat && (
+                                        <div className="ml-4 mt-1 space-y-1">
+                                          {categories.map((category) => (
+                                            <button
+                                              key={category}
+                                              onClick={() => setSelectedCategory(category)}
+                                              className={`w-full px-4 py-2 text-sm text-left transition-colors duration-150 block ${
+                                                selectedCategory === category
+                                                  ? 'bg-red-100 text-[#F41703] font-medium'
+                                                  : 'text-gray-600 hover:bg-gray-100 hover:text-[#F41703]'
+                                              }`}
+                                            >
+                                              {category}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      )}
                                     </div>
                                   ))}
                                 </div>
                               </div>
 
-                              {/* Column 2: Categories (filtered by main category) */}
-                              <div className="border-r border-gray-100 w-56">
-                                <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-white font-semibold text-sm text-gray-800 uppercase tracking-wide border-b border-gray-100">
-                                  Categories
-                                </div>
-                                <div className="py-2">
-                                  {categories.length > 0 ? (
-                                    categories.map((category) => (
-                                      <button
-                                        key={category}
-                                        onClick={() => setSelectedCategory(category)}
-                                        className={`w-full px-4 py-2.5 text-sm text-left transition-colors duration-150 block ${
-                                          selectedCategory === category
-                                            ? 'bg-[#F41703] text-white font-medium'
-                                            : 'text-gray-700 hover:bg-red-50 hover:text-[#F41703]'
-                                        }`}
-                                      >
-                                        {category}
-                                      </button>
-                                    ))
-                                  ) : (
-                                    <div className="px-4 py-8 text-sm text-gray-500 text-center">
-                                      Select a main category
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-
-                              {/* Column 3: Products for selected category */}
+                              {/* Column 2: Products for selected category */}
                               <div className="border-r border-gray-100 flex-1">
                                 <div className="px-4 py-3 bg-gradient-to-r from-white to-gray-50 font-semibold text-sm text-gray-800 uppercase tracking-wide border-b border-gray-100">
                                   {selectedCategory || 'Select a Category'}
@@ -429,7 +421,7 @@ const Navbar = () => {
                                         to={`/product/${product.slug}`}
                                         onClick={() => {
                                           setShowProductsDropdown(false)
-                                          setSelectedMainCategory(null)
+                                          setExpandedMainCategory(null)
                                           setSelectedCategory(null)
                                         }}
                                         className="w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-[#F41703] transition-colors duration-150 block"
@@ -445,8 +437,8 @@ const Navbar = () => {
                                 </div>
                               </div>
 
-                              {/* Column 4: Ad space - empty for now */}
-                              <div className="w-64">
+                              {/* Column 3: Ad space - empty for now */}
+                              <div className="w-72">
                                 <div className="p-4 h-full min-h-[200px]">
                                   {/* Add your ad content here */}
                                 </div>
@@ -829,8 +821,13 @@ const Navbar = () => {
                             <div key={mainCat}>
                               <button
                                 onClick={() => {
-                                  setMobileSelectedMainCategory(mobileSelectedMainCategory === mainCat ? null : mainCat)
-                                  setMobileSelectedCategory(null)
+                                  if (mobileSelectedMainCategory === mainCat) {
+                                    setMobileSelectedMainCategory(null)
+                                    setMobileSelectedCategory(null)
+                                  } else {
+                                    setMobileSelectedMainCategory(mainCat)
+                                    setMobileSelectedCategory(null)
+                                  }
                                 }}
                                 className={`w-full flex items-center justify-between px-3 py-2 rounded text-sm font-medium ${
                                   mobileSelectedMainCategory === mainCat
@@ -855,7 +852,13 @@ const Navbar = () => {
                                   {Object.keys(groupedByMain[mainCat]).map((category) => (
                                     <div key={category}>
                                       <button
-                                        onClick={() => setMobileSelectedCategory(mobileSelectedCategory === category ? null : category)}
+                                        onClick={() => {
+                                          if (mobileSelectedCategory === category) {
+                                            setMobileSelectedCategory(null)
+                                          } else {
+                                            setMobileSelectedCategory(category)
+                                          }
+                                        }}
                                         className={`w-full flex items-center justify-between px-3 py-2 rounded text-sm ${
                                           mobileSelectedCategory === category
                                             ? 'bg-[#F41703] text-white font-medium'
