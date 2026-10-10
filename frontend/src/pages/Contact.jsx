@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { useTranslation } from 'react-i18next'
 import { AppContext } from '../context/AppContext'
@@ -33,7 +33,73 @@ const CONTACT_CARDS = [
   },
 ]
 
-const REASONS = ['Sourcing Quote', 'Machinery Sourcing', 'Product Sourcing', 'Quality Inspection', 'Logistics Inquiry', 'Partnership', 'General Inquiry']
+const SUBJECT_CATEGORIES = [
+  {
+    id: 'machinery',
+    label: 'Machinery Sourcing',
+    icon: '⚙️',
+    items: [
+      'CNC Machines',
+      'Industrial Automation',
+      'Heavy Machinery',
+      'Packaging Machinery',
+      'Construction Equipment',
+      'Textile Machinery'
+    ]
+  },
+  {
+    id: 'product',
+    label: 'Product Sourcing',
+    icon: '📦',
+    items: [
+      'Electronics',
+      'Consumer Goods',
+      'Industrial Components',
+      'Raw Materials',
+      'Finished Products',
+      'Custom Manufacturing'
+    ]
+  },
+  {
+    id: 'inspection',
+    label: 'Inspection Service',
+    icon: '🔍',
+    items: [
+      'Quality Control',
+      'Pre-shipment Inspection',
+      'Factory Audit',
+      'Production Monitoring',
+      'Loading Supervision',
+      'Certification Services'
+    ]
+  },
+  {
+    id: 'logistics',
+    label: 'Logistic Service',
+    icon: '🚢',
+    items: [
+      'Sea Freight',
+      'Air Freight',
+      'Land Transportation',
+      'Customs Clearance',
+      'Warehousing',
+      'Door-to-Door Delivery'
+    ]
+  },
+  {
+    id: 'identification',
+    label: 'Manufactural Identification',
+    icon: '🏭',
+    items: [
+      'Supplier Verification',
+      'Factory Location',
+      'Capacity Assessment',
+      'Price Negotiation',
+      'Sample Development',
+      'Technical Support'
+    ]
+  }
+]
 
 const FAQS = [
   { q: 'How quickly will someone get back to me?', a: 'Our sourcing team responds to all enquiries within 24 hours on business days, and most calls are answered live during working hours.' },
@@ -80,11 +146,34 @@ const FaqItem = ({ q, a, isOpen, onToggle }) => (
 const Contact = () => {
   const { t } = useTranslation()
   const { user, openSignup } = useContext(AppContext)
-  const [formData, setFormData] = useState({ firstName: '', middleName: '', lastName: '', email: '', subject: '', message: '' })
+  const [formData, setFormData] = useState({ firstName: '', middleName: '', lastName: '', subject: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
   const [openFaq, setOpenFaq] = useState(0)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [selectedSubject, setSelectedSubject] = useState('')
+  const dropdownRef = useRef(null)
 
   const handleChange = (field) => (e) => setFormData((prev) => ({ ...prev, [field]: e.target.value }))
+
+  const handleSubjectSelect = (subject) => {
+    setSelectedSubject(subject)
+    setFormData((prev) => ({ ...prev, subject }))
+    setIsDropdownOpen(false)
+  }
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -99,7 +188,7 @@ const Contact = () => {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/contact/submit`, formData)
       if (response.data.success) {
         setSubmitted(true)
-        setFormData({ firstName: '', middleName: '', lastName: '', email: '', subject: '', message: '' })
+        setFormData({ firstName: '', middleName: '', lastName: '', subject: '', message: '' })
         setTimeout(() => setSubmitted(false), 3000)
       }
     } catch (error) {
@@ -184,25 +273,84 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.email')} *</label>
-                <input type="email" id="email" name="email" required value={formData.email} onChange={handleChange('email')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder={t('contact.form.email')} />
-              </div>
 
-
-
-              <div>
+              <div className="relative" ref={dropdownRef}>
                 <label htmlFor="subject" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.subject')} *</label>
-                <select id="subject" name="subject" required value={formData.subject} onChange={handleChange('subject')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base">
-                  <option value="">{t('contact.form.selectSubject')}</option>
-                  <option value="Sourcing Quote">{t('contact.form.subjects.sourcingQuote')}</option>
-                  <option value="Machinery Sourcing">{t('contact.form.subjects.machinerySourcing')}</option>
-                  <option value="Product Sourcing">{t('contact.form.subjects.productSourcing')}</option>
-                  <option value="Quality Inspection">{t('contact.form.subjects.qualityInspection')}</option>
-                  <option value="Logistics Inquiry">{t('contact.form.subjects.logisticsInquiry')}</option>
-                  <option value="Partnership">{t('contact.form.subjects.partnership')}</option>
-                  <option value="General Inquiry">{t('contact.form.subjects.generalInquiry')}</option>
-                </select>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base text-left bg-white flex items-center justify-between"
+                  >
+                    <span className={selectedSubject ? 'text-gray-900' : 'text-gray-500'}>
+                      {selectedSubject || t('contact.form.selectSubject')}
+                    </span>
+                    <svg
+                      className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div className="absolute z-50 w-full mt-2 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
+                      {SUBJECT_CATEGORIES.map((category) => (
+                        <div
+                          key={category.id}
+                          className="relative group"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => handleSubjectSelect(category.label)}
+                            className="w-full px-4 py-3 text-left text-gray-700 hover:bg-gradient-to-r hover:from-[#F41703]/5 hover:to-[#F97316]/5 flex items-center justify-between transition-colors duration-200"
+                          >
+                            <span className="flex items-center gap-3">
+                              <span className="text-xl">{category.icon}</span>
+                              <span className="font-medium">{category.label}</span>
+                            </span>
+                            <svg
+                              className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+
+                          {/* Sub-menu dropdown on hover */}
+                          <div className="absolute left-full top-0 ml-1 w-64 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                            <div className="p-2">
+                              <p className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                                Services
+                              </p>
+                              {category.items.map((item, index) => (
+                                <button
+                                  key={index}
+                                  type="button"
+                                  onClick={() => handleSubjectSelect(`${category.label} - ${item}`)}
+                                  className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gradient-to-r hover:from-[#F41703]/10 hover:to-[#F97316]/10 rounded-md transition-colors duration-150"
+                                >
+                                  {item}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="hidden"
+                  name="subject"
+                  value={formData.subject}
+                  required
+                />
               </div>
 
               <div>
