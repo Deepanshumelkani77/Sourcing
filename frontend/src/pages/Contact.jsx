@@ -146,26 +146,45 @@ const FaqItem = ({ q, a, isOpen, onToggle }) => (
 const Contact = () => {
   const { t } = useTranslation()
   const { user, openSignup } = useContext(AppContext)
-  const [formData, setFormData] = useState({ firstName: '', middleName: '', lastName: '', subject: '', message: '' })
+  const [formData, setFormData] = useState({ firstName: '', middleName: '', lastName: '', subject: '', subSubject: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
   const [openFaq, setOpenFaq] = useState(0)
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false)
+  const [isSubSubjectDropdownOpen, setIsSubSubjectDropdownOpen] = useState(false)
   const [selectedSubject, setSelectedSubject] = useState('')
-  const dropdownRef = useRef(null)
+  const [selectedSubSubject, setSelectedSubSubject] = useState('')
+  const subjectDropdownRef = useRef(null)
+  const subSubjectDropdownRef = useRef(null)
 
   const handleChange = (field) => (e) => setFormData((prev) => ({ ...prev, [field]: e.target.value }))
 
   const handleSubjectSelect = (subject) => {
     setSelectedSubject(subject)
-    setFormData((prev) => ({ ...prev, subject }))
-    setIsDropdownOpen(false)
+    setFormData((prev) => ({ ...prev, subject, subSubject: '' }))
+    setSelectedSubSubject('')
+    setIsSubjectDropdownOpen(false)
   }
 
-  // Close dropdown when clicking outside
+  const handleSubSubjectSelect = (subSubject) => {
+    setSelectedSubSubject(subSubject)
+    setFormData((prev) => ({ ...prev, subSubject }))
+    setIsSubSubjectDropdownOpen(false)
+  }
+
+  // Get sub-items for selected subject
+  const getSubItems = () => {
+    const category = SUBJECT_CATEGORIES.find(cat => cat.label === selectedSubject)
+    return category ? category.items : []
+  }
+
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false)
+      if (subjectDropdownRef.current && !subjectDropdownRef.current.contains(event.target)) {
+        setIsSubjectDropdownOpen(false)
+      }
+      if (subSubjectDropdownRef.current && !subSubjectDropdownRef.current.contains(event.target)) {
+        setIsSubSubjectDropdownOpen(false)
       }
     }
 
@@ -184,11 +203,25 @@ const Contact = () => {
       return
     }
 
+    // Validate subject is selected
+    if (!selectedSubject) {
+      alert('Please select a subject')
+      return
+    }
+
+    // Combine subject and subSubject for submission
+    const submissionData = {
+      ...formData,
+      subject: selectedSubSubject ? `${selectedSubject} - ${selectedSubSubject}` : selectedSubject
+    }
+
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/contact/submit`, formData)
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/contact/submit`, submissionData)
       if (response.data.success) {
         setSubmitted(true)
-        setFormData({ firstName: '', middleName: '', lastName: '', subject: '', message: '' })
+        setFormData({ firstName: '', middleName: '', lastName: '', subject: '', subSubject: '', message: '' })
+        setSelectedSubject('')
+        setSelectedSubSubject('')
         setTimeout(() => setSubmitted(false), 3000)
       }
     } catch (error) {
@@ -274,19 +307,19 @@ const Contact = () => {
               </div>
 
 
-              <div className="relative" ref={dropdownRef}>
+              <div className="relative" ref={subjectDropdownRef}>
                 <label htmlFor="subject" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.subject')} *</label>
                 <div className="relative">
                   <button
                     type="button"
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    onClick={() => setIsSubjectDropdownOpen(!isSubjectDropdownOpen)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base text-left bg-white flex items-center justify-between"
                   >
                     <span className={selectedSubject ? 'text-gray-900' : 'text-gray-500'}>
                       {selectedSubject || t('contact.form.selectSubject')}
                     </span>
                     <svg
-                      className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                      className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isSubjectDropdownOpen ? 'rotate-180' : ''}`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -295,52 +328,19 @@ const Contact = () => {
                     </svg>
                   </button>
 
-                  {/* Dropdown Menu */}
-                  {isDropdownOpen && (
+                  {/* Subject Dropdown Menu */}
+                  {isSubjectDropdownOpen && (
                     <div className="absolute z-50 w-full mt-2 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
                       {SUBJECT_CATEGORIES.map((category) => (
-                        <div
+                        <button
                           key={category.id}
-                          className="relative group"
+                          type="button"
+                          onClick={() => handleSubjectSelect(category.label)}
+                          className="w-full px-4 py-3 text-left text-gray-700 hover:bg-gradient-to-r hover:from-[#F41703]/5 hover:to-[#F97316]/5 flex items-center gap-3 transition-colors duration-200"
                         >
-                          <button
-                            type="button"
-                            onClick={() => handleSubjectSelect(category.label)}
-                            className="w-full px-4 py-3 text-left text-gray-700 hover:bg-gradient-to-r hover:from-[#F41703]/5 hover:to-[#F97316]/5 flex items-center justify-between transition-colors duration-200"
-                          >
-                            <span className="flex items-center gap-3">
-                              <span className="text-xl">{category.icon}</span>
-                              <span className="font-medium">{category.label}</span>
-                            </span>
-                            <svg
-                              className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </button>
-
-                          {/* Sub-menu dropdown on hover */}
-                          <div className="absolute left-full top-0 ml-1 w-64 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                            <div className="p-2">
-                              <p className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                                Services
-                              </p>
-                              {category.items.map((item, index) => (
-                                <button
-                                  key={index}
-                                  type="button"
-                                  onClick={() => handleSubjectSelect(`${category.label} - ${item}`)}
-                                  className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gradient-to-r hover:from-[#F41703]/10 hover:to-[#F97316]/10 rounded-md transition-colors duration-150"
-                                >
-                                  {item}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
+                          <span className="text-xl">{category.icon}</span>
+                          <span className="font-medium">{category.label}</span>
+                        </button>
                       ))}
                     </div>
                   )}
@@ -352,6 +352,59 @@ const Contact = () => {
                   required
                 />
               </div>
+
+              {/* Sub-Subject Field - appears only when subject is selected */}
+              {selectedSubject && (
+                <div className="relative" ref={subSubjectDropdownRef}>
+                  <label htmlFor="subSubject" className="block text-base font-medium text-gray-700 mb-2">Service Details *</label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsSubSubjectDropdownOpen(!isSubSubjectDropdownOpen)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base text-left bg-white flex items-center justify-between"
+                    >
+                      <span className={selectedSubSubject ? 'text-gray-900' : 'text-gray-500'}>
+                        {selectedSubSubject || 'Select service details'}
+                      </span>
+                      <svg
+                        className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isSubSubjectDropdownOpen ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {/* Sub-Subject Dropdown Menu */}
+                    {isSubSubjectDropdownOpen && (
+                      <div className="absolute z-50 w-full mt-2 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
+                        <div className="p-2">
+                          <p className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                            Available Services
+                          </p>
+                          {getSubItems().map((item, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() => handleSubSubjectSelect(item)}
+                              className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gradient-to-r hover:from-[#F41703]/10 hover:to-[#F97316]/10 rounded-md transition-colors duration-150"
+                            >
+                              {item}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    type="hidden"
+                    name="subSubject"
+                    value={formData.subSubject}
+                    required
+                  />
+                </div>
+              )}
 
               <div>
                 <label htmlFor="message" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.message')} *</label>
