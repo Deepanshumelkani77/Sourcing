@@ -5,6 +5,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
     productName: '',
     slug: '',
     category: '',
+    mainCategory: '',
     subCategory: '',
     shortDescription: '',
     description: '',
@@ -47,6 +48,7 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
         productName: product.productName || '',
         slug: product.slug || '',
         category: product.category || '',
+        mainCategory: product.mainCategory || '',
         subCategory: product.subCategory || '',
         shortDescription: product.shortDescription || '',
         description: product.description || '',
@@ -211,7 +213,20 @@ const ProductForm = ({ product, onSubmit, onCancel }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Main Category
+                </label>
+                <input
+                  type="text"
+                  name="mainCategory"
+                  value={formData.mainCategory}
+                  onChange={handleChange}
+                  placeholder="e.g., Conference Device"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent"
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Category *

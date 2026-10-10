@@ -157,6 +157,11 @@ const AdminProducts = () => {
               {/* Product Info */}
               <div className="p-4">
                 <div className="mb-2">
+                  {product.mainCategory && (
+                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider mr-2">
+                      {product.mainCategory}
+                    </span>
+                  )}
                   <span className="text-xs font-medium text-[#F41703] uppercase tracking-wider">
                     {product.category}
                   </span>
