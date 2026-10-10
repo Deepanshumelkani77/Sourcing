@@ -214,20 +214,14 @@ const Footer = () => {
             <ul className="space-y-3 mb-7">
               <li className="flex items-start gap-3">
                 <IconPin className="w-5 h-5 text-[#F41703] mt-0.5 flex-shrink-0" />
-                <div className="text-gray-400 text-left leading-relaxed">
-                  <a
-                    href="https://www.google.com/maps?q=FF+05,+Rise+Retailia+1,+Plot+No.+SC+01,+Sector+1,+Greater+Noida+West,+Gautam+Buddha+Nagar,+Uttar+Pradesh,+India+PIN+201306"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors duration-200"
-                  >
-                    FF 05, Rise Retailia 1<br />
-                    Plot No. SC 01, Sector 1<br />
-                    Greater Noida West<br />
-                    Gautam Buddha Nagar<br />
-                    Uttar Pradesh - 201306
-                  </a>
-                </div>
+                <a
+                  href="https://www.google.com/maps?q=FF+05,+Rise+Retailia+1,+Plot+No.+SC+01,+Sector+1,+Greater+Noida+West,+Gautam+Buddha+Nagar,+Uttar+Pradesh,+India+PIN+201306"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 text-left leading-relaxed hover:text-white transition-colors duration-200"
+                >
+                  {t('footer.address')}
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <IconMail className="w-5 h-5 text-[#F41703] flex-shrink-0" />
@@ -243,7 +237,7 @@ const Footer = () => {
               </li>
             </ul>
 
-
+           
           </div>
         </div>
       </div>
