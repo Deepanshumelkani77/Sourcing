@@ -14,6 +14,7 @@ const Signup = () => {
   const { showSignup, signupMode, closeSignup, setSignupMode } = useContext(AppContext)
   const [loginData, setLoginData] = useState({ email: '', password: '' })
   const [signupData, setSignupData] = useState({ firstName: '', middleName: '', lastName: '', email: '', phone: '', password: '' })
+  const [countryCode, setCountryCode] = useState('+91')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [captcha, setCaptcha] = useState('')
@@ -28,6 +29,29 @@ const Signup = () => {
   const [otpError, setOtpError] = useState('')
   const [loading, setLoading] = useState(false)
   const [otpLoading, setOtpLoading] = useState(false)
+
+  const countryCodes = [
+    { code: '+91', name: 'India', flag: '🇮🇳' },
+    { code: '+1', name: 'USA', flag: '🇺🇸' },
+    { code: '+44', name: 'UK', flag: '🇬🇧' },
+    { code: '+86', name: 'China', flag: '🇨🇳' },
+    { code: '+971', name: 'UAE', flag: '🇦🇪' },
+    { code: '+81', name: 'Japan', flag: '🇯🇵' },
+    { code: '+82', name: 'South Korea', flag: '🇰🇷' },
+    { code: '+65', name: 'Singapore', flag: '🇸🇬' },
+    { code: '+61', name: 'Australia', flag: '🇦🇺' },
+    { code: '+49', name: 'Germany', flag: '🇩🇪' },
+    { code: '+33', name: 'France', flag: '🇫🇷' },
+    { code: '+39', name: 'Italy', flag: '🇮🇹' },
+    { code: '+34', name: 'Spain', flag: '🇪🇸' },
+    { code: '+55', name: 'Brazil', flag: '🇧🇷' },
+    { code: '+52', name: 'Mexico', flag: '🇲🇽' },
+    { code: '+1', name: 'Canada', flag: '🇨🇦' },
+    { code: '+7', name: 'Russia', flag: '🇷🇺' },
+    { code: '+27', name: 'South Africa', flag: '🇿🇦' },
+    { code: '+62', name: 'Indonesia', flag: '🇮🇩' },
+    { code: '+66', name: 'Thailand', flag: '🇹🇭' },
+  ]
 
   const BRAND_COLOR = '#F41703'
   const SECONDARY_COLOR = '#F97316'
@@ -172,7 +196,7 @@ const Signup = () => {
     setError('')
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    const phoneRegex = /^\+?[0-9]{7,15}$/
+    const phoneRegex = /^[0-9]{7,15}$/
 
     if (!signupData.firstName.trim()) {
       setError('Please enter your first name')
@@ -211,7 +235,7 @@ const Signup = () => {
         middleName: signupData.middleName,
         lastName: signupData.lastName,
         email: signupData.email,
-        phone: signupData.phone,
+        phone: `${countryCode}${signupData.phone}`,
         password: signupData.password,
         emailVerified: true
       })
@@ -467,7 +491,27 @@ const Signup = () => {
                   {otpError && <div className="text-sm text-red-600">{otpError}</div>}
                 </div>
                 <div>
-                  <input name="phone" value={signupData.phone} onChange={handleSignupChange} placeholder="Phone number *" required className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400" />
+                  <div className="flex gap-2">
+                    <select
+                      value={countryCode}
+                      onChange={(e) => setCountryCode(e.target.value)}
+                      className="px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none bg-white text-sm min-w-[100px]"
+                    >
+                      {countryCodes.map((country) => (
+                        <option key={country.code} value={country.code}>
+                          {country.flag} {country.code}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      name="phone"
+                      value={signupData.phone}
+                      onChange={handleSignupChange}
+                      placeholder="Phone number *"
+                      required
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400"
+                    />
+                  </div>
                   <p className="text-xs text-gray-400 mt-1">Phone verification will be added later.</p>
                 </div>
                 <div>
