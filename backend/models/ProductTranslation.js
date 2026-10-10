@@ -40,6 +40,12 @@ const productTranslationSchema = new mongoose.Schema(
       trim: true,
     },
 
+    mainCategory: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
     subCategory: {
       type: String,
       default: "",

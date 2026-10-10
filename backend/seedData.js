@@ -23,6 +23,8 @@ const products = [
 
   category: "Conference Cameras",
 
+  mainCategory: "Conference Device",
+
   subCategory: "4K AI Conference Camera",
 
   shortDescription:
@@ -223,6 +225,8 @@ const products = [
   slug: "4k-ai-tracking-usb-conference-camera-series",
 
   category: "Conference Cameras",
+
+  mainCategory: "Conference Device",
 
   subCategory: "4K AI Tracking PTZ Camera",
 
@@ -526,6 +530,8 @@ const products = [
   slug: "ce-4k612-4k-ultra-hd-ai-tracking-conference-camera",
 
   category: "Conference Cameras",
+
+  mainCategory: "Conference Device",
 
   subCategory: "4K AI Tracking PTZ Camera",
 
@@ -934,6 +940,8 @@ const products = [
   slug: "ce-4k625-4k-ultra-hd-ai-tracking-conference-camera",
 
   category: "Conference Cameras",
+
+  mainCategory: "Conference Device",
 
   subCategory: "4K AI Tracking PTZ Camera",
 
@@ -1350,6 +1358,8 @@ const products = [
 
   category: "Conference Cameras",
 
+  mainCategory: "Conference Device",
+
   subCategory: "4K AI Tracking PTZ Camera",
 
   shortDescription:
@@ -1765,6 +1775,8 @@ const products = [
 
   category: "Conference Cameras",
 
+  mainCategory: "Conference Device",
+
   subCategory: "4K AI Tracking PTZ Camera",
 
   shortDescription:
@@ -2122,6 +2134,8 @@ const products = [
   slug: "ce-4k220s-4k-high-definition-ai-tracking-multi-interface-conference-camera",
 
   category: "Conference Cameras",
+
+  mainCategory: "Conference Device",
 
   subCategory: "4K AI Tracking PTZ Camera",
 
@@ -2481,6 +2495,8 @@ const products = [
   slug: "ce-g200-binocular-intelligent-voice-tracking-conference-ptz-camera",
 
   category: "Conference Cameras",
+
+  mainCategory: "Conference Device",
 
   subCategory: "AI Voice Tracking PTZ Camera",
 
@@ -2855,6 +2871,8 @@ const products = [
 
   category: "Conference Cameras",
 
+  mainCategory: "Conference Device",
+
   subCategory: "Intelligent Voice Tracking Camera System",
 
   shortDescription:
@@ -3173,6 +3191,8 @@ const products = [
 
   category: "Conference Audio",
 
+  mainCategory: "Conference Device",
+
   subCategory: "Ceiling-Mounted Microphone",
 
   shortDescription:
@@ -3342,6 +3362,8 @@ const products = [
   slug: "ct3-bluetooth-cascade-omnidirectional-microphone",
 
   category: "Conference Audio",
+
+  mainCategory: "Conference Device",
 
   subCategory: "Bluetooth Cascade Omnidirectional Microphone",
 
@@ -3579,6 +3601,8 @@ status: "active"
   slug: "ct9-set-wired-cascaded-omnidirectional-microphone",
 
   category: "Conference Audio",
+
+  mainCategory: "Conference Device",
 
   subCategory: "Wired Cascaded Omnidirectional Microphone",
 
@@ -3819,6 +3843,8 @@ status: "active"
   slug: "ct10d-interactive-omnidirectional-audio-acquisition-system",
 
   category: "Conference Audio",
+
+  mainCategory: "Conference Device",
 
   subCategory: "Ceiling Microphone Audio Acquisition System",
 
@@ -4128,6 +4154,8 @@ status: "active"
 
   category: "Conference Audio",
 
+  mainCategory: "Conference Device",
+
   subCategory: "Ceiling Microphone",
 
   shortDescription:
@@ -4321,6 +4349,8 @@ status: "active"
   slug: "cv3-wide-angle-usb-2-0-hd-camera",
 
   category: "Conference Cameras",
+
+  mainCategory: "Conference Device",
 
   subCategory: "USB Conference Camera",
 
@@ -4529,6 +4559,8 @@ status: "active"
 
   category: "Conference Cameras",
 
+  mainCategory: "Conference Device",
+
   subCategory: "Live Streaming Camera",
 
   shortDescription:
@@ -4734,6 +4766,8 @@ status: "active"
 
   category: "Conference Audio",
 
+  mainCategory: "Conference Device",
+
   subCategory: "Desktop Digital Microphone",
 
   shortDescription:
@@ -4902,6 +4936,8 @@ status: "active"
   slug: "m100-byod-wireless-conferencing-system",
 
   category: "Wireless Conferencing",
+
+  mainCategory: "Conference Device",
 
   subCategory: "BYOD Wireless Presentation System",
 
@@ -5204,6 +5240,8 @@ status: "active"
 
   category: "Conference Systems",
 
+  mainCategory: "Conference Device",
+
   subCategory: "Wired Digital Conference System",
 
   shortDescription:
@@ -5485,6 +5523,8 @@ status: "active"
   slug: "chevlen-wm60-wireless-digital-encrypted-conference-system",
 
   category: "Conference Systems",
+
+  mainCategory: "Conference Device",
 
   subCategory: "Wireless Digital Conference System",
 

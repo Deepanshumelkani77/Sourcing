@@ -21,6 +21,7 @@ const chineseTranslations = {
     shortDescription: "配备双AI麦克风、人脸识别、波束成形、EPTZ和4倍电子变焦的4K会议摄像头，用于高质量视频会议。",
     description: "CV4是一款集成两个音频拾音麦克风的4K高清会议摄像头。它使用人脸识别和人体识别技术自动调整图像构图并聚焦会议参与者。双麦克风使用AI语音算法、降噪和波束成形信号处理，从最远3米处清晰捕捉人声。",
     category: "会议摄像头",
+    mainCategory: "会议设备",
     subCategory: "4K AI会议摄像头",
     features: [
       "超高清4K视频",
@@ -116,6 +117,7 @@ const chineseTranslations = {
     shortDescription: "4K AI跟踪PTZ会议摄像头系列，配备3倍或10倍光学变焦、4K视频输出、流畅PTZ控制、多种连接选项和最多255个预设位置。",
     description: "4K高清AI跟踪USB会议摄像头系列是为企业、教育、远程医疗、会议室、教室、培训中心和其他专业应用设计的PTZ摄像头解决方案。该摄像头采用高质量的1/2.5英寸CMOS传感器，有效像素851万，支持最高3840 × 2160的4K分辨率，帧率30fps。它具有精确安静的PTZ定位、AI智能跟踪、3倍或10倍光学变焦选项、12倍数字变焦、多种视频输出选项和最多255个可编程预设位置。",
     category: "会议摄像头",
+    mainCategory: "会议设备",
     subCategory: "4K AI跟踪PTZ摄像头",
     features: [
       "4K超高清视频",
@@ -190,6 +192,7 @@ const chineseTranslations = {
     shortDescription: "专业4K AI跟踪PTZ会议摄像头，配备12倍光学变焦、16倍数字变焦、4K 60fps输出、多种专业接口和高级人体跟踪。",
     description: "CE 4K612是一款旗舰4K超高清AI跟踪会议摄像头，配备12倍光学变焦镜头和80.4°广角视场。它采用高质量的1/2.5英寸索尼CMOS图像传感器，有效像素829万，支持最高60fps的4K视频。该摄像头结合了高级ISP处理、自动对焦、3D降噪、AI人体检测和跟踪、多种视频接口、专业网络协议和PTZ控制，适用于会议、教育、医疗、广播、政府、协作办公、应急指挥、司法、公共安全和军事应用。",
     category: "会议摄像头",
+    mainCategory: "会议设备",
     subCategory: "4K AI跟踪PTZ摄像头",
     features: [
       "4K超高清视频",
@@ -268,6 +271,7 @@ const chineseTranslations = {
     shortDescription: "专业4K AI跟踪PTZ会议摄像头，配备25倍光学变焦、16倍数字变焦、4K 60fps输出、高级人体跟踪和全面专业接口。",
     description: "CE 4K625是一款旗舰4K超高清AI跟踪会议摄像头，配备25倍光学变焦镜头和59.2°广角视场。它采用1/1.8英寸索尼CMOS图像传感器，有效像素829万，支持最高60fps的4K视频。该摄像头结合了高级ISP处理、自动对焦、3D数字降噪、AI人体检测和跟踪、多种专业视频接口、网络协议、PTZ控制和最多255个预设位置。",
     category: "会议摄像头",
+    mainCategory: "会议设备",
     subCategory: "4K AI跟踪PTZ摄像头",
     features: [
       "4K超高清视频",
@@ -346,6 +350,7 @@ const chineseTranslations = {
     shortDescription: "专业4K AI跟踪PTZ会议摄像头，配备31倍光学变焦、16倍数字变焦、4K 60fps输出、高级人体跟踪和全面专业接口。",
     description: "CE 4K631是一款旗舰4K超高清AI跟踪会议摄像头，配备31倍光学变焦镜头和59°广角视场。它采用1/1.8英寸索尼CMOS图像传感器，有效像素829万，支持最高60fps的4K视频。该摄像头结合了高级ISP处理、自动对焦、3D数字降噪、AI人体检测和跟踪、多种专业视频接口、网络协议、PTZ控制和最多255个预设位置。",
     category: "会议摄像头",
+    mainCategory: "会议设备",
     subCategory: "4K AI跟踪PTZ摄像头",
     features: [
       "4K超高清视频",
@@ -426,6 +431,7 @@ const chineseTranslations = {
     shortDescription: "4K AI跟踪PTZ会议摄像头，配备10倍光学变焦、12倍数字变焦、USB 3.0、HDMI和IP视频输出、流畅PTZ控制和多种网络控制协议。",
     description: "CE 4K210是一款4K高清AI跟踪HDMI会议摄像头，专为专业视频应用设计。它采用1/2.5英寸Exmor R CMOS传感器，有效像素851万，支持3840×2160高分辨率视频。该摄像头提供10倍光学变焦、12倍数字变焦、AI目标跟踪、流畅安静的PTZ定位、USB 3.0、HDMI和IP接口、TF卡本地存储、一键录制以及多种控制和网络协议。",
     category: "会议摄像头",
+    mainCategory: "会议设备",
     subCategory: "4K AI跟踪PTZ摄像头",
     features: [
       "4K高清视频",
@@ -501,6 +507,7 @@ const chineseTranslations = {
     shortDescription: "4K AI跟踪PTZ会议摄像头，配备20倍光学变焦、12倍数字变焦、USB 3.0、HDMI、IP和SDI接口、流畅PTZ定位和多种网络控制协议。",
     description: "CE 4K220S是一款4K高清AI跟踪多接口会议摄像头，专为专业视频应用设计。它采用1/2.5英寸Exmor R CMOS传感器，有效像素851万，支持3840×2160分辨率。该摄像头配备20倍光学变焦、12倍数字变焦、AI实时目标跟踪、流畅安静的PTZ控制、USB 3.0、HDMI、IP和SDI视频接口、多种网络协议和多种遥控方式。",
     category: "会议摄像头",
+    mainCategory: "会议设备",
     subCategory: "4K AI跟踪PTZ摄像头",
     features: [
       "4K高清视频",
@@ -577,6 +584,7 @@ const chineseTranslations = {
     shortDescription: "双目智能语音跟踪会议PTZ摄像头，配备双镜头特写和全景成像、12倍光学变焦、AI演讲者跟踪和自动场景切换。",
     description: "CE G200是一款双目智能语音跟踪会议PTZ摄像头，集成了语音定位技术与AI人体检测和识别算法。它自动识别演讲者，以最佳视角进行构图，并根据参与者的移动和人数变化动态调整构图。其双镜头设计同时捕捉特写和全景画面，并支持智能自动场景切换。该系统还支持多种演讲者跟踪模式，可以智能检测白板书写并自动放大进行特写显示。",
     category: "会议摄像头",
+    mainCategory: "会议设备",
     subCategory: "AI语音跟踪PTZ摄像头",
     features: [
       "双目双镜头摄像头设计",
@@ -647,6 +655,7 @@ const chineseTranslations = {
     shortDescription: "四眼智能语音跟踪摄像头系统，配备音频定位、人体检测、智能视频分析、自动演讲者构图和特写与广角视角之间的无缝切换。",
     description: "CE G400四眼智能语音跟踪摄像头系统结合了音频定位与智能视频分析，提供自动化会议体验。它可以通过音频定位、人体检测和识别技术精确构图演讲者，并自动在特写和广角视角之间切换，以捕捉整个会议。该系统旨在最大限度减少手动摄像头操作，使会议参与者能够专注于讨论。",
     category: "会议摄像头",
+    mainCategory: "会议设备",
     subCategory: "智能语音跟踪摄像头系统",
     features: [
       "四眼智能语音跟踪摄像头系统",
@@ -709,6 +718,7 @@ const chineseTranslations = {
     shortDescription: "吊装麦克风，配备5-8米远距离拾音、超心形单向指向性和高语音清晰度，适用于会议环境。",
     description: "CHEVLEN MIC30是一款专为会议和专业音频环境远距离语音拾音设计的吊装麦克风。它提供5-8米拾音能力、高灵敏度和强指向性，可提高语音清晰度和信噪比性能。其扇形拾音模式可在广域范围内捕捉人声信号，而吊装设计可与建筑环境融为一体。",
     category: "会议音频",
+    mainCategory: "会议设备",
     subCategory: "吊装麦克风",
     features: [
       "吊装麦克风设计",
@@ -765,6 +775,7 @@ const chineseTranslations = {
     shortDescription: "便携式USB和蓝牙全向会议麦克风，配备3-5米拾音半径、360°音频拾音、无线级联和内置扬声器。",
     description: "CT3是一款专为会议和视频会议设计的便携式USB和蓝牙全向会议麦克风。它提供360°声音拾音，拾音半径为3-5米，并支持两个设备的无线级联，使两个麦克风都能同时接收和播放声音。该麦克风支持USB和蓝牙连接、智能动态降噪、384ms回声消除和全双工通信。它还包括内置高性能扬声器用于音频播放。",
     category: "会议音频",
+    mainCategory: "会议设备",
     subCategory: "蓝牙级联全向麦克风",
     features: [
       "USB和蓝牙连接",
@@ -827,6 +838,7 @@ const chineseTranslations = {
     shortDescription: "有线级联全向会议麦克风系统，配备音频网关、360°拾音、3-5米拾音半径，支持最多8个级联麦克风。",
     description: "CT9套装是一个USB有线级联全向麦克风系统，由CT9S音频网关和CT9M全向麦克风组成。最多可以级联8个全向麦克风，使所有连接的麦克风都能同时拾音和播放声音。该系统通过音频网关支持多种连接方式，包括无线接收器、USB和3.5mm模拟接口。它提供360°声音拾音、回声消除、智能动态降噪和全双工通信，适用于会议环境。",
     category: "会议音频",
+    mainCategory: "会议设备",
     subCategory: "有线级联全向麦克风",
     features: [
       "USB有线级联全向麦克风系统",
@@ -892,6 +904,7 @@ const chineseTranslations = {
     shortDescription: "USB连接交互式音频采集系统，配备两个吊装球形麦克风、10米拾音半径、24位/48kHz音频和自适应音频处理。",
     description: "CT10D交互式全向音频采集系统是一个USB连接的音频处理器，设计用于与两个有线吊装麦克风、本地计算机、有源扬声器和视频会议主机配合使用。它提供最远10米的麦克风拾音、48kHz高保真音频、自适应回声消除、自适应噪声抑制、自适应语音增益调整和智能混音。该系统支持24位A/D和D/A转换，并通过凤凰端子块提供2通道平衡输出。",
     category: "会议音频",
+    mainCategory: "会议设备",
     subCategory: "吊装麦克风音频采集系统",
     features: [
       "USB连接交互式音频采集系统",
@@ -954,6 +967,7 @@ const chineseTranslations = {
     shortDescription: "本地扩声和360°全向音频采集系统，配备内置音频处理、USB供电和3.5mm扬声器连接。",
     description: "CT20无缝本地全向音频采集和扩声系统专为本地扩声设计。它将全向音频采集与本地扩声设备相结合，在整个房间提供清晰真实的声音。其内置音频处理和环境自适应算法提供啸叫抑制、自动增益控制、自动噪声消除和混响抑制。该系统支持免提操作、远距离声音拾音和与远程参与者的实时交互。",
     category: "会议音频",
+    mainCategory: "会议设备",
     subCategory: "吊装麦克风",
     features: [
       "360°全向声音拾音",
@@ -1012,6 +1026,7 @@ const chineseTranslations = {
     shortDescription: "1080P USB 2.0高清会议摄像头，配备120°广角镜头、机械可调拍摄角度和即插即用操作。",
     description: "CV3广角USB 2.0高清摄像头是一款专为视频会议和在线通信设计的即插即用会议网络摄像头。它配备1080P高清CMOS传感器、120°广角定焦镜头和机械可调拍摄角度。该摄像头通过USB 2.0连接，无需驱动安装，并与常见的视频会议和通话软件兼容。",
     category: "会议摄像头",
+    mainCategory: "会议设备",
     subCategory: "USB会议摄像头",
     features: [
       "1080P全高清视频",
@@ -1065,6 +1080,7 @@ const chineseTranslations = {
     shortDescription: "专业1080P直播摄像头，配备18倍光学变焦、最高60fps、USB、HDMI和RJ45接口以及UVC/NDI视频传输。",
     description: "CV5是一款专为专业直播和视频会议设计的高清直播摄像头。它配备18倍光学变焦镜头、1080P分辨率和最高60fps的帧率。该摄像头采用1/2.8英寸高清CMOS传感器，提供USB、HDMI和RJ45接口，用于灵活连接和直接网络传输。它支持即插即用操作，无需驱动安装，并兼容Windows、macOS和Android。",
     category: "会议摄像头",
+    mainCategory: "会议设备",
     subCategory: "直播摄像头",
     features: [
       "1080P高清视频",
@@ -1128,6 +1144,7 @@ const chineseTranslations = {
     shortDescription: "紧凑型全向桌面数字接口麦克风，专为会议、教学、访谈、演讲和广播设计。",
     description: "CHEVLEN MIC40是一款专为会议、教学、访谈、演讲和广播设计的桌面数字接口麦克风。它结合了会议麦克风和全向麦克风的特性，具有紧凑的便携性和简单的操作。该麦克风提供360°全向声音拾音，支持2米内的远距离声音拾音。它还具有RFI屏蔽、防滑底座、触摸式静音控制和48V幻象电源。",
     category: "会议音频",
+    mainCategory: "会议设备",
     subCategory: "桌面数字麦克风",
     features: [
       "全向高清声音拾音",
@@ -1249,6 +1266,7 @@ const chineseTranslations = {
     shortDescription: "全数字有线会议系统，配备多种发言模式、智能摄像头跟踪、每个中央处理器最多60个麦克风单元，可扩展至最多512个单元。",
     description: "CHEVLEN DM80是一款专为专业会议环境设计的全数字有线加密会议系统。每个中央处理器可连接最多60个麦克风单元，提供6个RJ45端口和3个DIN 8芯接口，用于稳定的数据传输。该系统可使用扩展器扩展至支持最多512个麦克风单元，并支持最多12个主席麦克风。它提供多种会议发言模式、独立音频电平控制、基于PC的电子考勤和投票功能、智能视频跟踪以及支持四个高速PTZ摄像头输入的4进1出SDI视频矩阵。",
     category: "会议系统",
+    mainCategory: "会议设备",
     subCategory: "有线数字会议系统",
     features: [
       "全数字有线会议系统",
@@ -1323,6 +1341,7 @@ const chineseTranslations = {
     shortDescription: "UHF频段数字无线加密会议系统，配备多种发言模式、6个同时发言者、自动频率扫描和视频跟踪支持。",
     description: "CHEVLEN WM60是一款UHF频段数字无线会议系统，具有全数字控制和多种发言模式，用于安全、高质量的会议。它在可选的520-930MHz频率范围内运行，支持最多2,000个代表单元ID，最多5个主席单元和6个同时发言者。该系统使用具有随机唯一ID和电信级加密的安全数字传输，而自动频率扫描和DQPSK双天线真分集接收有助于提供可靠的无线操作。该系统与视频跟踪和中央控制系统兼容，并支持在同一覆盖区域内进行多次会议。",
     category: "会议系统",
+    mainCategory: "会议设备",
     subCategory: "无线数字会议系统",
     features: [
       "UHF频段数字无线会议系统",
@@ -1427,6 +1446,7 @@ const seedTranslations = async () => {
         shortDescription: customTranslation?.shortDescription || product.shortDescription,
         description: customTranslation?.description || product.description,
         category: customTranslation?.category || product.category,
+        mainCategory: customTranslation?.mainCategory || product.mainCategory,
         subCategory: customTranslation?.subCategory || product.subCategory,
         features: customTranslation?.features || product.features,
         specifications: customTranslation?.specifications || product.specifications,

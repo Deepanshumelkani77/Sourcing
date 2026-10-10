@@ -139,6 +139,12 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
 
+    mainCategory: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
     subCategory: {
       type: String,
       default: "",
@@ -299,6 +305,7 @@ productSchema.methods.getLocalizedData = function (language = "en") {
       shortDescription: translation.shortDescription,
       description: translation.description,
       category: translation.category,
+      mainCategory: translation.mainCategory,
       subCategory: translation.subCategory,
       features: translation.features,
       specifications: translation.specifications,
