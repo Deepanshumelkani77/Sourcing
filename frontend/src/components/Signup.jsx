@@ -285,7 +285,7 @@ const Signup = () => {
       <div className="fixed inset-0 z-[999] flex items-center justify-center">
         <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={close}></div>
 
-        <div className="relative w-full max-w-4xl mx-4 bg-white rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+        <div className="relative w-full max-w-4xl mx-2 sm:mx-4 bg-white rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
           {/* Left - marketing / toggle with sourcing image */}
           <div className="hidden md:flex flex-col relative overflow-hidden text-white p-8 gap-6">
             <img
@@ -321,7 +321,7 @@ const Signup = () => {
           </div>
 
           {/* Right - forms */}
-          <div className="p-6 md:p-8">
+          <div className="p-4 sm:p-6 md:p-8">
             <div className="flex items-start justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-semibold text-gray-800">{signupMode === 'login' ? 'Sign in to your account' : 'Create your account'}</h2>
@@ -331,22 +331,22 @@ const Signup = () => {
             </div>
 
             {signupMode === 'login' ? (
-              <form onSubmit={submitLogin} className="space-y-4">
+              <form onSubmit={submitLogin} className="space-y-3 sm:space-y-4">
                 <div>
-                  <input name="email" value={loginData.email} onChange={handleLoginChange} placeholder="Email address or phone number" required className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400" />
+                  <input name="email" value={loginData.email} onChange={handleLoginChange} placeholder="Email address or phone number" required className="w-full px-2 sm:px-3 py-2 sm:py-2.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-xs sm:text-sm" />
                 </div>
                 <div>
                   <div className="relative">
-                    <input name="password" type={showPassword ? 'text' : 'password'} value={loginData.password} onChange={handleLoginChange} placeholder="Password" required className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400" />
+                    <input name="password" type={showPassword ? 'text' : 'password'} value={loginData.password} onChange={handleLoginChange} placeholder="Password" required className="w-full px-2 sm:px-3 py-2 sm:py-2.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-xs sm:text-sm" />
                     <button type="button" onClick={() => setShowPassword(s => !s)} aria-label={showPassword ? 'Hide password' : 'Show password'} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
                       {showPassword ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.973 9.973 0 012.223-3.607" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3l18 18" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.88 9.88a3 3 0 104.24 4.24" />
                         </svg>
                       ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
@@ -355,23 +355,23 @@ const Signup = () => {
                   </div>
                 </div>
                 <div>
-                  <div className="flex gap-2">
-                    <input type="text" value={userCaptcha} onChange={(e) => setUserCaptcha(e.target.value)} placeholder="Enter CAPTCHA code" required className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400" />
-                    <div className="bg-gray-100 px-4 py-2 rounded-md font-mono text-lg tracking-wider select-none border border-gray-300">
+                  <div className="flex gap-1 sm:gap-2">
+                    <input type="text" value={userCaptcha} onChange={(e) => setUserCaptcha(e.target.value)} placeholder="Enter CAPTCHA" required className="flex-1 px-2 sm:px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-xs sm:text-sm" />
+                    <div className="bg-gray-100 px-2 sm:px-3 py-2 rounded-md font-mono text-sm sm:text-base tracking-wider select-none border border-gray-300 min-w-[60px] sm:min-w-[80px] flex items-center justify-center flex-shrink-0">
                       {captcha}
                     </div>
-                    <button type="button" onClick={generateCaptcha} className="text-gray-500 hover:text-gray-700" aria-label="Refresh CAPTCHA">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <button type="button" onClick={generateCaptcha} className="text-gray-500 hover:text-gray-700 p-1 flex-shrink-0" aria-label="Refresh CAPTCHA">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                       </svg>
                     </button>
                   </div>
                 </div>
-                {error && <div className="text-sm text-red-600">{error}</div>}
-                <button type="submit" disabled={loading} className="w-full py-2 rounded-md bg-[#F41703] text-white font-semibold hover:bg-[#d31402] disabled:opacity-60 transition-colors">
+                {error && <div className="text-xs sm:text-sm text-red-600">{error}</div>}
+                <button type="submit" disabled={loading} className="w-full py-2.5 sm:py-3 rounded-md bg-[#F41703] text-white font-semibold hover:bg-[#d31402] disabled:opacity-60 transition-colors text-sm sm:text-base">
                   {loading ? 'Logging in...' : 'Login'}
                 </button>
-                <div className="flex justify-between items-center text-sm text-gray-600">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0 text-xs sm:text-sm text-gray-600">
                   <span>Don't have an account? <button type="button" onClick={() => setSignupMode('signup')} className="text-[#F41703] font-semibold">Sign up</button></span>
                   <button type="button" onClick={() => setShowForgotPassword(true)} className="text-[#F97316] hover:underline">Forgot password?</button>
                 </div>
@@ -379,52 +379,52 @@ const Signup = () => {
                 <div className="mt-3">
                   <div className="flex items-center gap-3 my-3">
                     <hr className="flex-1 border-t border-gray-200" />
-                    <span className="text-sm text-gray-400">or continue with</span>
+                    <span className="text-xs sm:text-sm text-gray-400">or continue with</span>
                     <hr className="flex-1 border-t border-gray-200" />
                   </div>
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => handleSocialLogin('google')} className="flex-1 flex items-center justify-center gap-3 px-3 py-2 border rounded-md hover:bg-gray-50">
-                      <svg className="w-5 h-5" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <button type="button" onClick={() => handleSocialLogin('google')} className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 border rounded-md hover:bg-gray-50">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.2 9.23 3.15l6.9-6.9C36.6 2.48 30.63 0 24 0 14.73 0 6.95 5.24 3.02 12.9l7.99 6.2C12.99 13.12 17.98 9.5 24 9.5z"/>
                         <path fill="#34A853" d="M46.5 24c0-1.62-.14-3.19-.4-4.7H24v9.02h12.7c-.55 2.98-2.43 5.5-5.18 7.18l7.92 6.15C43.9 39.1 46.5 32.1 46.5 24z"/>
                         <path fill="#4A90E2" d="M10.99 28.1A14.9 14.9 0 0112 24c0-1.33-.2-2.62-.58-3.84L3.44 13.96A24 24 0 000 24c0 3.94.96 7.65 2.7 10.95l8.29-6.85z"/>
                         <path fill="#FBBC05" d="M24 48c6.63 0 12.6-2.19 17.27-5.96l-8.4-6.55C29.02 36.4 26.02 37.5 24 37.5c-6.02 0-11.01-3.62-12.99-8.14l-8 6.02C6.95 42.76 14.73 48 24 48z"/>
                       </svg>
-                      <span className="text-sm">Google</span>
+                      <span className="text-xs sm:text-sm">Google</span>
                     </button>
-                    <button type="button" onClick={() => handleSocialLogin('facebook')} className="flex-1 flex items-center justify-center gap-3 px-3 py-2 rounded-md bg-[#1877F2] text-white hover:brightness-95">
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <button type="button" onClick={() => handleSocialLogin('facebook')} className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-md bg-[#1877F2] text-white hover:brightness-95">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path fill="#ffffff" d="M22.675 0h-21.35C.597 0 0 .597 0 1.333v21.333C0 23.403.597 24 1.325 24H12.82v-9.294H9.692V11.01h3.128V8.413c0-3.1 1.894-4.788 4.66-4.788 1.325 0 2.463.099 2.793.143v3.24l-1.918.001c-1.504 0-1.796.716-1.796 1.765v2.315h3.587l-.467 3.696h-3.12V24h6.116C23.403 24 24 23.403 24 22.667V1.333C24 .597 23.403 0 22.675 0z"/>
                       </svg>
-                      <span className="text-sm">Facebook</span>
+                      <span className="text-xs sm:text-sm">Facebook</span>
                     </button>
                   </div>
                 </div>
               </form>
             ) : (
-              <form onSubmit={submitSignup} className="space-y-4">
-                <div className="grid grid-cols-3 gap-2">
+              <form onSubmit={submitSignup} className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div>
-                    <input name="firstName" value={signupData.firstName} onChange={handleSignupChange} placeholder="First name *" required className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-sm" />
+                    <input name="firstName" value={signupData.firstName} onChange={handleSignupChange} placeholder="First name *" required className="w-full px-3 py-2 sm:py-2.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-sm sm:text-base" />
                   </div>
                   <div>
-                    <input name="middleName" value={signupData.middleName} onChange={handleSignupChange} placeholder="Middle name" className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-sm" />
+                    <input name="middleName" value={signupData.middleName} onChange={handleSignupChange} placeholder="Middle name" className="w-full px-3 py-2 sm:py-2.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-sm sm:text-base" />
                   </div>
                   <div>
-                    <input name="lastName" value={signupData.lastName} onChange={handleSignupChange} placeholder="Last name *" required className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-sm" />
+                    <input name="lastName" value={signupData.lastName} onChange={handleSignupChange} placeholder="Last name *" required className="w-full px-3 py-2 sm:py-2.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-sm sm:text-base" />
                   </div>
                 </div>
                 <div>
-                  <div className="flex gap-2">
-                    <input name="email" type="email" value={signupData.email} onChange={handleSignupChange} placeholder="Email address *" required className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400" />
+                  <div className="flex gap-1 sm:gap-2">
+                    <input name="email" type="email" value={signupData.email} onChange={handleSignupChange} placeholder="Email address *" required className="flex-1 px-2 sm:px-3 py-2 sm:py-2.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-xs sm:text-sm" />
                     {!emailOtpVerified && (
-                      <button type="button" onClick={sendEmailOtp} disabled={emailOtpSent || otpLoading} className="px-3 py-2 bg-[#F41703] text-white text-sm rounded-md hover:bg-[#d31402] disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap">
+                      <button type="button" onClick={sendEmailOtp} disabled={emailOtpSent || otpLoading} className="px-2 sm:px-3 py-2 sm:py-2.5 bg-[#F41703] text-white text-xs sm:text-sm rounded-md hover:bg-[#d31402] disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap flex-shrink-0">
                         {otpLoading ? 'Sending...' : emailOtpSent ? 'OTP Sent' : 'Send OTP'}
                       </button>
                     )}
                     {emailOtpVerified && (
-                      <div className="px-3 py-2 bg-green-100 text-green-700 text-sm rounded-md flex items-center gap-1 whitespace-nowrap">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="px-2 sm:px-3 py-2 sm:py-2.5 bg-green-100 text-green-700 text-xs sm:text-sm rounded-md flex items-center gap-1 whitespace-nowrap flex-shrink-0">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                         Verified
@@ -433,7 +433,7 @@ const Signup = () => {
                   </div>
                   {emailOtpSent && !emailOtpVerified && (
                     <div className="mt-2">
-                      <div className="flex gap-2 justify-between">
+                      <div className="flex gap-1 sm:gap-2 justify-between">
                         {[0, 1, 2, 3, 4, 5].map((index) => (
                           <input
                             key={index}
@@ -473,16 +473,16 @@ const Signup = () => {
                                 inputs[lastIndex].focus();
                               }
                             }}
-                            className="w-10 h-12 text-center text-xl font-semibold border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none placeholder-gray-300"
+                            className="w-8 sm:w-10 h-10 sm:h-12 text-center text-lg sm:text-xl font-semibold border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none placeholder-gray-300"
                             placeholder="•"
                           />
                         ))}
                       </div>
                       <div className="mt-3 flex gap-2">
-                        <button type="button" onClick={verifyEmailOtp} disabled={otpLoading || emailOtp.length !== 6} className="flex-1 px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap">
+                        <button type="button" onClick={verifyEmailOtp} disabled={otpLoading || emailOtp.length !== 6} className="flex-1 px-2 sm:px-3 py-2 sm:py-2.5 bg-green-600 text-white text-xs sm:text-sm rounded-md hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap">
                           {otpLoading ? 'Checking...' : 'Verify OTP'}
                         </button>
-                        <button type="button" onClick={sendEmailOtp} disabled={otpLoading} className="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 disabled:opacity-60 whitespace-nowrap">
+                        <button type="button" onClick={sendEmailOtp} disabled={otpLoading} className="px-2 sm:px-3 py-2 sm:py-2.5 bg-gray-200 text-gray-700 text-xs sm:text-sm rounded-md hover:bg-gray-300 disabled:opacity-60 whitespace-nowrap">
                           Resend OTP
                         </button>
                       </div>
@@ -491,11 +491,11 @@ const Signup = () => {
                   {otpError && <div className="text-sm text-red-600">{otpError}</div>}
                 </div>
                 <div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 sm:gap-2">
                     <select
                       value={countryCode}
                       onChange={(e) => setCountryCode(e.target.value)}
-                      className="px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none bg-white text-sm min-w-[100px]"
+                      className="px-2 sm:px-3 py-2 sm:py-2.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none bg-white text-xs sm:text-sm min-w-[70px] sm:min-w-[100px] flex-shrink-0"
                     >
                       {countryCodes.map((country) => (
                         <option key={country.code} value={country.code}>
@@ -509,41 +509,41 @@ const Signup = () => {
                       onChange={handleSignupChange}
                       placeholder="Phone number *"
                       required
-                      className="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400"
+                      className="flex-1 px-2 sm:px-3 py-2 sm:py-2.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-xs sm:text-sm"
                     />
                   </div>
                   <p className="text-xs text-gray-400 mt-1">Phone verification will be added later.</p>
                 </div>
                 <div>
-                  <input name="password" type={showPassword ? 'text' : 'password'} value={signupData.password} onChange={handleSignupChange} placeholder="Create a password" required className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400" />
+                  <input name="password" type={showPassword ? 'text' : 'password'} value={signupData.password} onChange={handleSignupChange} placeholder="Create a password" required className="w-full px-3 py-2 sm:py-2.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F41703] outline-none placeholder-gray-400 text-sm sm:text-base" />
                 </div>
-                {error && <div className="text-sm text-red-600">{error}</div>}
-                <button type="submit" disabled={loading || !emailOtpVerified} className="w-full py-2 rounded-md bg-[#F41703] text-white font-semibold hover:bg-[#d31402] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
+                {error && <div className="text-xs sm:text-sm text-red-600">{error}</div>}
+                <button type="submit" disabled={loading || !emailOtpVerified} className="w-full py-2.5 sm:py-3 rounded-md bg-[#F41703] text-white font-semibold hover:bg-[#d31402] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm sm:text-base">
                   {loading ? 'Creating account...' : 'Create account'}
                 </button>
-                <div className="text-center text-sm text-gray-600">Already have an account? <button type="button" onClick={() => setSignupMode('login')} className="text-[#F41703] font-semibold">Sign in</button></div>
+                <div className="text-center text-xs sm:text-sm text-gray-600">Already have an account? <button type="button" onClick={() => setSignupMode('login')} className="text-[#F41703] font-semibold">Sign in</button></div>
 
                 <div className="mt-3">
                   <div className="flex items-center gap-3 my-3">
                     <hr className="flex-1 border-t border-gray-200" />
-                    <span className="text-sm text-gray-400">or continue with</span>
+                    <span className="text-xs sm:text-sm text-gray-400">or continue with</span>
                     <hr className="flex-1 border-t border-gray-200" />
                   </div>
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => handleSocialLogin('google')} className="flex-1 flex items-center justify-center gap-3 px-3 py-2 border rounded-md hover:bg-gray-50">
-                      <svg className="w-5 h-5" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <button type="button" onClick={() => handleSocialLogin('google')} className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 border rounded-md hover:bg-gray-50">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.2 9.23 3.15l6.9-6.9C36.6 2.48 30.63 0 24 0 14.73 0 6.95 5.24 3.02 12.9l7.99 6.2C12.99 13.12 17.98 9.5 24 9.5z"/>
                         <path fill="#34A853" d="M46.5 24c0-1.62-.14-3.19-.4-4.7H24v9.02h12.7c-.55 2.98-2.43 5.5-5.18 7.18l7.92 6.15C43.9 39.1 46.5 32.1 46.5 24z"/>
                         <path fill="#4A90E2" d="M10.99 28.1A14.9 14.9 0 0112 24c0-1.33-.2-2.62-.58-3.84L3.44 13.96A24 24 0 000 24c0 3.94.96 7.65 2.7 10.95l8.29-6.85z"/>
                         <path fill="#FBBC05" d="M24 48c6.63 0 12.6-2.19 17.27-5.96l-8.4-6.55C29.02 36.4 26.02 37.5 24 37.5c-6.02 0-11.01-3.62-12.99-8.14l-8 6.02C6.95 42.76 14.73 48 24 48z"/>
                       </svg>
-                      <span className="text-sm">Google</span>
+                      <span className="text-xs sm:text-sm">Google</span>
                     </button>
-                    <button type="button" onClick={() => handleSocialLogin('facebook')} className="flex-1 flex items-center justify-center gap-3 px-3 py-2 rounded-md bg-[#1877F2] text-white hover:brightness-95">
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <button type="button" onClick={() => handleSocialLogin('facebook')} className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-md bg-[#1877F2] text-white hover:brightness-95">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path fill="#ffffff" d="M22.675 0h-21.35C.597 0 0 .597 0 1.333v21.333C0 23.403.597 24 1.325 24H12.82v-9.294H9.692V11.01h3.128V8.413c0-3.1 1.894-4.788 4.66-4.788 1.325 0 2.463.099 2.793.143v3.24l-1.918.001c-1.504 0-1.796.716-1.796 1.765v2.315h3.587l-.467 3.696h-3.12V24h6.116C23.403 24 24 23.403 24 22.667V1.333C24 .597 23.403 0 22.675 0z"/>
                       </svg>
-                      <span className="text-sm">Facebook</span>
+                      <span className="text-xs sm:text-sm">Facebook</span>
                     </button>
                   </div>
                 </div>

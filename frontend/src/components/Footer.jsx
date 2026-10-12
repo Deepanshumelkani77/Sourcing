@@ -48,6 +48,7 @@ const IconArrowUpRight = (p) => (
 const quickLinks = [
   { to: '/', labelKey: 'nav.home' },
   { to: '/about', labelKey: 'nav.about' },
+  { to: '/services', labelKey: 'nav.services' },
   { to: '/blog', labelKey: 'nav.blog' },
   { to: '/contact', labelKey: 'nav.contact' },
   { to: '/career', labelKey: 'nav.career' },

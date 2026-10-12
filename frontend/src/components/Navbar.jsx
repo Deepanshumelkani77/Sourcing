@@ -314,7 +314,7 @@ const Navbar = () => {
                 createPortal(
                   <div
                     ref={productsDropdownRef}
-                    className="fixed w-[1000px] bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden text-left animate-loc-in z-40 max-h-[500px] overflow-y-auto"
+                    className="fixed w-[1000px] bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden text-left animate-loc-in z-40 max-h-[500px] overflow-y-auto z-[999]"
                     style={{ top: `${productsDropdownPosition.top}px`, left: `${productsDropdownPosition.left}px` }}
                     onMouseEnter={() => {
                       if (productsTimeoutRef.current) {

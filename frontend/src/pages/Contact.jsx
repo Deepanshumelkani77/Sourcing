@@ -88,7 +88,7 @@ const SUBJECT_CATEGORIES = [
   },
   {
     id: 'identification',
-    label: 'Manufactural Identification',
+    label: 'Manufacturer Identification',
     icon: '🏭',
     items: [
       'Supplier Verification',
@@ -283,37 +283,37 @@ const Contact = () => {
       {/* ---- Form + map ---- */}
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 mb-4">
           {/* Left: Contact Form */}
-          <div className="bg-white rounded-xl shadow-lg p-8 pt-3">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('contact.form.title')}</h2>
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 pt-3">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">{t('contact.form.title')}</h2>
             {submitted && (
               <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <p className="text-green-800 font-medium">{t('contact.form.success')}</p>
               </div>
             )}
-            <form onSubmit={handleSubmit} className="space-y-2">
-              <div className="grid grid-cols-3 gap-2">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label htmlFor="firstName" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.firstName')} *</label>
-                  <input type="text" id="firstName" name="firstName" required value={formData.firstName} onChange={handleChange('firstName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder={t('contact.form.firstName')} />
+                  <label htmlFor="firstName" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">{t('contact.form.firstName')} *</label>
+                  <input type="text" id="firstName" name="firstName" required value={formData.firstName} onChange={handleChange('firstName')} className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-sm sm:text-base" placeholder={t('contact.form.firstName')} />
                 </div>
                 <div>
-                  <label htmlFor="middleName" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.middleName')}</label>
-                  <input type="text" id="middleName" name="middleName" value={formData.middleName} onChange={handleChange('middleName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder={t('contact.form.middleName')} />
+                  <label htmlFor="middleName" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">{t('contact.form.middleName')}</label>
+                  <input type="text" id="middleName" name="middleName" value={formData.middleName} onChange={handleChange('middleName')} className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-sm sm:text-base" placeholder={t('contact.form.middleName')} />
                 </div>
                 <div>
-                  <label htmlFor="lastName" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.lastName')} *</label>
-                  <input type="text" id="lastName" name="lastName" required value={formData.lastName} onChange={handleChange('lastName')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base" placeholder={t('contact.form.lastName')} />
+                  <label htmlFor="lastName" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">{t('contact.form.lastName')} *</label>
+                  <input type="text" id="lastName" name="lastName" required value={formData.lastName} onChange={handleChange('lastName')} className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-sm sm:text-base" placeholder={t('contact.form.lastName')} />
                 </div>
               </div>
 
 
               <div className="relative" ref={subjectDropdownRef}>
-                <label htmlFor="subject" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.subject')} *</label>
+                <label htmlFor="subject" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Subject *</label>
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => setIsSubjectDropdownOpen(!isSubjectDropdownOpen)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base text-left bg-white flex items-center justify-between"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-sm sm:text-base text-left bg-white flex items-center justify-between"
                   >
                     <span className={selectedSubject ? 'text-gray-900' : 'text-gray-500'}>
                       {selectedSubject || t('contact.form.selectSubject')}
@@ -356,12 +356,12 @@ const Contact = () => {
               {/* Sub-Subject Field - appears only when subject is selected */}
               {selectedSubject && (
                 <div className="relative" ref={subSubjectDropdownRef}>
-                  <label htmlFor="subSubject" className="block text-base font-medium text-gray-700 mb-2">Service Details *</label>
+                  <label htmlFor="subSubject" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Service Details *</label>
                   <div className="relative">
                     <button
                       type="button"
                       onClick={() => setIsSubSubjectDropdownOpen(!isSubSubjectDropdownOpen)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-base text-left bg-white flex items-center justify-between"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition text-sm sm:text-base text-left bg-white flex items-center justify-between"
                     >
                       <span className={selectedSubSubject ? 'text-gray-900' : 'text-gray-500'}>
                         {selectedSubSubject || 'Select service details'}
@@ -380,9 +380,7 @@ const Contact = () => {
                     {isSubSubjectDropdownOpen && (
                       <div className="absolute z-50 w-full mt-2 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
                         <div className="p-2">
-                          <p className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                            Available Services
-                          </p>
+                        
                           {getSubItems().map((item, index) => (
                             <button
                               key={index}
@@ -407,11 +405,11 @@ const Contact = () => {
               )}
 
               <div>
-                <label htmlFor="message" className="block text-base font-medium text-gray-700 mb-2">{t('contact.form.message')} *</label>
-                <textarea id="message" name="message" required rows={2} value={formData.message} onChange={handleChange('message')} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition resize-none text-base" placeholder={t('contact.form.message')}></textarea>
+                <label htmlFor="message" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Message *</label>
+                <textarea id="message" name="message" required rows={2} value={formData.message} onChange={handleChange('message')} className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F6A9E] focus:border-transparent outline-none transition resize-none text-sm sm:text-base" placeholder="Your message"></textarea>
               </div>
 
-              <button type="submit" className="w-full bg-[#F41703] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#F41703] transition-colors duration-300 shadow-md hover:shadow-lg text-base">{t('contact.form.submit')}</button>
+              <button type="submit" className="w-full bg-[#F41703] text-white py-3 sm:py-4 px-6 rounded-lg font-semibold hover:bg-[#F41703] transition-colors duration-300 shadow-md hover:shadow-lg text-sm sm:text-base">{t('contact.form.submit')}</button>
             </form>
           </div>
 
