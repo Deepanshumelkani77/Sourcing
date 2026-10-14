@@ -12,12 +12,20 @@ This guide will help you set up the IndoChinaBridge AI Chatbot for your website.
 
 ### 1. Install OpenAI SDK in Backend
 
+**For Local Development:**
+
 Navigate to the backend directory and install the OpenAI package:
 
 ```bash
 cd backend
 npm install openai
 ```
+
+**Note:** The `openai` package has been added to `backend/package.json`, so it will be automatically installed when you run `npm install` in the backend directory.
+
+**For Render Production:**
+
+The package is already in `package.json`, so it will be installed automatically during the build process. No manual installation needed on Render.
 
 ### 2. Configure Environment Variables
 
@@ -50,12 +58,21 @@ Add the following environment variable in your Render dashboard:
 
 ### 3. Restart Backend Server
 
+**For Local Development:**
+
 Stop the backend server (if running) and restart it:
 
 ```bash
 cd backend
+npm install  # Install the new openai package
 npm run dev
 ```
+
+**For Render Production:**
+
+The `openai` package has been added to `package.json`, so it will be automatically installed during the next build on Render. Just push your changes to trigger a new deployment.
+
+**Important:** Make sure to add your `OPENAI_API_KEY` environment variable in Render's dashboard before deploying!
 
 ### 4. Restart Frontend Server
 
@@ -245,6 +262,26 @@ Edit `frontend/src/components/chatbot/Chatbot.css` to customize:
 - Review search regex in chatController.js
 
 ## Production Deployment
+
+### Render Deployment
+
+1. **Add Environment Variables in Render Dashboard:**
+   - Go to your backend service in Render
+   - Navigate to "Environment" section
+   - Add: `OPENAI_API_KEY` = your actual OpenAI API key
+   - Ensure other existing env vars are set (MONGODB_URI, JWT_SECRET, etc.)
+
+2. **Push Changes to GitHub:**
+   - The `openai` package is now in `package.json`
+   - Render will automatically install it during build
+   - Deployment will trigger automatically on push
+
+3. **Verify Deployment:**
+   - Check Render logs for successful build
+   - Ensure no "MODULE_NOT_FOUND" errors
+   - Test the chatbot on your production site
+
+### General Production Checklist
 
 1. Set `OPENAI_API_KEY` in production environment variables
 2. Consider using Redis for conversation storage (currently using in-memory Map)

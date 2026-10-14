@@ -76,7 +76,7 @@ const handleChat = async (req, res) => {
 
     // Get or create conversation
     let conversation = conversations.get(conversationId) || [];
-    
+
     // Add user message
     conversation.push({
       role: 'user',
@@ -112,7 +112,7 @@ const handleChat = async (req, res) => {
     let leadCreated = false;
     if (shouldCreateLead && conversation.length > 4) {
       const leadInfo = extractLeadInfo(conversation);
-      
+
       // Only create lead if we have basic info
       if (leadInfo.email || leadInfo.phone) {
         try {
@@ -120,7 +120,7 @@ const handleChat = async (req, res) => {
             .filter(m => m.role === 'user')
             .map(m => m.content)
             .join('; ');
-          
+
           await Lead.create(leadInfo);
           leadCreated = true;
         } catch (error) {

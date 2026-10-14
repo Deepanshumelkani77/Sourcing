@@ -1,8 +1,12 @@
 const OpenAI = require('openai');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize OpenAI only if API key is available
+let openai = null;
+if (process.env.OPENAI_API_KEY) {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+}
 
 const SYSTEM_PROMPT = `You are the IndoChinaBridge AI Sourcing Assistant.
 
@@ -46,6 +50,11 @@ Company Information:
 - Operating in global markets with focus on China-India trade.`;
 
 async function generateChatResponse(messages, context = {}) {
+  if (!openai) {
+    console.warn('OpenAI not initialized - missing OPENAI_API_KEY');
+    return "I'm sorry, the chatbot service is currently unavailable. Please contact us directly through our contact page for assistance.";
+  }
+
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -60,11 +69,16 @@ async function generateChatResponse(messages, context = {}) {
     return completion.choices[0].message.content;
   } catch (error) {
     console.error('OpenAI API Error:', error);
-    throw new Error('Failed to generate response');
+    return "I'm sorry, I encountered an error. Please try again or contact us directly.";
   }
 }
 
 async function generateChatResponseWithTools(messages, tools = []) {
+  if (!openai) {
+    console.warn('OpenAI not initialized - missing OPENAI_API_KEY');
+    throw new Error('OpenAI not initialized');
+  }
+
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
