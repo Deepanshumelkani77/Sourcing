@@ -21,6 +21,8 @@ npm install openai
 
 ### 2. Configure Environment Variables
 
+**For Local Development:**
+
 Create a `.env` file in the backend directory (if it doesn't exist) and add your OpenAI API key:
 
 ```bash
@@ -35,6 +37,16 @@ Make sure you also have these existing variables configured:
 - `MONGODB_URI` - Your MongoDB connection string
 - `JWT_SECRET` - Your JWT secret key
 - Other existing environment variables
+
+**For Render Production:**
+
+Add the following environment variable in your Render dashboard:
+1. Go to your Render dashboard
+2. Select your backend service
+3. Go to "Environment" section
+4. Add new environment variable:
+   - Key: `OPENAI_API_KEY`
+   - Value: Your actual OpenAI API key (get from https://platform.openai.com/api-keys)
 
 ### 3. Restart Backend Server
 
