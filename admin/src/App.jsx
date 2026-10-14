@@ -14,6 +14,12 @@ import AdminContactSubmissions from './pages/AdminContactSubmissions'
 import AdminQuotations from './pages/AdminQuotations'
 import AdminReviews from './pages/AdminReviews'
 import Login from './pages/Login'
+import CRMDashboard from './pages/crm/CRMDashboard'
+import CRMLeads from './pages/crm/Leads'
+import CRMCustomers from './pages/crm/Customers'
+import CRMFollowUps from './pages/crm/FollowUps'
+import CRMDeals from './pages/crm/Deals'
+import CRMQuotations from './pages/crm/Quotations'
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -55,6 +61,13 @@ const App = () => {
                 <Route path="/contact-submissions" element={<AdminContactSubmissions />} />
                 <Route path="/quotations" element={<AdminQuotations />} />
                 <Route path="/reviews" element={<AdminReviews />} />
+                {/* CRM Routes */}
+                <Route path="/crm" element={<CRMDashboard />} />
+                <Route path="/crm/leads" element={<CRMLeads />} />
+                <Route path="/crm/customers" element={<CRMCustomers />} />
+                <Route path="/crm/followups" element={<CRMFollowUps />} />
+                <Route path="/crm/deals" element={<CRMDeals />} />
+                <Route path="/crm/quotations" element={<CRMQuotations />} />
               </Routes>
             </ProtectedRoute>
           }

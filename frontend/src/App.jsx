@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, Outlet } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Signup from './components/Signup'
 import Footer from './components/Footer'
+import Chatbot from './components/chatbot/Chatbot'
 import Home from './pages/Home'
 import About from './pages/About'
 import Services from './pages/Services'
@@ -35,14 +36,21 @@ const App = () => {
     <AuthProvider>
       <AppContextProvider>
         <ScrollToTop />
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <Signup />
-
-          {/* Home Page Content */}
-          <main className="flex-1">
-
-          <Routes>
+        <Routes>
+          {/* Main website routes with Navbar and Footer */}
+          <Route
+            element={
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+                <Signup />
+                <main className="flex-1">
+                  <Outlet />
+                </main>
+                <Footer />
+                <Chatbot />
+              </div>
+            }
+          >
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
@@ -55,15 +63,8 @@ const App = () => {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/data-deletion" element={<DataDeletion />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
-          </Routes>
-
-
-
-          </main>
-
-          <Footer />
-
-        </div>
+          </Route>
+        </Routes>
       </AppContextProvider>
     </AuthProvider>
   )

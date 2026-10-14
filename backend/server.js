@@ -16,6 +16,8 @@ const jobRoutes = require("./routes/jobRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const quotationRoutes = require("./routes/quotationRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const crmRoutes = require("./routes/crmRoutes");
+const chatRoutes = require("./routes/chat");
 const passport = require("./config/passport");
 const { googleCallback, facebookCallback } = require("./controllers/userAuthController");
 
@@ -41,7 +43,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174", "https://www.indochinabridge.com", "https://indochinabridge.com", "https://sourcingadmin.vercel.app"],
+    origin: ["http://localhost:5173", "http://localhost:5174", "https://www.indochinabridge.com", "https://indochinabridge.com", "https://sourcingadmin.vercel.app", "https://sourcing-x379.onrender.com"],
     credentials: true,
   })
 );
@@ -159,6 +161,16 @@ app.use(
 app.use(
   "/api/reviews",
   reviewRoutes
+);
+
+app.use(
+  "/api/crm",
+  crmRoutes
+);
+
+app.use(
+  "/api",
+  chatRoutes
 );
 
 
