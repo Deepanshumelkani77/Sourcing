@@ -47,6 +47,13 @@ const FollowUps = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
+      // Get current user ID from localStorage
+      const user = JSON.parse(localStorage.getItem('user') || '{}')
+      const userId = user._id || user.id || user.adminId
+
+      console.log('User from localStorage:', user)
+      console.log('User ID:', userId)
+
       // Clean up the data before sending - only send valid ObjectIds or exclude invalid ones
       const dataToSend = {
         type: formData.type,
@@ -56,6 +63,11 @@ const FollowUps = () => {
         outcome: formData.outcome || null,
         notes: formData.notes || null,
         nextFollowUpDate: formData.nextFollowUpDate || null,
+      }
+
+      // Only include assignedTo if we have a valid user ID
+      if (userId && /^[0-9a-fA-F]{24}$/.test(userId)) {
+        dataToSend.assignedTo = userId
       }
 
       // Only include leadId if it's a valid ObjectId
@@ -68,10 +80,7 @@ const FollowUps = () => {
         dataToSend.customerId = formData.customerId
       }
 
-      // Only include assignedTo if it's a valid ObjectId
-      if (formData.assignedTo && /^[0-9a-fA-F]{24}$/.test(formData.assignedTo)) {
-        dataToSend.assignedTo = formData.assignedTo
-      }
+      console.log('Data being sent:', dataToSend)
 
       if (editingFollowUp) {
         await api.put(`/api/crm/followups/${editingFollowUp._id}`, dataToSend)
@@ -450,9 +459,10 @@ const FollowUps = () => {
                   <option value="">Select outcome</option>
                   <option value="Interested">Interested</option>
                   <option value="Not Interested">Not Interested</option>
-                  <option value="Follow-up Required">Follow-up Required</option>
-                  <option value="Decision Pending">Decision Pending</option>
-                  <option value="Closed">Closed</option>
+                  <option value="Follow-up Later">Follow-up Later</option>
+                  <option value="Quote Sent">Quote Sent</option>
+                  <option value="Deal Closed">Deal Closed</option>
+                  <option value="No Response">No Response</option>
                 </select>
               </div>
 

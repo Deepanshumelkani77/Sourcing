@@ -10,6 +10,7 @@ exports.createFollowUp = async (req, res) => {
     const followUpData = {
       ...req.body,
       createdBy: req.user._id,
+      assignedTo: req.body.assignedTo || req.user._id, // Default to current user if not provided
     };
 
     const followUp = await FollowUp.create(followUpData);
