@@ -20,7 +20,7 @@ const FollowUps = () => {
     outcome: '',
     notes: '',
     nextFollowUpDate: '',
-    assignedTo: '',
+    assignedTo: null,
   })
 
   useEffect(() => {
@@ -47,15 +47,36 @@ const FollowUps = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
+      // Clean up the data before sending - only send valid ObjectIds or exclude invalid ones
+      const dataToSend = {
+        type: formData.type,
+        scheduledDate: formData.scheduledDate,
+        completedDate: formData.completedDate || null,
+        status: formData.status,
+        outcome: formData.outcome || null,
+        notes: formData.notes || null,
+        nextFollowUpDate: formData.nextFollowUpDate || null,
+      }
+
+      // Only include leadId if it's a valid ObjectId
+      if (formData.leadId && /^[0-9a-fA-F]{24}$/.test(formData.leadId)) {
+        dataToSend.leadId = formData.leadId
+      }
+
+      // Only include customerId if it's a valid ObjectId
+      if (formData.customerId && /^[0-9a-fA-F]{24}$/.test(formData.customerId)) {
+        dataToSend.customerId = formData.customerId
+      }
+
+      // Only include assignedTo if it's a valid ObjectId
+      if (formData.assignedTo && /^[0-9a-fA-F]{24}$/.test(formData.assignedTo)) {
+        dataToSend.assignedTo = formData.assignedTo
+      }
+
       if (editingFollowUp) {
-        await axios.put(`/api/crm/followups/${editingFollowUp._id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        await api.put(`/api/crm/followups/${editingFollowUp._id}`, dataToSend)
       } else {
-        await axios.post('/api/crm/followups', formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        await api.post('/api/crm/followups', dataToSend)
       }
       setShowModal(false)
       setEditingFollowUp(null)
@@ -63,15 +84,15 @@ const FollowUps = () => {
       fetchFollowUps()
     } catch (err) {
       console.error('Failed to save follow-up:', err)
+      console.error('Error response:', err.response?.data)
+      console.error('Form data being sent:', formData)
+      alert(`Failed to save follow-up: ${err.response?.data?.message || err.message}`)
     }
   }
 
   const handleComplete = async (id) => {
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      await axios.put(`/api/crm/followups/${id}/complete`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await api.put(`/api/crm/followups/${id}/complete`, {})
       fetchFollowUps()
     } catch (err) {
       console.error('Failed to complete follow-up:', err)
@@ -90,7 +111,7 @@ const FollowUps = () => {
       outcome: followUp.outcome || '',
       notes: followUp.notes || '',
       nextFollowUpDate: followUp.nextFollowUpDate ? followUp.nextFollowUpDate.split('T')[0] : '',
-      assignedTo: followUp.assignedTo || '',
+      assignedTo: followUp.assignedTo || null,
     })
     setShowModal(true)
   }
@@ -98,10 +119,7 @@ const FollowUps = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this follow-up?')) return
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      await axios.delete(`/api/crm/followups/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await api.delete(`/api/crm/followups/${id}`)
       fetchFollowUps()
     } catch (err) {
       console.error('Failed to delete follow-up:', err)
@@ -119,7 +137,7 @@ const FollowUps = () => {
       outcome: '',
       notes: '',
       nextFollowUpDate: '',
-      assignedTo: '',
+      assignedTo: null,
     })
   }
 
@@ -379,23 +397,23 @@ const FollowUps = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Lead ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Lead ID (Optional)</label>
                   <input
                     type="text"
                     value={formData.leadId}
                     onChange={(e) => setFormData({ ...formData, leadId: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    placeholder="Enter lead ID"
+                    placeholder="Leave empty if not linked to a lead"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Customer ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Customer ID (Optional)</label>
                   <input
                     type="text"
                     value={formData.customerId}
                     onChange={(e) => setFormData({ ...formData, customerId: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    placeholder="Enter customer ID"
+                    placeholder="Leave empty if not linked to a customer"
                   />
                 </div>
               </div>
@@ -424,13 +442,18 @@ const FollowUps = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Outcome</label>
-                <input
-                  type="text"
+                <select
                   value={formData.outcome}
                   onChange={(e) => setFormData({ ...formData, outcome: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="e.g., Interested, Not interested, Follow-up required"
-                />
+                >
+                  <option value="">Select outcome</option>
+                  <option value="Interested">Interested</option>
+                  <option value="Not Interested">Not Interested</option>
+                  <option value="Follow-up Required">Follow-up Required</option>
+                  <option value="Decision Pending">Decision Pending</option>
+                  <option value="Closed">Closed</option>
+                </select>
               </div>
 
               <div>
