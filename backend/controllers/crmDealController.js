@@ -91,7 +91,7 @@ exports.getDeals = async (req, res) => {
 // @access  Private/Admin
 exports.getDealsByStage = async (req, res) => {
   try {
-    const stages = ["Lead", "Qualified", "Proposal Sent", "Negotiation", "Won", "Lost", "On Hold"];
+    const stages = ["Qualified", "Sourcing/Proposal", "Negotiation", "Won", "Lost"];
     const pipeline = {};
 
     for (const stage of stages) {
@@ -205,13 +205,11 @@ exports.updateDealStage = async (req, res) => {
     // Auto-set probability based on stage if not provided
     if (!probability) {
       const stageProbabilities = {
-        "Lead": 10,
         "Qualified": 30,
-        "Proposal Sent": 50,
+        "Sourcing/Proposal": 50,
         "Negotiation": 70,
         "Won": 100,
         "Lost": 0,
-        "On Hold": 20,
       };
       deal.probability = stageProbabilities[stage] || 0;
     }
@@ -281,7 +279,7 @@ exports.getDealStats = async (req, res) => {
     const wonDeals = await Deal.countDocuments({ stage: "Won" });
     const lostDeals = await Deal.countDocuments({ stage: "Lost" });
     const activeDeals = await Deal.countDocuments({
-      stage: { $in: ["Lead", "Qualified", "Proposal Sent", "Negotiation"] },
+      stage: { $in: ["Qualified", "Sourcing/Proposal", "Negotiation"] },
     });
 
     const totalValue = await Deal.aggregate([

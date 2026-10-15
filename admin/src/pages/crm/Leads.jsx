@@ -125,7 +125,6 @@ const Leads = () => {
       New: 'bg-blue-100 text-blue-700',
       Contacted: 'bg-yellow-100 text-yellow-700',
       Qualified: 'bg-green-100 text-green-700',
-      Converted: 'bg-purple-100 text-purple-700',
       Lost: 'bg-red-100 text-red-700',
     }
     return colors[status] || 'bg-gray-100 text-gray-700'
@@ -172,6 +171,37 @@ const Leads = () => {
           <Link to="/crm/quotations" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
             Quotations
           </Link>
+        </div>
+      </div>
+
+      {/* Workflow Visualization */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Lead Qualification Workflow</h3>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+            <span className="text-sm font-medium text-gray-700">New</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <span className="text-sm font-medium text-gray-700">Contacted</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <span className="text-sm font-medium text-gray-700">Qualified</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+            <span className="text-sm font-medium text-gray-700">Deal</span>
+          </div>
+          <div className="text-gray-400">or</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            <span className="text-sm font-medium text-gray-700">Lost</span>
+          </div>
         </div>
       </div>
 
@@ -252,12 +282,12 @@ const Leads = () => {
                     >
                       Edit
                     </button>
-                    {lead.status !== 'Converted' && (
+                    {lead.status === 'Qualified' && (
                       <button
                         onClick={() => handleConvertToCustomer(lead._id)}
                         className="text-green-600 hover:text-green-900"
                       >
-                        Convert
+                        Create Deal
                       </button>
                     )}
                     <button
@@ -407,7 +437,6 @@ const Leads = () => {
                     <option value="New">New</option>
                     <option value="Contacted">Contacted</option>
                     <option value="Qualified">Qualified</option>
-                    <option value="Converted">Converted</option>
                     <option value="Lost">Lost</option>
                   </select>
                 </div>

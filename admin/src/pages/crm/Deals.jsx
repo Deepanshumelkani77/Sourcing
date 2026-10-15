@@ -10,7 +10,7 @@ const Deals = () => {
   const [editingDeal, setEditingDeal] = useState(null)
   const [viewMode, setViewMode] = useState('pipeline')
 
-  const stages = ['Lead', 'Qualified', 'Proposal Sent', 'Negotiation', 'Won', 'Lost', 'On Hold']
+  const stages = ['Qualified', 'Sourcing/Proposal', 'Negotiation', 'Won', 'Lost']
 
   const [formData, setFormData] = useState({
     customerId: '',
@@ -19,8 +19,8 @@ const Deals = () => {
     title: '',
     description: '',
     dealValue: '',
-    stage: 'Lead',
-    probability: 10,
+    stage: 'Qualified',
+    probability: 30,
     expectedClosingDate: '',
     actualClosingDate: '',
     sourceCountry: '',
@@ -155,8 +155,8 @@ const Deals = () => {
       title: '',
       description: '',
       dealValue: '',
-      stage: 'Lead',
-      probability: 10,
+      stage: 'Qualified',
+      probability: 30,
       expectedClosingDate: '',
       actualClosingDate: '',
       sourceCountry: '',
@@ -170,13 +170,11 @@ const Deals = () => {
 
   const getStageColor = (stage) => {
     const colors = {
-      Lead: 'bg-gray-100 border-gray-300',
       Qualified: 'bg-blue-50 border-blue-300',
-      'Proposal Sent': 'bg-yellow-50 border-yellow-300',
+      'Sourcing/Proposal': 'bg-yellow-50 border-yellow-300',
       Negotiation: 'bg-orange-50 border-orange-300',
       Won: 'bg-green-50 border-green-300',
       Lost: 'bg-red-50 border-red-300',
-      'On Hold': 'bg-purple-50 border-purple-300',
     }
     return colors[stage] || 'bg-gray-50 border-gray-200'
   }
@@ -212,6 +210,37 @@ const Deals = () => {
           <Link to="/crm/quotations" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
             Quotations
           </Link>
+        </div>
+      </div>
+
+      {/* Pipeline Workflow Visualization */}
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Deal Pipeline Workflow</h3>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+            <span className="text-sm font-medium text-gray-700">Qualified</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <span className="text-sm font-medium text-gray-700">Sourcing/Proposal</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+            <span className="text-sm font-medium text-gray-700">Negotiation</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <span className="text-sm font-medium text-gray-700">Won</span>
+          </div>
+          <div className="text-gray-400">or</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            <span className="text-sm font-medium text-gray-700">Lost</span>
+          </div>
         </div>
       </div>
 

@@ -185,10 +185,10 @@ exports.convertLeadToCustomer = async (req, res) => {
 
     const customer = await Customer.create(customerData);
 
-    // Update lead
+    // Update lead - mark as qualified (workflow: qualified leads move to deals)
     lead.convertedToCustomer = true;
     lead.customerId = customer._id;
-    lead.status = "Converted";
+    lead.status = "Qualified";
     await lead.save();
 
     res.status(200).json({
@@ -212,7 +212,6 @@ exports.getLeadStats = async (req, res) => {
     const newLeads = await Lead.countDocuments({ status: "New" });
     const contacted = await Lead.countDocuments({ status: "Contacted" });
     const qualified = await Lead.countDocuments({ status: "Qualified" });
-    const converted = await Lead.countDocuments({ status: "Converted" });
     const lost = await Lead.countDocuments({ status: "Lost" });
 
     const highPriority = await Lead.countDocuments({ priority: "High" });
@@ -230,12 +229,50 @@ exports.getLeadStats = async (req, res) => {
         newLeads,
         contacted,
         qualified,
-        converted,
         lost,
         highPriority,
         urgent,
         totalDealValue: totalDealValue[0]?.total || 0,
       },
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Update lead status (qualification workflow)
+// @route   PUT /api/crm/leads/:id/status
+// @access  Private/Admin
+exports.updateLeadStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const validStatuses = ["New", "Contacted", "Qualified", "Lost"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status. Valid statuses are: New, Contacted, Qualified, Lost",
+      });
+    }
+
+    const lead = await Lead.findById(req.params.id);
+
+    if (!lead) {
+      return res.status(404).json({
+        success: false,
+        message: "Lead not found",
+      });
+    }
+
+    lead.status = status;
+    await lead.save();
+
+    res.status(200).json({
+      success: true,
+      data: lead,
     });
   } catch (error) {
     res.status(400).json({

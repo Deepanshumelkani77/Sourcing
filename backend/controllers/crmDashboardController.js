@@ -35,7 +35,7 @@ exports.getDashboardStats = async (req, res) => {
     // Deal Statistics
     const totalDeals = await Deal.countDocuments();
     const activeDeals = await Deal.countDocuments({
-      stage: { $in: ["Lead", "Qualified", "Proposal Sent", "Negotiation"] },
+      stage: { $in: ["Qualified", "Sourcing/Proposal", "Negotiation"] },
     });
     const wonDeals = await Deal.countDocuments({ stage: "Won" });
     const lostDeals = await Deal.countDocuments({ stage: "Lost" });
@@ -311,8 +311,8 @@ exports.getSourceReport = async (req, res) => {
         $group: {
           _id: "$source",
           count: { $sum: 1 },
-          converted: {
-            $sum: { $cond: [{ $eq: ["$status", "Converted"] }, 1, 0] },
+          qualified: {
+            $sum: { $cond: [{ $eq: ["$status", "Qualified"] }, 1, 0] },
           },
           totalValue: { $sum: "$dealValue" },
         },

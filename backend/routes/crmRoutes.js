@@ -8,6 +8,7 @@ const {
   deleteLead,
   convertLeadToCustomer,
   getLeadStats,
+  updateLeadStatus,
 } = require("../controllers/crmLeadController");
 
 const {
@@ -76,6 +77,7 @@ router.route("/leads/:id").get(protectAdmin, getLead);
 router.route("/leads/:id").put(protectAdmin, updateLead);
 router.route("/leads/:id").delete(protectAdmin, deleteLead);
 router.route("/leads/:id/convert").post(protectAdmin, convertLeadToCustomer);
+router.route("/leads/:id/status").put(protectAdmin, updateLeadStatus);
 
 // Customer Routes
 router

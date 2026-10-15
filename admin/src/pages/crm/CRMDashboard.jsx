@@ -85,15 +85,15 @@ const CRMDashboard = () => {
           color="text-blue-600"
         />
         <StatCard
-          title="Active Deals"
-          value={stats?.deals?.active || 0}
-          subtitle={`${stats?.deals?.won || 0} won`}
+          title="Qualified Leads"
+          value={stats?.leads?.distribution?.find(d => d._id === 'Qualified')?.count || 0}
+          subtitle="Ready for deals"
           color="text-green-600"
         />
         <StatCard
-          title="Total Customers"
-          value={stats?.customers?.total || 0}
-          subtitle={`${stats?.customers?.active || 0} active`}
+          title="Active Deals"
+          value={stats?.deals?.active || 0}
+          subtitle={`${stats?.deals?.won || 0} won`}
           color="text-purple-600"
         />
         <StatCard
@@ -102,6 +102,72 @@ const CRMDashboard = () => {
           subtitle={`$${(stats?.revenue?.thisMonth || 0).toLocaleString()} this month`}
           color="text-orange-600"
         />
+      </div>
+
+      {/* Workflow Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Lead Pipeline */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Lead Qualification Pipeline</h3>
+          <div className="space-y-3">
+            {['New', 'Contacted', 'Qualified', 'Lost'].map((status) => {
+              const count = stats?.leads?.distribution?.find(d => d._id === status)?.count || 0
+              const percentage = stats?.leads?.total > 0 ? ((count / stats.leads.total) * 100).toFixed(1) : 0
+              const colors = {
+                'New': 'bg-blue-500',
+                'Contacted': 'bg-yellow-500',
+                'Qualified': 'bg-green-500',
+                'Lost': 'bg-red-500'
+              }
+              return (
+                <div key={status}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="font-medium text-gray-700">{status}</span>
+                    <span className="text-gray-600">{count} ({percentage}%)</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className={`${colors[status]} h-2 rounded-full transition-all`}
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Deal Pipeline */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Deal Pipeline</h3>
+          <div className="space-y-3">
+            {['Qualified', 'Sourcing/Proposal', 'Negotiation', 'Won', 'Lost'].map((stage) => {
+              const stageData = stats?.deals?.distribution?.find(d => d._id === stage) || { count: 0, value: 0 }
+              const percentage = stats?.deals?.total > 0 ? ((stageData.count / stats.deals.total) * 100).toFixed(1) : 0
+              const colors = {
+                'Qualified': 'bg-blue-500',
+                'Sourcing/Proposal': 'bg-yellow-500',
+                'Negotiation': 'bg-orange-500',
+                'Won': 'bg-green-500',
+                'Lost': 'bg-red-500'
+              }
+              return (
+                <div key={stage}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="font-medium text-gray-700">{stage}</span>
+                    <span className="text-gray-600">{stageData.count} deals (${(stageData.value || 0).toLocaleString()})</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className={`${colors[stage]} h-2 rounded-full transition-all`}
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Quick Actions */}
