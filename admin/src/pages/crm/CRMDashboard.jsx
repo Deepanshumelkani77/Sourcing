@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
+import api from '../../config/axios'
 
 const CRMDashboard = () => {
   const [stats, setStats] = useState(null)
@@ -13,10 +13,7 @@ const CRMDashboard = () => {
 
   const fetchDashboardStats = async () => {
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      const response = await axios.get('/api/crm/dashboard', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const response = await api.get('/api/crm/dashboard')
       setStats(response.data.data)
       setLoading(false)
     } catch (err) {

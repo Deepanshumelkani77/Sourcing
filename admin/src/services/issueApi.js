@@ -2,7 +2,7 @@ const API_BASE = "https://sourcing-x379.onrender.com"
 
 const getIssues = async () => {
   try {
-    const response = await fetch(`${API_BASE}/issues`, {
+    const response = await fetch(`${API_BASE}/api/issues`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -20,7 +20,7 @@ const getIssues = async () => {
 
 const getIssueById = async (id) => {
   try {
-    const response = await fetch(`${API_BASE}/issues/${id}`, {
+    const response = await fetch(`${API_BASE}/api/issues/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ const getIssueById = async (id) => {
 
 const updateIssueStatus = async (id, status, adminNotes) => {
   try {
-    const response = await fetch(`${API_BASE}/issues/${id}/status`, {
+    const response = await fetch(`${API_BASE}/api/issues/${id}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

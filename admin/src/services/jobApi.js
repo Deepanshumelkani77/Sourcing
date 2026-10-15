@@ -2,7 +2,7 @@ const API_BASE = "https://sourcing-x379.onrender.com"
 
 const getAllJobs = async () => {
   try {
-    const response = await fetch(`${API_BASE}/jobs`, {
+    const response = await fetch(`${API_BASE}/api/jobs`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -20,7 +20,7 @@ const getAllJobs = async () => {
 
 const getJobById = async (id) => {
   try {
-    const response = await fetch(`${API_BASE}/jobs/${id}`, {
+    const response = await fetch(`${API_BASE}/api/jobs/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ const getJobById = async (id) => {
 
 const createJob = async (jobData) => {
   try {
-    const response = await fetch(`${API_BASE}/jobs`, {
+    const response = await fetch(`${API_BASE}/api/jobs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ const createJob = async (jobData) => {
 
 const updateJob = async (id, jobData) => {
   try {
-    const response = await fetch(`${API_BASE}/jobs/${id}`, {
+    const response = await fetch(`${API_BASE}/api/jobs/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ const updateJob = async (id, jobData) => {
 
 const deleteJob = async (id) => {
   try {
-    const response = await fetch(`${API_BASE}/jobs/${id}`, {
+    const response = await fetch(`${API_BASE}/api/jobs/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

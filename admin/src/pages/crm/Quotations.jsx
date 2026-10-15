@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 
 const Quotations = () => {
@@ -171,6 +172,30 @@ const Quotations = () => {
 
   return (
     <div className="space-y-6">
+      {/* CRM Sub-navigation */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="flex items-center gap-4">
+          <Link to="/crm" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Dashboard
+          </Link>
+          <Link to="/crm/leads" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Leads
+          </Link>
+          <Link to="/crm/customers" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Customers
+          </Link>
+          <Link to="/crm/followups" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Follow-ups
+          </Link>
+          <Link to="/crm/deals" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Deals
+          </Link>
+          <Link to="/crm/quotations" className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            Quotations
+          </Link>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Quotation Management</h2>

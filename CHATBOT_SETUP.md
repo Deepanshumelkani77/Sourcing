@@ -86,10 +86,9 @@ npm run dev
 ## Features Implemented
 
 ### Frontend Components
-- **Chatbot.jsx** - Main chatbot component with floating button and chat window
-- **ChatMessage.jsx** - Individual message component for user and bot messages
-- **QuickActions.jsx** - Quick action buttons for common tasks
-- **Chatbot.css** - Styling for the chatbot with responsive design
+- **Chatbot.jsx** - Main chatbot component with floating button and chat window (includes inline styles)
+- **ChatMessage.jsx** - Individual message component for user and bot messages (includes inline styles)
+- **QuickActions.jsx** - Quick action buttons for common tasks (includes inline styles)
 
 ### Backend Components
 - **openaiService.js** - OpenAI integration service with system prompt

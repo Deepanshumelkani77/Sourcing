@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import { Link } from 'react-router-dom'
+import api from '../../config/axios'
 
 const Deals = () => {
   const [pipeline, setPipeline] = useState({})
@@ -37,7 +38,7 @@ const Deals = () => {
   const fetchDeals = async () => {
     try {
       const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      const response = await axios.get('/api/crm/deals', {
+      const response = await api.get('/api/crm/deals', {
         headers: { Authorization: `Bearer ${token}` },
       })
       setDeals(response.data.data || [])
@@ -52,7 +53,7 @@ const Deals = () => {
   const fetchPipeline = async () => {
     try {
       const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      const response = await axios.get('/api/crm/deals/pipeline', {
+      const response = await api.get('/api/crm/deals/pipeline', {
         headers: { Authorization: `Bearer ${token}` },
       })
       setPipeline(response.data.data || {})
@@ -73,11 +74,11 @@ const Deals = () => {
     try {
       const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
       if (editingDeal) {
-        await axios.put(`/api/crm/deals/${editingDeal._id}`, formData, {
+        await api.put(`/api/crm/deals/${editingDeal._id}`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         })
       } else {
-        await axios.post('/api/crm/deals', formData, {
+        await api.post('/api/crm/deals', formData, {
           headers: { Authorization: `Bearer ${token}` },
         })
       }
@@ -94,7 +95,7 @@ const Deals = () => {
   const handleStageUpdate = async (dealId, newStage) => {
     try {
       const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      await axios.put(
+      await api.put(
         `/api/crm/deals/${dealId}/stage`,
         { stage: newStage },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -133,7 +134,7 @@ const Deals = () => {
     if (!window.confirm('Are you sure you want to delete this deal?')) return
     try {
       const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      await axios.delete(`/api/crm/deals/${id}`, {
+      await api.delete(`/api/crm/deals/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       fetchDeals()
@@ -187,6 +188,30 @@ const Deals = () => {
 
   return (
     <div className="space-y-6">
+      {/* CRM Sub-navigation */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="flex items-center gap-4">
+          <Link to="/crm" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Dashboard
+          </Link>
+          <Link to="/crm/leads" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Leads
+          </Link>
+          <Link to="/crm/customers" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Customers
+          </Link>
+          <Link to="/crm/followups" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Follow-ups
+          </Link>
+          <Link to="/crm/deals" className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            Deals
+          </Link>
+          <Link to="/crm/quotations" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Quotations
+          </Link>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Deal Management</h2>

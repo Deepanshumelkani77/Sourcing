@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import { Link } from 'react-router-dom'
+import api from '../../config/axios'
 
 const FollowUps = () => {
   const [followUps, setFollowUps] = useState([])
@@ -28,11 +29,10 @@ const FollowUps = () => {
 
   const fetchFollowUps = async () => {
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
       const [allRes, todayRes, overdueRes] = await Promise.all([
-        axios.get('/api/crm/followups', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('/api/crm/followups/today', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('/api/crm/followups/overdue', { headers: { Authorization: `Bearer ${token}` } }),
+        api.get('/api/crm/followups'),
+        api.get('/api/crm/followups/today'),
+        api.get('/api/crm/followups/overdue'),
       ])
       setFollowUps(allRes.data?.data || [])
       setTodayFollowUps(todayRes.data?.data || [])
@@ -168,6 +168,30 @@ const FollowUps = () => {
 
   return (
     <div className="space-y-6">
+      {/* CRM Sub-navigation */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="flex items-center gap-4">
+          <Link to="/crm" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Dashboard
+          </Link>
+          <Link to="/crm/leads" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Leads
+          </Link>
+          <Link to="/crm/customers" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Customers
+          </Link>
+          <Link to="/crm/followups" className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            Follow-ups
+          </Link>
+          <Link to="/crm/deals" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Deals
+          </Link>
+          <Link to="/crm/quotations" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Quotations
+          </Link>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Follow-up Management</h2>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import { Link } from 'react-router-dom'
+import api from '../../config/axios'
 
 const Leads = () => {
   const [leads, setLeads] = useState([])
@@ -15,7 +16,7 @@ const Leads = () => {
     productRequirement: '',
     quantity: '',
     source: 'Website',
-    assignedTo: '',
+    assignedTo: null,
     priority: 'Medium',
     status: 'New',
     followUpDate: '',
@@ -29,10 +30,7 @@ const Leads = () => {
 
   const fetchLeads = async () => {
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      const response = await axios.get('/api/crm/leads', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const response = await api.get('/api/crm/leads')
       setLeads(response.data.data || [])
       setLoading(false)
     } catch (err) {
@@ -45,15 +43,10 @@ const Leads = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
       if (editingLead) {
-        await axios.put(`/api/crm/leads/${editingLead._id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        await api.put(`/api/crm/leads/${editingLead._id}`, formData)
       } else {
-        await axios.post('/api/crm/leads', formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        await api.post('/api/crm/leads', formData)
       }
       setShowModal(false)
       setEditingLead(null)
@@ -61,6 +54,9 @@ const Leads = () => {
       fetchLeads()
     } catch (err) {
       console.error('Failed to save lead:', err)
+      console.error('Error response:', err.response?.data)
+      console.error('Form data being sent:', formData)
+      alert(`Failed to save lead: ${err.response?.data?.message || err.message}`)
     }
   }
 
@@ -75,7 +71,7 @@ const Leads = () => {
       productRequirement: lead.productRequirement || '',
       quantity: lead.quantity || '',
       source: lead.source || 'Website',
-      assignedTo: lead.assignedTo || '',
+      assignedTo: lead.assignedTo || null,
       priority: lead.priority || 'Medium',
       status: lead.status || 'New',
       followUpDate: lead.followUpDate ? lead.followUpDate.split('T')[0] : '',
@@ -88,10 +84,7 @@ const Leads = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this lead?')) return
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      await axios.delete(`/api/crm/leads/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await api.delete(`/api/crm/leads/${id}`)
       fetchLeads()
     } catch (err) {
       console.error('Failed to delete lead:', err)
@@ -101,10 +94,7 @@ const Leads = () => {
   const handleConvertToCustomer = async (leadId) => {
     if (!window.confirm('Convert this lead to a customer?')) return
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      await axios.post(`/api/crm/leads/${leadId}/convert`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await api.post(`/api/crm/leads/${leadId}/convert`, {})
       fetchLeads()
     } catch (err) {
       console.error('Failed to convert lead:', err)
@@ -121,7 +111,7 @@ const Leads = () => {
       productRequirement: '',
       quantity: '',
       source: 'Website',
-      assignedTo: '',
+      assignedTo: null,
       priority: 'Medium',
       status: 'New',
       followUpDate: '',
@@ -161,6 +151,30 @@ const Leads = () => {
 
   return (
     <div className="space-y-6">
+      {/* CRM Sub-navigation */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="flex items-center gap-4">
+          <Link to="/crm" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Dashboard
+          </Link>
+          <Link to="/crm/leads" className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            Leads
+          </Link>
+          <Link to="/crm/customers" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Customers
+          </Link>
+          <Link to="/crm/followups" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Follow-ups
+          </Link>
+          <Link to="/crm/deals" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Deals
+          </Link>
+          <Link to="/crm/quotations" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Quotations
+          </Link>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Lead Management</h2>

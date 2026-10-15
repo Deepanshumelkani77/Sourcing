@@ -52,7 +52,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 space-y-1">
+        <nav className="p-2 space-y-0">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path
             return (
