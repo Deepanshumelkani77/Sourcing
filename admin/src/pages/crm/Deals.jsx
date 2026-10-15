@@ -89,6 +89,9 @@ const Deals = () => {
       if (viewMode === 'pipeline') fetchPipeline()
     } catch (err) {
       console.error('Failed to save deal:', err)
+      console.error('Error response:', err.response?.data)
+      console.error('Form data being sent:', formData)
+      alert(`Failed to save deal: ${err.response?.data?.message || err.message}`)
     }
   }
 

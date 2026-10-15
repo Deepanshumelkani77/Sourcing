@@ -24,6 +24,7 @@ exports.createDeal = async (req, res) => {
       ...req.body,
       dealNumber: generateDealNumber(),
       createdBy: req.user._id,
+      assignedTo: req.body.assignedTo || req.user._id, // Default to current user if not provided
     };
 
     const deal = await Deal.create(dealData);

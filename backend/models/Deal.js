@@ -10,7 +10,6 @@ const dealSchema = new mongoose.Schema(
     customerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Customer",
-      required: true,
     },
     leadId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -93,7 +92,6 @@ const dealSchema = new mongoose.Schema(
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Admin",
-      required: true,
     },
     notes: {
       type: String,
