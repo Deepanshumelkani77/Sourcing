@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import axios from 'axios'
+import api from '../../config/axios'
 
 const Quotations = () => {
   const [searchParams] = useSearchParams()
@@ -34,15 +34,14 @@ const Quotations = () => {
       const fetchDeal = async () => {
         setFetchingDeal(true)
         try {
-          const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-          const response = await axios.get(`/api/crm/deals/${dealIdFromUrl}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
+          const response = await api.get(`/api/crm/deals/${dealIdFromUrl}`)
           const deal = response.data.data
+          // Extract leadId - it might be populated as an object or just an ID string
+          const leadId = deal.leadId?._id || deal.leadId || ''
           setFormData(prev => ({
             ...prev,
             dealId: dealIdFromUrl,
-            leadId: deal.leadId || '',
+            leadId: leadId,
           }))
           setShowModal(true)
         } catch (err) {
@@ -62,10 +61,7 @@ const Quotations = () => {
 
   const fetchQuotations = async () => {
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      const response = await axios.get('/api/crm/quotations', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const response = await api.get('/api/crm/quotations')
       setQuotations(response.data.data || [])
       setLoading(false)
     } catch (err) {
@@ -78,15 +74,10 @@ const Quotations = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
       if (editingQuotation) {
-        await axios.put(`/api/crm/quotations/${editingQuotation._id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        await api.put(`/api/crm/quotations/${editingQuotation._id}`, formData)
       } else {
-        await axios.post('/api/crm/quotations', formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        await api.post('/api/crm/quotations', formData)
       }
       setShowModal(false)
       setEditingQuotation(null)
@@ -100,10 +91,7 @@ const Quotations = () => {
   const handleSend = async (id) => {
     if (!window.confirm('Send this quotation to the customer?')) return
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      await axios.put(`/api/crm/quotations/${id}/send`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await api.put(`/api/crm/quotations/${id}/send`, {})
       fetchQuotations()
     } catch (err) {
       console.error('Failed to send quotation:', err)
@@ -113,10 +101,7 @@ const Quotations = () => {
   const handleAccept = async (id) => {
     if (!window.confirm('Mark this quotation as accepted? This will mark the deal as Won and create/update the customer.')) return
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      const response = await axios.put(`/api/crm/quotations/${id}/accept`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const response = await api.put(`/api/crm/quotations/${id}/accept`, {})
       fetchQuotations()
       alert(response.data.message || 'Quotation accepted successfully!')
     } catch (err) {
@@ -128,10 +113,7 @@ const Quotations = () => {
   const handleReject = async (id) => {
     if (!window.confirm('Mark this quotation as rejected?')) return
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      await axios.put(`/api/crm/quotations/${id}/reject`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await api.put(`/api/crm/quotations/${id}/reject`, {})
       fetchQuotations()
     } catch (err) {
       console.error('Failed to reject quotation:', err)
@@ -159,10 +141,7 @@ const Quotations = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this quotation?')) return
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      await axios.delete(`/api/crm/quotations/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await api.delete(`/api/crm/quotations/${id}`)
       fetchQuotations()
     } catch (err) {
       console.error('Failed to delete quotation:', err)

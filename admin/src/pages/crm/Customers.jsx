@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
+import api from '../../config/axios'
 
 const Customers = () => {
   const [customers, setCustomers] = useState([])
@@ -32,10 +32,7 @@ const Customers = () => {
 
   const fetchCustomers = async () => {
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      const response = await axios.get('/api/crm/customers', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const response = await api.get('/api/crm/customers')
       setCustomers(response.data.data || [])
       setLoading(false)
     } catch (err) {
@@ -48,15 +45,10 @@ const Customers = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
       if (editingCustomer) {
-        await axios.put(`/api/crm/customers/${editingCustomer._id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        await api.put(`/api/crm/customers/${editingCustomer._id}`, formData)
       } else {
-        await axios.post('/api/crm/customers', formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        await api.post('/api/crm/customers', formData)
       }
       setShowModal(false)
       setEditingCustomer(null)
@@ -93,10 +85,7 @@ const Customers = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this customer?')) return
     try {
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      await axios.delete(`/api/crm/customers/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await api.delete(`/api/crm/customers/${id}`)
       fetchCustomers()
     } catch (err) {
       console.error('Failed to delete customer:', err)
