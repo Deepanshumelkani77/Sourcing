@@ -19,11 +19,21 @@ const generateQuotationNumber = () => {
 // @access  Private/Admin
 exports.createQuotation = async (req, res) => {
   try {
-    const quotationData = {
-      ...req.body,
-      quotationNumber: generateQuotationNumber(),
-      createdBy: req.user._id,
-    };
+    // Remove empty string values for ObjectId fields
+    const quotationData = { ...req.body };
+    if (!quotationData.customerId || quotationData.customerId === '') {
+      delete quotationData.customerId;
+    }
+    if (!quotationData.leadId || quotationData.leadId === '') {
+      delete quotationData.leadId;
+    }
+    if (!quotationData.dealId || quotationData.dealId === '') {
+      delete quotationData.dealId;
+    }
+
+    quotationData.quotationNumber = generateQuotationNumber();
+    quotationData.createdBy = req.user._id;
+    quotationData.assignedTo = quotationData.assignedTo || req.user._id;
 
     // Calculate total amount from items
     if (quotationData.items && quotationData.items.length > 0) {
@@ -125,15 +135,27 @@ exports.updateQuotation = async (req, res) => {
       });
     }
 
+    // Remove empty string values for ObjectId fields
+    const updateData = { ...req.body };
+    if (!updateData.customerId || updateData.customerId === '') {
+      delete updateData.customerId;
+    }
+    if (!updateData.leadId || updateData.leadId === '') {
+      delete updateData.leadId;
+    }
+    if (!updateData.dealId || updateData.dealId === '') {
+      delete updateData.dealId;
+    }
+
     // Recalculate total if items updated
-    if (req.body.items) {
-      req.body.totalAmount = req.body.items.reduce(
+    if (updateData.items) {
+      updateData.totalAmount = updateData.items.reduce(
         (sum, item) => sum + (item.totalPrice || item.quantity * item.unitPrice),
         0
       );
     }
 
-    quotation = await CRMQuotation.findByIdAndUpdate(req.params.id, req.body, {
+    quotation = await CRMQuotation.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true,
     });
@@ -167,11 +189,6 @@ exports.sendQuotation = async (req, res) => {
     quotation.status = "Sent";
     quotation.sentDate = new Date();
 
-    // Calculate expiry date
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + (quotation.validity || 30));
-    quotation.expiryDate = expiryDate;
-
     await quotation.save();
 
     // Create or update deal if not exists
@@ -183,10 +200,10 @@ exports.sendQuotation = async (req, res) => {
         quotationId: quotation._id,
         title: quotation.title,
         dealValue: quotation.totalAmount,
-        stage: "Proposal Sent",
+        stage: "Sourcing/Proposal",
         probability: 50,
         assignedTo: quotation.assignedTo,
-        createdBy: req.admin.id,
+        createdBy: req.user._id,
       };
 
       const deal = await Deal.create(dealData);
@@ -225,17 +242,58 @@ exports.acceptQuotation = async (req, res) => {
 
     await quotation.save();
 
-    // Update deal stage to Negotiation
+    // Update deal stage to Won (this will trigger customer creation in deal controller)
     if (quotation.dealId) {
-      await Deal.findByIdAndUpdate(quotation.dealId, {
-        stage: "Negotiation",
-        probability: 70,
-      });
+      const deal = await Deal.findById(quotation.dealId);
+      if (deal) {
+        deal.stage = "Won";
+        deal.probability = 100;
+        deal.actualClosingDate = new Date();
+
+        // If customer exists, update revenue
+        if (deal.customerId) {
+          await Customer.findByIdAndUpdate(deal.customerId, {
+            $inc: { totalRevenue: deal.dealValue, totalOrders: 1 },
+            lastOrderDate: new Date(),
+          });
+        } else if (deal.leadId) {
+          // If no customer but has lead, create customer from lead
+          const lead = await Lead.findById(deal.leadId);
+          if (lead) {
+            const customerData = {
+              customerName: lead.customerName,
+              companyName: lead.companyName || lead.customerName,
+              phone: lead.phone,
+              whatsapp: lead.whatsapp || lead.phone,
+              email: lead.email,
+              source: lead.source,
+              assignedTo: deal.assignedTo,
+              leadId: lead._id,
+              createdBy: req.user._id,
+              totalOrders: 1,
+              totalRevenue: deal.dealValue,
+              lastOrderDate: new Date(),
+            };
+
+            const customer = await Customer.create(customerData);
+
+            // Update deal with customer ID
+            deal.customerId = customer._id;
+
+            // Update lead
+            lead.customerId = customer._id;
+            await lead.save();
+          }
+        }
+
+        await deal.save();
+      }
     }
 
     res.status(200).json({
       success: true,
       data: quotation,
+      message: "Quotation accepted. Deal marked as Won and customer created/updated.",
     });
   } catch (error) {
     res.status(400).json({
@@ -334,19 +392,6 @@ exports.getQuotationStats = async (req, res) => {
       { $group: { _id: null, total: { $sum: "$totalAmount" } } },
     ]);
 
-    // Expired quotations check
-    const today = new Date();
-    const expiredQuotations = await CRMQuotation.find({
-      status: "Sent",
-      expiryDate: { $lt: today },
-    });
-
-    // Update expired status
-    for (const quote of expiredQuotations) {
-      quote.status = "Expired";
-      await quote.save();
-    }
-
     const recentQuotations = await CRMQuotation.find()
       .sort({ createdAt: -1 })
       .limit(5)
@@ -361,7 +406,7 @@ exports.getQuotationStats = async (req, res) => {
         sent,
         accepted,
         rejected,
-        expired: expiredQuotations.length,
+        expired,
         totalValue: totalValue[0]?.total || 0,
         acceptedValue: acceptedValue[0]?.total || 0,
         recentQuotations,

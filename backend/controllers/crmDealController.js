@@ -20,12 +20,21 @@ const generateDealNumber = () => {
 // @access  Private/Admin
 exports.createDeal = async (req, res) => {
   try {
-    const dealData = {
-      ...req.body,
-      dealNumber: generateDealNumber(),
-      createdBy: req.user._id,
-      assignedTo: req.body.assignedTo || req.user._id, // Default to current user if not provided
-    };
+    // Remove empty string values for ObjectId fields
+    const dealData = { ...req.body };
+    if (!dealData.customerId || dealData.customerId === '') {
+      delete dealData.customerId;
+    }
+    if (!dealData.quotationId || dealData.quotationId === '') {
+      delete dealData.quotationId;
+    }
+    if (!dealData.leadId || dealData.leadId === '') {
+      delete dealData.leadId;
+    }
+
+    dealData.dealNumber = generateDealNumber();
+    dealData.createdBy = req.user._id;
+    dealData.assignedTo = dealData.assignedTo || req.user._id; // Default to current user if not provided
 
     const deal = await Deal.create(dealData);
 
@@ -158,15 +167,27 @@ exports.updateDeal = async (req, res) => {
       });
     }
 
+    // Remove empty string values for ObjectId fields
+    const updateData = { ...req.body };
+    if (!updateData.customerId || updateData.customerId === '') {
+      delete updateData.customerId;
+    }
+    if (!updateData.quotationId || updateData.quotationId === '') {
+      delete updateData.quotationId;
+    }
+    if (!updateData.leadId || updateData.leadId === '') {
+      delete updateData.leadId;
+    }
+
     // If stage changed to Won, update customer revenue
-    if (req.body.stage === "Won" && deal.stage !== "Won") {
+    if (updateData.stage === "Won" && deal.stage !== "Won") {
       await Customer.findByIdAndUpdate(deal.customerId, {
         $inc: { totalRevenue: deal.dealValue },
         lastOrderDate: new Date(),
       });
     }
 
-    deal = await Deal.findByIdAndUpdate(req.params.id, req.body, {
+    deal = await Deal.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true,
     });
@@ -214,13 +235,45 @@ exports.updateDealStage = async (req, res) => {
       deal.probability = stageProbabilities[stage] || 0;
     }
 
-    // If won, update customer
+    // If won, create customer if not exists and update revenue
     if (stage === "Won" && deal.stage !== "Won") {
-      await Customer.findByIdAndUpdate(deal.customerId, {
-        $inc: { totalRevenue: deal.dealValue },
-        lastOrderDate: new Date(),
-      });
       deal.actualClosingDate = new Date();
+
+      // If customer exists, update revenue
+      if (deal.customerId) {
+        await Customer.findByIdAndUpdate(deal.customerId, {
+          $inc: { totalRevenue: deal.dealValue, totalOrders: 1 },
+          lastOrderDate: new Date(),
+        });
+      } else if (deal.leadId) {
+        // If no customer but has lead, create customer from lead
+        const lead = await Lead.findById(deal.leadId);
+        if (lead) {
+          const customerData = {
+            customerName: lead.customerName,
+            companyName: lead.companyName || lead.customerName,
+            phone: lead.phone,
+            whatsapp: lead.whatsapp || lead.phone,
+            email: lead.email,
+            source: lead.source,
+            assignedTo: deal.assignedTo,
+            leadId: lead._id,
+            createdBy: req.user._id,
+            totalOrders: 1,
+            totalRevenue: deal.dealValue,
+            lastOrderDate: new Date(),
+          };
+
+          const customer = await Customer.create(customerData);
+
+          // Update deal with customer ID
+          deal.customerId = customer._id;
+
+          // Update lead
+          lead.customerId = customer._id;
+          await lead.save();
+        }
+      }
     }
 
     // If lost, save reason

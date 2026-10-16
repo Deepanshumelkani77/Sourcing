@@ -167,6 +167,45 @@ const Customers = () => {
         </div>
       </div>
 
+      {/* Workflow Visualization */}
+      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Complete CRM Workflow</h3>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+            <span className="text-sm font-medium text-gray-700">Lead</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <span className="text-sm font-medium text-gray-700">Qualified</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <span className="text-sm font-medium text-gray-700">Deal</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+            <span className="text-sm font-medium text-gray-700">Quotation</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-600"></div>
+            <span className="text-sm font-medium text-gray-700">Won</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-700"></div>
+            <span className="text-sm font-medium text-gray-700">Customer ✓</span>
+          </div>
+        </div>
+        <p className="text-sm text-gray-600 mt-3">
+          💡 Customers are automatically created when a deal is won. They track total orders, revenue, and order history.
+        </p>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Customer Management</h2>
@@ -263,7 +302,7 @@ const Customers = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200">
               <h3 className="text-xl font-semibold text-gray-900">

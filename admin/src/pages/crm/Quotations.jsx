@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 
 const Quotations = () => {
+  const [searchParams] = useSearchParams()
+  const dealIdFromUrl = searchParams.get('dealId')
+
   const [quotations, setQuotations] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingQuotation, setEditingQuotation] = useState(null)
+  const [fetchingDeal, setFetchingDeal] = useState(false)
   const [formData, setFormData] = useState({
-    customerId: '',
     leadId: '',
     dealId: '',
     title: '',
-    validityPeriod: '',
+    validity: 30,
     status: 'Draft',
     totalAmount: '',
     currency: 'USD',
@@ -24,7 +27,38 @@ const Quotations = () => {
 
   useEffect(() => {
     fetchQuotations()
-  }, [])
+
+    // If dealId is in URL, open modal to create quotation from that deal
+    if (dealIdFromUrl) {
+      // Fetch deal to get leadId
+      const fetchDeal = async () => {
+        setFetchingDeal(true)
+        try {
+          const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
+          const response = await axios.get(`/api/crm/deals/${dealIdFromUrl}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          const deal = response.data.data
+          setFormData(prev => ({
+            ...prev,
+            dealId: dealIdFromUrl,
+            leadId: deal.leadId || '',
+          }))
+          setShowModal(true)
+        } catch (err) {
+          console.error('Failed to fetch deal:', err)
+          setFormData(prev => ({
+            ...prev,
+            dealId: dealIdFromUrl
+          }))
+          setShowModal(true)
+        } finally {
+          setFetchingDeal(false)
+        }
+      }
+      fetchDeal()
+    }
+  }, [dealIdFromUrl])
 
   const fetchQuotations = async () => {
     try {
@@ -77,15 +111,17 @@ const Quotations = () => {
   }
 
   const handleAccept = async (id) => {
-    if (!window.confirm('Mark this quotation as accepted?')) return
+    if (!window.confirm('Mark this quotation as accepted? This will mark the deal as Won and create/update the customer.')) return
     try {
       const token = localStorage.getItem('auth_token') || localStorage.getItem('token')
-      await axios.put(`/api/crm/quotations/${id}/accept`, {}, {
+      const response = await axios.put(`/api/crm/quotations/${id}/accept`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       })
       fetchQuotations()
+      alert(response.data.message || 'Quotation accepted successfully!')
     } catch (err) {
       console.error('Failed to accept quotation:', err)
+      alert('Failed to accept quotation: ' + (err.response?.data?.message || err.message))
     }
   }
 
@@ -105,11 +141,10 @@ const Quotations = () => {
   const handleEdit = (quotation) => {
     setEditingQuotation(quotation)
     setFormData({
-      customerId: quotation.customerId || '',
       leadId: quotation.leadId || '',
       dealId: quotation.dealId || '',
       title: quotation.title || '',
-      validityPeriod: quotation.validityPeriod ? quotation.validityPeriod.split('T')[0] : '',
+      validity: quotation.validity || 30,
       status: quotation.status || 'Draft',
       totalAmount: quotation.totalAmount || '',
       currency: quotation.currency || 'USD',
@@ -136,11 +171,10 @@ const Quotations = () => {
 
   const resetForm = () => {
     setFormData({
-      customerId: '',
       leadId: '',
       dealId: '',
       title: '',
-      validityPeriod: '',
+      validity: 30,
       status: 'Draft',
       totalAmount: '',
       currency: 'USD',
@@ -196,6 +230,42 @@ const Quotations = () => {
         </div>
       </div>
 
+      {/* Workflow Visualization */}
+      <div className="bg-gradient-to-r from-purple-50 to-green-50 rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Complete CRM Workflow</h3>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+            <span className="text-sm font-medium text-gray-700">Lead</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <span className="text-sm font-medium text-gray-700">Qualified</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <span className="text-sm font-medium text-gray-700">Deal</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+            <span className="text-sm font-medium text-gray-700">Quotation</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-600"></div>
+            <span className="text-sm font-medium text-gray-700">Accepted</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-700"></div>
+            <span className="text-sm font-medium text-gray-700">Customer</span>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Quotation Management</h2>
@@ -230,7 +300,7 @@ const Quotations = () => {
                   Amount
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Valid Until
+                  Validity (days)
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -256,9 +326,7 @@ const Quotations = () => {
                     {quotation.currency} {quotation.totalAmount?.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {quotation.validityPeriod
-                      ? new Date(quotation.validityPeriod).toLocaleDateString()
-                      : '-'}
+                    {quotation.validity || 30} days
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(quotation.status)}`}>
@@ -314,8 +382,19 @@ const Quotations = () => {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      {showModal && fetchingDeal && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-8">
+            <div className="flex items-center gap-3">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+              <span className="text-gray-700">Loading deal information...</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showModal && !fetchingDeal && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200">
               <h3 className="text-xl font-semibold text-gray-900">
@@ -350,16 +429,7 @@ const Quotations = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Customer ID</label>
-                  <input
-                    type="text"
-                    value={formData.customerId}
-                    onChange={(e) => setFormData({ ...formData, customerId: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  />
-                </div>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Lead ID</label>
                   <input
@@ -367,6 +437,8 @@ const Quotations = () => {
                     value={formData.leadId}
                     onChange={(e) => setFormData({ ...formData, leadId: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="Auto-filled from deal"
+                    readOnly
                   />
                 </div>
                 <div>
@@ -376,6 +448,8 @@ const Quotations = () => {
                     value={formData.dealId}
                     onChange={(e) => setFormData({ ...formData, dealId: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="Auto-filled when creating from deal"
+                    readOnly
                   />
                 </div>
               </div>
@@ -407,12 +481,13 @@ const Quotations = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Validity Period</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Validity (days)</label>
                 <input
-                  type="date"
-                  value={formData.validityPeriod}
-                  onChange={(e) => setFormData({ ...formData, validityPeriod: e.target.value })}
+                  type="number"
+                  value={formData.validity}
+                  onChange={(e) => setFormData({ ...formData, validity: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="30"
                 />
               </div>
 

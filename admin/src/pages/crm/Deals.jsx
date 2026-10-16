@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import api from '../../config/axios'
 
 const Deals = () => {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const leadIdFromUrl = searchParams.get('leadId')
+
   const [pipeline, setPipeline] = useState({})
   const [deals, setDeals] = useState([])
   const [loading, setLoading] = useState(true)
@@ -13,9 +17,7 @@ const Deals = () => {
   const stages = ['Qualified', 'Sourcing/Proposal', 'Negotiation', 'Won', 'Lost']
 
   const [formData, setFormData] = useState({
-    customerId: '',
     leadId: '',
-    quotationId: '',
     title: '',
     description: '',
     dealValue: '',
@@ -33,7 +35,16 @@ const Deals = () => {
 
   useEffect(() => {
     fetchDeals()
-  }, [])
+
+    // If leadId is in URL, open modal to create deal from that lead
+    if (leadIdFromUrl) {
+      setFormData(prev => ({
+        ...prev,
+        leadId: leadIdFromUrl
+      }))
+      setShowModal(true)
+    }
+  }, [leadIdFromUrl])
 
   const fetchDeals = async () => {
     try {
@@ -105,17 +116,21 @@ const Deals = () => {
       )
       fetchPipeline()
       fetchDeals()
+
+      // If deal is won, show success message
+      if (newStage === 'Won') {
+        alert('🎉 Deal won! Customer has been created automatically.')
+      }
     } catch (err) {
       console.error('Failed to update deal stage:', err)
+      alert(`Failed to update deal stage: ${err.response?.data?.message || err.message}`)
     }
   }
 
   const handleEdit = (deal) => {
     setEditingDeal(deal)
     setFormData({
-      customerId: deal.customerId || '',
       leadId: deal.leadId || '',
-      quotationId: deal.quotationId || '',
       title: deal.title || '',
       description: deal.description || '',
       dealValue: deal.dealValue || '',
@@ -147,11 +162,13 @@ const Deals = () => {
     }
   }
 
+  const handleCreateQuotation = (dealId) => {
+    navigate(`/crm/quotations?dealId=${dealId}`)
+  }
+
   const resetForm = () => {
     setFormData({
-      customerId: '',
       leadId: '',
-      quotationId: '',
       title: '',
       description: '',
       dealValue: '',
@@ -216,7 +233,7 @@ const Deals = () => {
       {/* Pipeline Workflow Visualization */}
       <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl shadow-sm border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Deal Pipeline Workflow</h3>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-blue-500"></div>
             <span className="text-sm font-medium text-gray-700">Qualified</span>
@@ -233,8 +250,13 @@ const Deals = () => {
           </div>
           <div className="text-gray-400">→</div>
           <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+            <span className="text-sm font-medium text-gray-700">Quotation</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <span className="text-sm font-medium text-gray-700">Won</span>
+            <span className="text-sm font-medium text-gray-700">Won → Customer</span>
           </div>
           <div className="text-gray-400">or</div>
           <div className="flex items-center gap-2">
@@ -242,6 +264,9 @@ const Deals = () => {
             <span className="text-sm font-medium text-gray-700">Lost</span>
           </div>
         </div>
+        <p className="text-sm text-gray-600 mt-3">
+          💡 Click "Quote" button on a deal to create a quotation. When quotation is accepted, deal will be marked as Won and customer will be created automatically.
+        </p>
       </div>
 
       {/* Header */}
@@ -328,6 +353,12 @@ const Deals = () => {
                         Edit
                       </button>
                       <button
+                        onClick={() => handleCreateQuotation(deal._id)}
+                        className="text-xs text-purple-600 hover:text-purple-900"
+                      >
+                        Quote
+                      </button>
+                      <button
                         onClick={() => handleDelete(deal._id)}
                         className="text-xs text-red-600 hover:text-red-900"
                       >
@@ -408,6 +439,12 @@ const Deals = () => {
                         Edit
                       </button>
                       <button
+                        onClick={() => handleCreateQuotation(deal._id)}
+                        className="text-purple-600 hover:text-purple-900"
+                      >
+                        Quote
+                      </button>
+                      <button
                         onClick={() => handleDelete(deal._id)}
                         className="text-red-600 hover:text-red-900"
                       >
@@ -427,7 +464,7 @@ const Deals = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200">
               <h3 className="text-xl font-semibold text-gray-900">
@@ -456,34 +493,16 @@ const Deals = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Customer ID</label>
-                  <input
-                    type="text"
-                    value={formData.customerId}
-                    onChange={(e) => setFormData({ ...formData, customerId: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Lead ID</label>
-                  <input
-                    type="text"
-                    value={formData.leadId}
-                    onChange={(e) => setFormData({ ...formData, leadId: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Quotation ID</label>
-                  <input
-                    type="text"
-                    value={formData.quotationId}
-                    onChange={(e) => setFormData({ ...formData, quotationId: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Lead ID</label>
+                <input
+                  type="text"
+                  value={formData.leadId}
+                  onChange={(e) => setFormData({ ...formData, leadId: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="Auto-filled when creating from lead"
+                  readOnly
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">

@@ -10,7 +10,6 @@ const crmQuotationSchema = new mongoose.Schema(
     customerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Customer",
-      required: true,
     },
     leadId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -81,7 +80,6 @@ const crmQuotationSchema = new mongoose.Schema(
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Admin",
-      required: true,
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import api from '../../config/axios'
 
 const Leads = () => {
+  const navigate = useNavigate()
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -45,6 +46,16 @@ const Leads = () => {
     try {
       if (editingLead) {
         await api.put(`/api/crm/leads/${editingLead._id}`, formData)
+
+        // If status changed to Qualified, navigate to create deal
+        if (formData.status === 'Qualified' && editingLead.status !== 'Qualified') {
+          setShowModal(false)
+          setEditingLead(null)
+          resetForm()
+          fetchLeads()
+          navigate(`/crm/deals?leadId=${editingLead._id}`)
+          return
+        }
       } else {
         await api.post('/api/crm/leads', formData)
       }
@@ -91,14 +102,9 @@ const Leads = () => {
     }
   }
 
-  const handleConvertToCustomer = async (leadId) => {
-    if (!window.confirm('Convert this lead to a customer?')) return
-    try {
-      await api.post(`/api/crm/leads/${leadId}/convert`, {})
-      fetchLeads()
-    } catch (err) {
-      console.error('Failed to convert lead:', err)
-    }
+  const handleCreateDeal = (leadId) => {
+    // Navigate to deals page with lead ID as query parameter
+    navigate(`/crm/deals?leadId=${leadId}`)
   }
 
   const resetForm = () => {
@@ -176,11 +182,11 @@ const Leads = () => {
 
       {/* Workflow Visualization */}
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Lead Qualification Workflow</h3>
-        <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Complete CRM Workflow</h3>
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-            <span className="text-sm font-medium text-gray-700">New</span>
+            <span className="text-sm font-medium text-gray-700">Lead</span>
           </div>
           <div className="text-gray-400">→</div>
           <div className="flex items-center gap-2">
@@ -194,8 +200,23 @@ const Leads = () => {
           </div>
           <div className="text-gray-400">→</div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-600"></div>
             <span className="text-sm font-medium text-gray-700">Deal</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+            <span className="text-sm font-medium text-gray-700">Quotation</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-600"></div>
+            <span className="text-sm font-medium text-gray-700">Won</span>
+          </div>
+          <div className="text-gray-400">→</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-700"></div>
+            <span className="text-sm font-medium text-gray-700">Customer</span>
           </div>
           <div className="text-gray-400">or</div>
           <div className="flex items-center gap-2">
@@ -284,7 +305,7 @@ const Leads = () => {
                     </button>
                     {lead.status === 'Qualified' && (
                       <button
-                        onClick={() => handleConvertToCustomer(lead._id)}
+                        onClick={() => handleCreateDeal(lead._id)}
                         className="text-green-600 hover:text-green-900"
                       >
                         Create Deal
@@ -309,7 +330,7 @@ const Leads = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200">
               <h3 className="text-xl font-semibold text-gray-900">
