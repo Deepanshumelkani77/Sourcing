@@ -1,5 +1,31 @@
 const Lead = require("../models/Lead");
 const Customer = require("../models/Customer");
+const Admin = require("../models/Admin");
+
+// @desc    Get employees for lead assignment
+// @route   GET /api/crm/employees
+// @access  Private/Admin
+exports.getEmployeesForAssignment = async (req, res) => {
+  try {
+    const employees = await Admin.find({
+      role: { $in: ['employee', 'admin', 'main_admin'] },
+      isActive: true
+    })
+      .select('firstName lastName email department role')
+      .sort({ firstName: 1, lastName: 1 });
+
+    res.status(200).json({
+      success: true,
+      count: employees.length,
+      data: employees
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 // Generate lead number
 const generateLeadNumber = () => {
@@ -52,7 +78,7 @@ exports.getLeads = async (req, res) => {
     if (assignedTo) query.assignedTo = assignedTo;
 
     const leads = await Lead.find(query)
-      .populate("assignedTo", "name email")
+      .populate("assignedTo", "firstName lastName email department")
       .populate("customerId", "customerName companyName")
       .sort({ createdAt: -1 });
 

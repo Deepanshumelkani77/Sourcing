@@ -8,8 +8,14 @@ exports.getEmployees = async (req, res) => {
   try {
     // Role check is done in middleware
 
-    const { department, isActive } = req.query;
+    const { department, isActive, forAssignment } = req.query;
+
     let query = { role: 'employee' };
+
+    // If fetching for assignment, include all admin roles
+    if (forAssignment === 'true') {
+      query = { role: { $in: ['employee', 'admin', 'main_admin'] } };
+    }
 
     if (department) query.department = department;
     if (isActive !== undefined) query.isActive = isActive === 'true';

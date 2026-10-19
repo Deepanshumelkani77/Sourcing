@@ -9,6 +9,7 @@ const {
   convertLeadToCustomer,
   getLeadStats,
   updateLeadStatus,
+  getEmployeesForAssignment,
 } = require("../controllers/crmLeadController");
 
 const {
@@ -65,6 +66,9 @@ const { protectAdmin } = require("../middleware/authMiddleware");
 
 // Dashboard Routes
 router.route("/dashboard").get(protectAdmin, getDashboardStats);
+
+// Get employees for lead assignment
+router.route("/employees").get(protectAdmin, getEmployeesForAssignment);
 
 // Lead Routes
 router
