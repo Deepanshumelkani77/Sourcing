@@ -40,10 +40,11 @@ const protectUser = async (req, res, next) => {
   }
 };
 
-// Admin-specific protection - only checks admin_token cookie
+// Admin-specific protection - checks admin_token cookie and Authorization header
 const protectAdmin = async (req, res, next) => {
   try {
-    const token = req.cookies.admin_token;
+    // Try to get token from cookie first, then from Authorization header
+    const token = req.cookies.admin_token || req.headers.authorization?.replace('Bearer ', '');
 
     if (!token) {
       return res.status(401).json({

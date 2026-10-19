@@ -20,6 +20,8 @@ import CRMCustomers from './pages/crm/Customers'
 import CRMFollowUps from './pages/crm/FollowUps'
 import CRMDeals from './pages/crm/Deals'
 import CRMQuotations from './pages/crm/Quotations'
+import SourcingRequests from './pages/SourcingRequests'
+import Employees from './pages/Employees'
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -68,6 +70,8 @@ const App = () => {
                 <Route path="/crm/followups" element={<CRMFollowUps />} />
                 <Route path="/crm/deals" element={<CRMDeals />} />
                 <Route path="/crm/quotations" element={<CRMQuotations />} />
+                <Route path="/sourcing-requests" element={<SourcingRequests />} />
+                <Route path="/employees" element={<Employees />} />
               </Routes>
             </ProtectedRoute>
           }

@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is authenticated and is admin
   const isAuthenticated = () => {
-    return user !== null && user.role === 'admin'
+    return user !== null && (user.role === 'admin' || user.role === 'main_admin' || user.role === 'employee')
   }
 
   // Login function
@@ -60,6 +60,9 @@ export const AuthProvider = ({ children }) => {
       if (data.success) {
         setUser(data.user)
         localStorage.setItem('admin_user', JSON.stringify(data.user))
+        if (data.token) {
+          localStorage.setItem('admin_token', data.token)
+        }
         return { success: true }
       } else {
         return { success: false, message: data.message || 'Login failed' }
@@ -85,6 +88,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setUser(null)
       localStorage.removeItem('admin_user')
+      localStorage.removeItem('admin_token')
       navigate('/login')
     }
   }
