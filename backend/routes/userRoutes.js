@@ -9,10 +9,10 @@ const { protectAdmin, authorize } = require('../middleware/authMiddleware');
 
 // Admin routes
 router.route('/')
-  .get(protectAdmin, getAllUsers);
+  .get(protectAdmin, authorize('admin', 'main_admin', 'employee'), getAllUsers);
 
 router.route('/:id')
-  .get(protectAdmin, authorize('admin'), getUserById)
-  .delete(protectAdmin, authorize('admin'), deleteUser);
+  .get(protectAdmin, authorize('admin', 'main_admin', 'employee'), getUserById)
+  .delete(protectAdmin, authorize('admin', 'main_admin', 'employee'), deleteUser);
 
 module.exports = router;

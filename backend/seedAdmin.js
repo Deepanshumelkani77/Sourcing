@@ -10,12 +10,19 @@ const seedAdmin = async () => {
     console.log('✅ Connected to MongoDB');
 
     // Check if main admin already exists
-    const existingAdmin = await Admin.findOne({ role: 'main_admin' });
-    
+    const existingAdmin = await Admin.findOne({ email: 'admin@indochinabridge.com' });
+
     if (existingAdmin) {
-      console.log('⚠️  Main admin already exists:');
+      console.log('⚠️  Admin already exists, updating role to main_admin...');
+      existingAdmin.role = 'main_admin';
+      existingAdmin.department = 'Management';
+      existingAdmin.permissions = ['all'];
+      existingAdmin.isActive = true;
+      await existingAdmin.save();
+      console.log('✅ Admin updated successfully:');
       console.log(`   Email: ${existingAdmin.email}`);
       console.log(`   Name: ${existingAdmin.firstName} ${existingAdmin.lastName}`);
+      console.log(`   Role: ${existingAdmin.role}`);
       process.exit(0);
     }
 

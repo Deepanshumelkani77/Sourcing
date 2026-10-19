@@ -14,22 +14,22 @@ const { protectAdmin, protectUser, authorize } = require('../middleware/authMidd
 
 // Admin routes
 router.route('/')
-  .get(protectAdmin, getAllContainers)
-  .post(protectAdmin, createContainer);
+  .get(protectAdmin, authorize('admin', 'main_admin', 'employee'), getAllContainers)
+  .post(protectAdmin, authorize('admin', 'main_admin', 'employee'), createContainer);
 
 router.route('/available-orders')
-  .get(protectAdmin, getAvailableOrders);
+  .get(protectAdmin, authorize('admin', 'main_admin', 'employee'), getAvailableOrders);
 
 // Customer routes (must be before /:id to avoid route conflicts)
 router.route('/my-containers')
   .get(protectUser, getUserContainers);
 
 router.route('/:id')
-  .get(protectAdmin, authorize('admin'), getContainerById)
-  .put(protectAdmin, authorize('admin'), updateContainer)
-  .delete(protectAdmin, authorize('admin'), deleteContainer);
+  .get(protectAdmin, authorize('admin', 'main_admin', 'employee'), getContainerById)
+  .put(protectAdmin, authorize('admin', 'main_admin', 'employee'), updateContainer)
+  .delete(protectAdmin, authorize('admin', 'main_admin', 'employee'), deleteContainer);
 
 router.route('/:id/status')
-  .put(protectAdmin, authorize('admin'), updateContainerStatus);
+  .put(protectAdmin, authorize('admin', 'main_admin', 'employee'), updateContainerStatus);
 
 module.exports = router;
