@@ -14,11 +14,11 @@ const { protectAdmin, protectUser, authorize } = require('../middleware/authMidd
 
 // Admin routes
 router.route('/')
-  .get(protectAdmin, authorize('admin'), getAllContainers)
-  .post(protectAdmin, authorize('admin'), createContainer);
+  .get(protectAdmin, getAllContainers)
+  .post(protectAdmin, createContainer);
 
 router.route('/available-orders')
-  .get(protectAdmin, authorize('admin'), getAvailableOrders);
+  .get(protectAdmin, getAvailableOrders);
 
 // Customer routes (must be before /:id to avoid route conflicts)
 router.route('/my-containers')

@@ -9,7 +9,7 @@ const { protectAdmin, authorize } = require('../middleware/authMiddleware');
 
 // Admin routes
 router.route('/')
-  .get(protectAdmin, authorize('admin'), getAllUsers);
+  .get(protectAdmin, getAllUsers);
 
 router.route('/:id')
   .get(protectAdmin, authorize('admin'), getUserById)
