@@ -70,7 +70,7 @@ const protectAdmin = async (req, res, next) => {
       });
     }
 
-    admin.role = 'admin';
+    req.admin = admin;
     req.user = admin;
 
     next();
@@ -119,7 +119,7 @@ const protect = async (req, res, next) => {
         });
       }
 
-      user.role = 'admin';
+      req.admin = user;
       req.user = user;
       return next();
     }
@@ -149,7 +149,10 @@ const protect = async (req, res, next) => {
 
 const authorize = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
+    // Check both user.role and admin.role for flexibility
+    const userRole = req.user?.role || req.admin?.role;
+    
+    if (!roles.includes(userRole)) {
       return res.status(403).json({
         success: false,
         message: "Not authorized to access this route",

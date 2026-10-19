@@ -76,7 +76,7 @@ const login = async (req, res) => {
         lastName: admin.lastName,
         email: admin.email,
         phone: admin.phone,
-        role: "admin",
+        role: admin.role || "admin",
         department: admin.department,
       },
     });
@@ -105,7 +105,7 @@ const logout = async (req, res) => {
 
 const getMe = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.user._id).select("-password");
+    const admin = await Admin.findById(req.admin._id).select("-password");
 
     if (!admin) {
       return res.status(404).json({
@@ -122,7 +122,7 @@ const getMe = async (req, res) => {
         lastName: admin.lastName,
         email: admin.email,
         phone: admin.phone,
-        role: "admin",
+        role: admin.role || "admin",
         department: admin.department,
       },
     });

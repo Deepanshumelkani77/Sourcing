@@ -30,14 +30,27 @@ const adminSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  role: {
+    type: String,
+    enum: ['main_admin', 'employee'],
+    default: 'employee'
+  },
   department: {
     type: String,
     enum: ['Management', 'Operations', 'Sales', 'Support', 'Other'],
     default: 'Management'
   },
+  permissions: {
+    type: [String],
+    default: []
+  },
   isActive: {
     type: Boolean,
     default: true
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Admin'
   },
   lastLogin: {
     type: Date

@@ -18,6 +18,8 @@ const quotationRoutes = require("./routes/quotationRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const crmRoutes = require("./routes/crmRoutes");
 const chatRoutes = require("./routes/chat");
+const sourcingRequestRoutes = require("./routes/sourcingRequestRoutes");
+const employeeRoutes = require("./routes/employeeRoutes");
 const passport = require("./config/passport");
 const { googleCallback, facebookCallback } = require("./controllers/userAuthController");
 
@@ -166,6 +168,16 @@ app.use(
 app.use(
   "/api/crm",
   crmRoutes
+);
+
+app.use(
+  "/api/sourcing-requests",
+  sourcingRequestRoutes
+);
+
+app.use(
+  "/api/admin/employees",
+  employeeRoutes
 );
 
 app.use(
