@@ -67,6 +67,9 @@ const login = async (req, res) => {
     const token = createToken(admin._id);
     setAdminCookie(res, token);
 
+    console.log('Login - Admin role:', admin.role);
+    console.log('Login - Admin isActive:', admin.isActive);
+
     return res.status(200).json({
       success: true,
       message: "Login successful",
