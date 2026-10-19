@@ -15,10 +15,14 @@ export const getAllUsers = async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     const url = `${API_URL}/api/users${queryString ? `?${queryString}` : ''}`;
 
+    const headers = getAuthHeader();
+    console.log('getAllUsers - Headers:', headers);
+    console.log('getAllUsers - Token in localStorage:', !!localStorage.getItem('admin_token'));
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        ...getAuthHeader()
+        ...headers
       },
       credentials: 'include'
     });

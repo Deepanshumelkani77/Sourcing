@@ -46,6 +46,9 @@ const protectAdmin = async (req, res, next) => {
     // Try to get token from cookie first, then from Authorization header
     const token = req.cookies.admin_token || req.headers.authorization?.replace('Bearer ', '');
 
+    console.log('protectAdmin - Token from cookie:', !!req.cookies.admin_token);
+    console.log('protectAdmin - Token from header:', !!req.headers.authorization);
+
     if (!token) {
       return res.status(401).json({
         success: false,
@@ -73,9 +76,13 @@ const protectAdmin = async (req, res, next) => {
 
     req.admin = admin;
     req.user = admin;
+    req.user.role = admin.role || 'admin';
+
+    console.log('protectAdmin - Admin role:', req.user.role);
 
     next();
   } catch (error) {
+    console.error('protectAdmin error:', error);
     return res.status(401).json({
       success: false,
       message: "Invalid or expired authentication token",
@@ -122,6 +129,7 @@ const protect = async (req, res, next) => {
 
       req.admin = user;
       req.user = user;
+      req.user.role = user.role || 'admin';
       return next();
     }
 
@@ -152,7 +160,12 @@ const authorize = (...roles) => {
   return (req, res, next) => {
     // Check both user.role and admin.role for flexibility
     const userRole = req.user?.role || req.admin?.role;
-    
+
+    console.log('authorize - Required roles:', roles);
+    console.log('authorize - User role:', userRole);
+    console.log('authorize - req.user:', req.user);
+    console.log('authorize - req.admin:', req.admin);
+
     if (!roles.includes(userRole)) {
       return res.status(403).json({
         success: false,
