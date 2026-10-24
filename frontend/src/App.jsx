@@ -16,6 +16,11 @@ import Reviews from './pages/Reviews'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import DataDeletion from './pages/DataDeletion'
 import AuthCallback from './pages/AuthCallback'
+import India from './pages/India'
+import China from './pages/China'
+import MiddleEast from './pages/MiddleEast'
+import SoutheastAsia from './pages/SoutheastAsia'
+import Europe from './pages/Europe'
 import { Routes, Route } from 'react-router-dom'
 import AppContextProvider from './context/AppContext'
 import { AuthProvider } from './context/AuthProvider'
@@ -60,6 +65,11 @@ const App = () => {
             <Route path="/product/:slug" element={<ProductPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/reviews" element={<Reviews />} />
+            <Route path="/countries/india" element={<India />} />
+            <Route path="/countries/china" element={<China />} />
+            <Route path="/countries/middle-east" element={<MiddleEast />} />
+            <Route path="/countries/southeast-asia" element={<SoutheastAsia />} />
+            <Route path="/countries/europe" element={<Europe />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/data-deletion" element={<DataDeletion />} />
             <Route path="/auth/callback" element={<AuthCallback />} />

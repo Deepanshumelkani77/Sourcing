@@ -1,21 +1,38 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
-const CountryCard = ({ name, flag, image, description }) => {
+const CountryCard = ({ name, flag, image, description, slug }) => {
+  const navigate = useNavigate()
+
+  const handleClick = () => {
+    if (slug) {
+      navigate(`/countries/${slug}`)
+    }
+  }
+
   return (
-    <div className="group relative overflow-hidden rounded-xl bg-white shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 hover:border-[#F41703]">
+    <div
+      onClick={handleClick}
+      className={`group relative overflow-hidden rounded-xl bg-white shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 hover:border-[#F41703] cursor-pointer ${!slug ? 'cursor-default' : ''}`}
+    >
       <div className="relative h-48 overflow-hidden">
-        <img 
-          src={image} 
+        <img
+          src={image}
           alt={name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        
+
       </div>
       <div className="p-5">
         <h3 className="text-xl font-bold text-gray-900 mb-2">{name}</h3>
         <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+        {slug && (
+          <div className="mt-3 text-orange-600 text-sm font-medium group-hover:underline">
+            Learn more →
+          </div>
+        )}
       </div>
     </div>
   )
@@ -29,31 +46,36 @@ const Countries = () => {
       nameKey: 'countries.china.name',
       flag: '🇨🇳',
       image: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      descriptionKey: 'countries.china.description'
+      descriptionKey: 'countries.china.description',
+      slug: 'china'
     },
     {
       nameKey: 'countries.india.name',
       flag: '🇮🇳',
       image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      descriptionKey: 'countries.india.description'
+      descriptionKey: 'countries.india.description',
+      slug: 'india'
     },
     {
       nameKey: 'countries.middleEast.name',
       flag: '🌍',
       image: 'https://images.unsplash.com/photo-1548013146-72479768bada?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      descriptionKey: 'countries.middleEast.description'
+      descriptionKey: 'countries.middleEast.description',
+      slug: 'middle-east'
     },
     {
       nameKey: 'countries.southeastAsia.name',
       flag: '🌏',
       image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      descriptionKey: 'countries.southeastAsia.description'
+      descriptionKey: 'countries.southeastAsia.description',
+      slug: 'southeast-asia'
     },
     {
       nameKey: 'countries.europe.name',
       flag: '🇪🇺',
       image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      descriptionKey: 'countries.europe.description'
+      descriptionKey: 'countries.europe.description',
+      slug: 'europe'
     }
   ]
 
@@ -72,12 +94,13 @@ const Countries = () => {
             {/* Country Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
               {countries.map((country, index) => (
-                <CountryCard 
-                  key={index} 
+                <CountryCard
+                  key={index}
                   name={t(country.nameKey)}
                   flag={country.flag}
                   image={country.image}
                   description={t(country.descriptionKey)}
+                  slug={country.slug}
                 />
               ))}
             </div>

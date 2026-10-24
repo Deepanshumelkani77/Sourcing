@@ -4,12 +4,14 @@ import { getProductBySlug } from '../services/productApi'
 import QuoteModal from '../components/QuoteModal'
 import { useAuth } from '../context/AuthProvider'
 import { useTranslation } from 'react-i18next'
+import { AppContext } from '../context/AppContext'
 
 const ProductPage = () => {
   const { slug } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
   const { i18n } = useTranslation()
+  const { openSignup } = React.useContext(AppContext)
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -234,7 +236,7 @@ const ProductPage = () => {
               <button
                 onClick={() => {
                   if (!user) {
-                    navigate('/login')
+                    openSignup()
                   } else {
                     setShowQuoteModal(true)
                   }
