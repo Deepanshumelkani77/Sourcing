@@ -274,8 +274,8 @@ const ServiceCard = ({ service, selected, onToggle, onOpen, wide }) => (
     }`} />
 
     <div className="relative p-6">
-      <div className="mb-5 flex items-start justify-between">
-        <div className="relative">
+      <div className="mb-5 flex items-center gap-4">
+        <div className="relative flex-shrink-0">
           <span
             className={`flex h-14 w-14 items-center justify-center rounded-2xl text-lg font-extrabold tracking-tight transition-all duration-300 ${
               selected
@@ -290,19 +290,20 @@ const ServiceCard = ({ service, selected, onToggle, onOpen, wide }) => (
             <div className="absolute -inset-1 bg-gradient-to-r from-[#F41703] to-[#F97316] rounded-2xl blur opacity-30 animate-pulse" />
           )}
         </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="mb-1 text-xl font-bold leading-snug text-gray-900 group-hover:text-[#F41703] transition-colors">
+            {service.title}
+          </h3>
+          <p className="leading-relaxed text-gray-600 text-sm">
+            {service.description}
+          </p>
+        </div>
         {selected && (
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F41703] text-white shadow-lg shadow-[#F41703]/30">
+          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#F41703] text-white shadow-lg shadow-[#F41703]/30">
             <CheckIcon className="h-4 w-4" />
           </span>
         )}
       </div>
-
-      <h3 className="mb-3 text-xl font-bold leading-snug text-gray-900 group-hover:text-[#F41703] transition-colors">
-        {service.title}
-      </h3>
-      <p className="flex-1 leading-relaxed text-gray-600 text-sm">
-        {service.description}
-      </p>
 
       <div className="mt-6 flex items-center justify-between gap-3 border-t border-gray-100/50 pt-5">
         <button

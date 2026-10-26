@@ -254,9 +254,9 @@
     "title": "From China to Your Business",
     "subtitle": "Global sourcing capabilities that connect you to markets worldwide",
     "tagline": "One sourcing partner. Multiple markets.",
-    "china": {
-      "name": "China",
-      "description": "Source from manufacturing hubs and suppliers across China."
+    "africa": {
+      "name": "Africa",
+      "description": "Deliver to African markets with streamlined logistics."
     },
     "india": {
       "name": "India",

@@ -21,6 +21,7 @@ import China from './pages/China'
 import MiddleEast from './pages/MiddleEast'
 import SoutheastAsia from './pages/SoutheastAsia'
 import Europe from './pages/Europe'
+import Africa from './pages/Africa'
 import { Routes, Route } from 'react-router-dom'
 import AppContextProvider from './context/AppContext'
 import { AuthProvider } from './context/AuthProvider'
@@ -66,6 +67,7 @@ const App = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/reviews" element={<Reviews />} />
             <Route path="/countries/india" element={<India />} />
+            <Route path="/countries/africa" element={<Africa />} />
             <Route path="/countries/china" element={<China />} />
             <Route path="/countries/middle-east" element={<MiddleEast />} />
             <Route path="/countries/southeast-asia" element={<SoutheastAsia />} />

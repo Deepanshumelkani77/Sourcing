@@ -43,11 +43,11 @@ const Countries = () => {
 
   const countries = [
     {
-      nameKey: 'countries.china.name',
-      flag: '🇨🇳',
-      image: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      descriptionKey: 'countries.china.description',
-      slug: 'china'
+      nameKey: 'countries.africa.name',
+      flag: '�',
+      image: 'https://images.unsplash.com/photo-151742334239415-0912a4f508f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      descriptionKey: 'countries.africa.description',
+      slug: 'africa'
     },
     {
       nameKey: 'countries.india.name',
