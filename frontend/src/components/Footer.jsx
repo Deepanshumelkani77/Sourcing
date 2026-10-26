@@ -3,6 +3,118 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AppContext } from '../context/AppContext'
 
+/* Services data - imported from Services page structure */
+const SERVICE_PHASES = [
+  {
+    id: 'source',
+    number: '01',
+    name: 'Source',
+    tagline: 'Find and vet the right manufacturers',
+    services: [
+      {
+        id: 'supplier-identification',
+        number: '01',
+        title: 'Supplier Identification',
+        description: 'Find suitable manufacturers that match your requirements.',
+      },
+      {
+        id: 'supplier-evaluation',
+        number: '02',
+        title: 'Supplier Evaluation & Verification',
+        description: 'Evaluate capability, experience, capacity, pricing and reliability.',
+      }
+    ]
+  },
+  {
+    id: 'sample',
+    number: '02',
+    name: 'Sample',
+    tagline: 'Test and approve before you commit',
+    services: [
+      {
+        id: 'sample-inspection',
+        number: '03',
+        title: 'Sample Inspection',
+        description: 'Inspect samples before production.',
+      },
+      {
+        id: 'buyer-sample-approval',
+        number: '04',
+        title: 'Buyer Sample Approval',
+        description: 'Send the sample/evidence to the buyer for approval.',
+      }
+    ]
+  },
+  {
+    id: 'order',
+    number: '03',
+    name: 'Order & Production',
+    tagline: 'Lock in terms and track every milestone',
+    services: [
+      {
+        id: 'order-placement',
+        number: '05',
+        title: 'Order Placement',
+        description: 'Coordinate purchase order placement with the approved supplier.',
+      },
+      {
+        id: 'contract-documentation',
+        number: '06',
+        title: 'Contract & Documentation',
+        description: 'Coordinate contracts, specifications, commercial terms and required documentation.',
+      },
+      {
+        id: 'production-monitoring',
+        number: '07',
+        title: 'Production Monitoring',
+        description: 'Track production progress and communicate updates.',
+      }
+    ]
+  },
+  {
+    id: 'quality',
+    number: '04',
+    name: 'Quality & Delivery',
+    tagline: 'Verify, ship and receive with confidence',
+    services: [
+      {
+        id: 'quality-inspection',
+        number: '08',
+        title: 'Quality Inspection',
+        description: 'Check production against agreed specifications and quality requirements.',
+      },
+      {
+        id: 'quantity-verification',
+        number: '09',
+        title: 'Quantity Verification',
+        description: 'Verify quantities, packing quantities and order fulfillment.',
+      },
+      {
+        id: 'dispatch-coordination',
+        number: '10',
+        title: 'Dispatch Coordination',
+        description: 'Coordinate dispatch readiness and shipping handover.',
+      },
+      {
+        id: 'local-transportation',
+        number: '11',
+        title: 'Local Transportation',
+        description: 'Coordinate movement of goods from supplier/factory to warehouse, consolidation point, port, etc.',
+      },
+      {
+        id: 'receiving-delivery',
+        number: '12',
+        title: 'Receiving & Delivery',
+        description: 'Coordinate receiving and final handover.',
+      }
+    ]
+  }
+]
+
+const ALL_SERVICES = SERVICE_PHASES.flatMap((phase) =>
+  phase.services.map((s) => ({ ...s, phaseId: phase.id, phaseName: phase.name, phaseNumber: phase.number }))
+)
+
 /* ---------------- Icons (same stroke style used across the site) ---------------- */
 const IconMail = (p) => (
   <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -54,13 +166,12 @@ const quickLinks = [
   { to: '/career', labelKey: 'nav.career' },
 ]
 
-const services = [
-  'footer.productSourcing',
-  'footer.supplierIdentification',
-  'footer.qualityInspection',
-  'footer.logisticsShipping',
-  'footer.endToEndSourcing',
-]
+const services = ALL_SERVICES.slice(0, 6).map((service) => ({
+  id: service.id,
+  title: service.title,
+  phase: service.phaseName,
+  number: service.number,
+}))
 
 const socials = [
   { 
@@ -200,9 +311,9 @@ const Footer = () => {
             <h4 className="text-white font-semibold mb-5">{t('footer.ourServices')}</h4>
             <ul className="space-y-3">
               {services.map((service) => (
-                <li key={service}>
-                  <Link to="/contact" className="text-gray-400 hover:text-white transition-colors duration-200">
-                    {t(service)}
+                <li key={service.id}>
+                  <Link to="/services" className="text-gray-400 hover:text-white transition-colors duration-200">
+                    {service.title}
                   </Link>
                 </li>
               ))}
