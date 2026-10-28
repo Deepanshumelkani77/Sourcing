@@ -1,6 +1,6 @@
 const assets = {
   header1: '/assets/header1.png',
-  video: '/assets/sourcing.mp4',
+  video: '/assets/souring1.mp4',
   logo:'/assets/final_logo.png'
 }
 
