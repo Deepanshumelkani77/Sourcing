@@ -562,7 +562,7 @@ const QuoteModal = ({ isOpen, onClose, product }) => {
                 </label>
                 <textarea
                   required
-                  rows={3}
+                  rows={1}
                   value={formData.message}
                   onChange={handleChange('message')}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all resize-none bg-gray-50 focus:bg-white"
