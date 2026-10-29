@@ -41,6 +41,12 @@ const AdminServices = () => {
             })
           })
         }
+        // Sort by phaseNumber then by service number
+        allServices.sort((a, b) => {
+          const phaseOrder = parseInt(a.phaseNumber) - parseInt(b.phaseNumber)
+          if (phaseOrder !== 0) return phaseOrder
+          return parseInt(a.number) - parseInt(b.number)
+        })
         setServices(allServices)
       }
     } catch (error) {
