@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthProvider'
 import { AppContext } from '../context/AppContext'
+import { useTranslation } from 'react-i18next'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://sourcing-x379.onrender.com'
 
@@ -252,7 +253,7 @@ const Field = ({ label, required, as = 'input', className = '', ...props }) => (
 /* ------------------------------------------------------------------ */
 /* Service card                                                       */
 /* ------------------------------------------------------------------ */
-const ServiceCard = ({ service, selected, onToggle, onOpen, wide }) => (
+const ServiceCard = ({ service, selected, onToggle, onOpen, wide, t }) => (
   <article
     className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-white transition-all duration-300 motion-reduce:transition-none ${
       selected
@@ -292,10 +293,10 @@ const ServiceCard = ({ service, selected, onToggle, onOpen, wide }) => (
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="mb-1 text-xl font-bold leading-snug text-gray-900 group-hover:text-[#F41703] transition-colors">
-            {service.title}
+            {t(`services.service.${service.id}.title`)}
           </h3>
           <p className="leading-relaxed text-gray-600 text-sm">
-            {service.description}
+            {t(`services.service.${service.id}.description`)}
           </p>
         </div>
         {selected && (
@@ -315,7 +316,7 @@ const ServiceCard = ({ service, selected, onToggle, onOpen, wide }) => (
               : 'text-gray-700 hover:text-[#F41703] hover:bg-[#F41703]/5'
           } ${ring}`}
         >
-          View details
+          {t('services.viewDetails')}
           <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </button>
 
@@ -331,11 +332,11 @@ const ServiceCard = ({ service, selected, onToggle, onOpen, wide }) => (
         >
           {selected ? (
             <>
-              <CheckIcon className="h-4 w-4" /> Added
+              <CheckIcon className="h-4 w-4" /> {t('services.added')}
             </>
           ) : (
             <>
-              <PlusIcon className="h-4 w-4" /> Add
+              <PlusIcon className="h-4 w-4" /> {t('services.add')}
             </>
           )}
         </button>
@@ -347,7 +348,7 @@ const ServiceCard = ({ service, selected, onToggle, onOpen, wide }) => (
 /* ------------------------------------------------------------------ */
 /* Detail modal                                                       */
 /* ------------------------------------------------------------------ */
-const DetailModal = ({ service, selected, onToggle, onClose }) => (
+const DetailModal = ({ service, selected, onToggle, onClose, t }) => (
   <div
     className="svc-fade fixed inset-0 z-50 flex items-end justify-center bg-gray-950/60 backdrop-blur-sm sm:items-center sm:p-4"
     onClick={onClose}
@@ -355,7 +356,7 @@ const DetailModal = ({ service, selected, onToggle, onClose }) => (
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={service.title}
+      aria-label={t(`services.service.${service.id}.title`)}
       onClick={(e) => e.stopPropagation()}
       className="svc-pop flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl"
     >
@@ -370,9 +371,9 @@ const DetailModal = ({ service, selected, onToggle, onClose }) => (
         <div className="relative flex items-start justify-between gap-4">
           <div>
             <span className="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur">
-              Phase {service.phaseNumber} · {service.phaseName}
+              {t('services.phases.source.name')} {service.phaseNumber} · {t(`services.phases.${service.phaseId}.name`)}
             </span>
-            <h3 className="mt-3 text-2xl font-bold leading-tight sm:text-3xl">{service.title}</h3>
+            <h3 className="mt-3 text-2xl font-bold leading-tight sm:text-3xl">{t(`services.service.${service.id}.title`)}</h3>
           </div>
           <button
             onClick={onClose}
@@ -388,14 +389,14 @@ const DetailModal = ({ service, selected, onToggle, onClose }) => (
       <div className="flex-1 space-y-8 overflow-y-auto px-6 py-7 sm:px-8">
         <section>
           <h4 className="mb-2 text-sm font-bold uppercase tracking-wider text-[#F41703]">What we do</h4>
-          <p className="leading-relaxed text-gray-700">{service.details}</p>
+          <p className="leading-relaxed text-gray-700">{t(`services.service.${service.id}.details`)}</p>
         </section>
 
         <section>
           <h4 className="mb-4 text-sm font-bold uppercase tracking-wider text-[#F41703]">What's included</h4>
           <ul className="grid gap-3 sm:grid-cols-2">
-            {service.included.map((item) => (
-              <li key={item} className="flex items-center gap-3 rounded-xl bg-gray-50 px-4 py-3 text-gray-800">
+            {service.included.map((item, index) => (
+              <li key={index} className="flex items-center gap-3 rounded-xl bg-gray-50 px-4 py-3 text-gray-800">
                 <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
                   <CheckIcon className="h-3.5 w-3.5" />
                 </span>
@@ -407,7 +408,7 @@ const DetailModal = ({ service, selected, onToggle, onClose }) => (
 
         <section className="rounded-2xl border border-[#F41703]/15 bg-gradient-to-br from-[#FFF3EE] to-white p-5">
           <h4 className="mb-1.5 text-sm font-bold uppercase tracking-wider text-[#F41703]">You receive</h4>
-          <p className="leading-relaxed text-gray-800">{service.deliverable}</p>
+          <p className="leading-relaxed text-gray-800">{t(`services.service.${service.id}.deliverable`)}</p>
         </section>
       </div>
 
@@ -432,10 +433,10 @@ const DetailModal = ({ service, selected, onToggle, onClose }) => (
         >
           {selected ? (
             <>
-              <CheckIcon className="h-5 w-5" /> Service selected
+              <CheckIcon className="h-5 w-5" /> {t('services.serviceSelected')}
             </>
           ) : (
-            'Select this service'
+            t('services.selectThisService')
           )}
         </button>
       </div>
@@ -446,7 +447,7 @@ const DetailModal = ({ service, selected, onToggle, onClose }) => (
 /* ------------------------------------------------------------------ */
 /* Request modal                                                      */
 /* ------------------------------------------------------------------ */
-const RequestModal = ({ selectedIds, user, loading, submitted, error, onRemove, onSubmit, onClose, onDone }) => (
+const RequestModal = ({ selectedIds, user, loading, submitted, error, onRemove, onSubmit, onClose, onDone, t }) => (
   <div
     className="svc-fade fixed inset-0 z-50 flex items-end justify-center bg-gray-950/60 backdrop-blur-sm sm:items-center sm:p-4"
     onClick={submitted ? undefined : onClose}
@@ -454,7 +455,7 @@ const RequestModal = ({ selectedIds, user, loading, submitted, error, onRemove, 
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Request a Sourcing Proposal"
+      aria-label={t('services.submitRequest')}
       onClick={(e) => e.stopPropagation()}
       className="svc-pop flex max-h-[94vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl"
     >
@@ -481,8 +482,8 @@ const RequestModal = ({ selectedIds, user, loading, submitted, error, onRemove, 
             <div className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full bg-white/10" aria-hidden="true" />
             <div className="relative flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-2xl font-bold sm:text-3xl">Request a Sourcing Proposal</h3>
-                <p className="mt-1 text-white/90">Tell us about your order and our team will get back to you.</p>
+                <h3 className="text-2xl font-bold sm:text-3xl">{t('services.submitRequest')}</h3>
+                <p className="mt-1 text-white/90">{t('services.subtitle')}</p>
               </div>
               <button
                 onClick={onClose}
@@ -603,7 +604,7 @@ const RequestModal = ({ selectedIds, user, loading, submitted, error, onRemove, 
                 disabled={loading}
                 className={`inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-bold text-white shadow-lg shadow-[#F41703]/30 transition-all hover:shadow-xl hover:shadow-[#F41703]/40 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-[2] ${brandGrad} ${ring}`}
               >
-                {loading ? 'Submitting...' : 'Submit Sourcing Request'}
+                {loading ? t('services.sending') : t('services.submitRequest')}
                 {!loading && <ArrowIcon />}
               </button>
             </div>
@@ -620,6 +621,7 @@ const RequestModal = ({ selectedIds, user, loading, submitted, error, onRemove, 
 const Services = () => {
   const { user } = useAuth()
   const { openSignup } = React.useContext(AppContext)
+  const { t } = useTranslation()
 
   const [selectedServices, setSelectedServices] = useState([])
   const [activeService, setActiveService] = useState(null) // detail modal
@@ -748,13 +750,13 @@ const Services = () => {
         <div className="relative mx-auto max-w-7xl px-4 h-full flex flex-col justify-center sm:px-6 lg:px-8">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white/90 backdrop-blur w-fit">
             <span className="h-2 w-2 rounded-full bg-[#F97316]" />
-            End-to-end sourcing from China
+            {t('services.subtitle')}
           </span>
           <h1 className="mt-6 max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Sourcing Services
+            {t('services.title')}
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl">
-            From supplier discovery to final delivery, choose exactly the support you need.
+            {t('services.subtitle')}
           </p>
         </div>
       </section>
@@ -884,16 +886,16 @@ const Services = () => {
                       {phase.number}
                     </span>
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Phase</p>
-                      <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{phase.name}</h2>
-                      <p className="mt-0.5 text-gray-500">{phase.tagline}</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{t('services.phases.source.name')}</p>
+                      <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{t(`services.phases.${phase.id}.name`)}</h2>
+                      <p className="mt-0.5 text-gray-500">{t(`services.phases.${phase.id}.tagline`)}</p>
                     </div>
                   </div>
                   <button
                     onClick={() => togglePhase(phase)}
                     className={`rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-[#F41703] hover:text-[#F41703] ${ring}`}
                   >
-                    {phaseAll ? 'Deselect this phase' : 'Select this phase'}
+                    {phaseAll ? t('services.added') : t('services.add')}
                   </button>
                 </div>
 
@@ -906,6 +908,7 @@ const Services = () => {
                       onToggle={toggleService}
                       onOpen={setActiveService}
                       wide={oddLast && i === count - 1}
+                      t={t}
                     />
                   ))}
                 </div>
@@ -966,6 +969,7 @@ const Services = () => {
           selected={isSelected(activeService.id)}
           onToggle={toggleService}
           onClose={() => setActiveService(null)}
+          t={t}
         />
       )}
 
@@ -983,6 +987,7 @@ const Services = () => {
             e.preventDefault()
             handleSubmitRequest(Object.fromEntries(new FormData(e.target)))
           }}
+          t={t}
         />
       )}
     </div>

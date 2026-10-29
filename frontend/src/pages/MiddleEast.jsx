@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 /* Change these if your routes are different */
 const CONTACT_PATH = '/contact?country=middle-east'
@@ -364,17 +365,18 @@ const RouteVisual = () => (
 /* Page                                                               */
 /* ------------------------------------------------------------------ */
 const MiddleEast = () => {
+  const { t } = useTranslation()
   const [openFaq, setOpenFaq] = useState(0)
   const [checked, setChecked] = useState([])
 
   useEffect(() => {
     window.scrollTo(0, 0)
     const previous = document.title
-    document.title = 'Source from China for Middle East | IndoChinaBridge'
+    document.title = t('countryPages.middleEast.title')
     return () => {
       document.title = previous
     }
-  }, [])
+  }, [t])
 
   const toggleCheck = (i) => setChecked((prev) => (prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]))
   const done = checked.length
@@ -433,18 +435,18 @@ const MiddleEast = () => {
                 Home
               </Link>
               <span className="mx-2" aria-hidden="true">/</span>
-              <span className="font-medium text-gray-800">Sourcing for Middle East</span>
+              <span className="font-medium text-gray-800">{t('countryPages.middleEast.breadcrumb')}</span>
             </nav>
 
-            <Eyebrow>Your China sourcing partner for Middle East</Eyebrow>
+            <Eyebrow>{t('countryPages.middleEast.eyebrow')}</Eyebrow>
 
             <h1 className="mt-6 text-5xl font-extrabold leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl">
-              China's factories.
-              <span className="block bg-gradient-to-r from-[#F41703] to-[#F97316] bg-clip-text text-transparent">Middle East's market.</span>
+              {t('countryPages.middleEast.headline').split('.')[0]}.
+              <span className="block bg-gradient-to-r from-[#F41703] to-[#F97316] bg-clip-text text-transparent">{t('countryPages.middleEast.headline').split('.')[1]}</span>
             </h1>
 
             <p className="mt-7 max-w-xl text-lg leading-relaxed text-gray-600 sm:text-xl">
-              We find verified manufacturers, inspect quality before anything ships, and coordinate delivery to your door, so importing from China feels simple.
+              {t('countryPages.middleEast.description')}
             </p>
 
             <div className="mt-9 flex flex-col gap-4 sm:flex-row">

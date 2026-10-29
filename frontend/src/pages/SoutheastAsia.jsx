@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 /* Change these if your routes are different */
 const CONTACT_PATH = '/contact?country=southeast-asia'

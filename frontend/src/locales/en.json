@@ -275,6 +275,50 @@
       "description": "Reach European markets with reliable sourcing."
     }
   },
+  "countryPages": {
+    "india": {
+      "title": "Source from China for India | IndoChinaBridge",
+      "breadcrumb": "Sourcing for India",
+      "eyebrow": "Your China sourcing partner for India",
+      "headline": "China's factories. India's market.",
+      "description": "We find verified manufacturers, inspect quality before anything ships, and coordinate delivery to your door, so importing from China feels simple."
+      },
+    "china": {
+      "title": "Source from China for China | IndoChinaBridge",
+      "breadcrumb": "Sourcing for China",
+      "eyebrow": "Your China sourcing partner for China",
+      "headline": "China's factories. China's market.",
+      "description": "We find verified manufacturers, inspect quality before anything ships, and coordinate delivery to your door, so importing from China feels simple."
+    },
+    "middleEast": {
+      "title": "Source from China for Middle East | IndoChinaBridge",
+      "breadcrumb": "Sourcing for Middle East",
+      "eyebrow": "Your China sourcing partner for Middle East",
+      "headline": "China's factories. Middle East's market.",
+      "description": "We find verified manufacturers, inspect quality before anything ships, and coordinate delivery to your door, so importing from China feels simple."
+    },
+    "southeastAsia": {
+      "title": "Source from China for Southeast Asia | IndoChinaBridge",
+      "breadcrumb": "Sourcing for Southeast Asia",
+      "eyebrow": "Your China sourcing partner for Southeast Asia",
+      "headline": "China's factories. Southeast Asia's market.",
+      "description": "We find verified manufacturers, inspect quality before anything ships, and coordinate delivery to your door, so importing from China feels simple."
+    },
+    "europe": {
+      "title": "Source from China for Europe | IndoChinaBridge",
+      "breadcrumb": "Sourcing for Europe",
+      "eyebrow": "Your China sourcing partner for Europe",
+      "headline": "China's factories. Europe's market.",
+      "description": "We find verified manufacturers, inspect quality before anything ships, and coordinate delivery to your door, so importing from China feels simple."
+    },
+    "africa": {
+      "title": "Source from China for Africa | IndoChinaBridge",
+      "breadcrumb": "Sourcing for Africa",
+      "eyebrow": "Your China sourcing partner for Africa",
+      "headline": "China's factories. Africa's market.",
+      "description": "We find verified manufacturers, inspect quality before anything ships, and coordinate delivery to your door, so importing from China feels simple."
+    }
+  },
   "footer": {
     "brandDescription": "Your trusted partner in sourcing machinery, products, and manufacturing solutions from verified Chinese suppliers to global markets.",
     "quickLinks": "Quick Links",
@@ -389,5 +433,126 @@
     "language": "Language",
     "english": "English",
     "chinese": "中文"
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Complete sourcing management from factory to your door",
+    "selectServices": "Select the services you need",
+    "viewDetails": "View details",
+    "add": "Add",
+    "added": "Added",
+    "selectThisService": "Select this service",
+    "serviceSelected": "Service selected",
+    "submitRequest": "Submit Request",
+    "yourSelectedServices": "Your selected services",
+    "yourMessage": "Your message",
+    "sendInquiry": "Send Inquiry",
+    "sending": "Sending...",
+    "inquirySent": "Inquiry sent successfully!",
+    "error": "Failed to send inquiry. Please try again.",
+    "phases": {
+      "source": {
+        "name": "Source",
+        "tagline": "Find and vet the right manufacturers"
+      },
+      "sample": {
+        "name": "Sample",
+        "tagline": "Test and approve before you commit"
+      },
+      "order": {
+        "name": "Order & Production",
+        "tagline": "Lock in terms and track every milestone"
+      },
+      "quality": {
+        "name": "Quality & Delivery",
+        "tagline": "Verify, ship and receive with confidence"
+      }
+    },
+    "service": {
+      "supplier-identification": {
+        "title": "Supplier Identification",
+        "description": "Find suitable manufacturers that match your requirements.",
+        "details": "We identify suitable manufacturers based on your product specifications, quantity, quality requirements, target pricing and destination.",
+        "included": ["Manufacturer search", "Capability matching", "MOQ comparison", "Price comparison", "Initial supplier screening"],
+        "deliverable": "A shortlist of potential suppliers with relevant supplier information for your evaluation."
+      },
+      "supplier-evaluation": {
+        "title": "Supplier Evaluation & Verification",
+        "description": "Evaluate capability, experience, capacity, pricing and reliability.",
+        "details": "We conduct comprehensive supplier verification including factory audits, capability assessment, financial stability review, and quality system evaluation.",
+        "included": ["Factory audits", "Capability assessment", "Financial verification", "Quality system review", "Reliability assessment"],
+        "deliverable": "Detailed supplier evaluation report with verification results and recommendations."
+      },
+      "sample-inspection": {
+        "title": "Sample Inspection",
+        "description": "Inspect samples before production.",
+        "details": "Our quality experts inspect production samples against your specifications, quality standards, and technical requirements before mass production begins.",
+        "included": ["Visual inspection", "Dimensional verification", "Material testing", "Functionality testing", "Documentation review"],
+        "deliverable": "Sample inspection report with detailed findings and photographs."
+      },
+      "buyer-sample-approval": {
+        "title": "Buyer Sample Approval",
+        "description": "Send the sample/evidence to the buyer for approval.",
+        "details": "We coordinate the sample submission process, provide inspection evidence, and facilitate your approval decision with comprehensive documentation.",
+        "included": ["Sample coordination", "Evidence documentation", "Approval facilitation", "Change management", "Approval tracking"],
+        "deliverable": "Sample approval documentation with inspection evidence and status."
+      },
+      "order-placement": {
+        "title": "Order Placement",
+        "description": "Coordinate purchase order placement with the approved supplier.",
+        "details": "We manage the entire order placement process including PO preparation, supplier confirmation, and timeline establishment.",
+        "included": ["PO preparation", "Supplier confirmation", "Timeline establishment", "Terms negotiation", "Order documentation"],
+        "deliverable": "Confirmed purchase order with agreed terms and delivery schedule."
+      },
+      "contract-documentation": {
+        "title": "Contract & Documentation",
+        "description": "Coordinate contracts, specifications, commercial terms and required documentation.",
+        "details": "We prepare and manage all necessary contracts, specifications, commercial terms, and export/import documentation.",
+        "included": ["Contract preparation", "Specification documents", "Commercial terms", "Export documentation", "Import documentation"],
+        "deliverable": "Complete contract and documentation package for legal and operational use."
+      },
+      "production-monitoring": {
+        "title": "Production Monitoring",
+        "description": "Track production progress and communicate updates.",
+        "details": "We monitor production progress at key milestones, conduct regular status checks, and provide timely updates on schedule adherence.",
+        "included": ["Production tracking", "Milestone monitoring", "Status reporting", "Issue resolution", "Schedule management"],
+        "deliverable": "Regular production status reports with milestone progress and risk alerts."
+      },
+      "quality-inspection": {
+        "title": "Quality Inspection",
+        "description": "Check production against agreed specifications and quality requirements.",
+        "details": "Comprehensive quality inspection of finished goods against specifications, quality standards, and acceptance criteria.",
+        "included": ["Quality inspection", "Specification verification", "Defect detection", "Compliance checking", "Inspection reporting"],
+        "deliverable": "Quality inspection report with defect analysis and acceptance status."
+      },
+      "quantity-verification": {
+        "title": "Quantity Verification",
+        "description": "Verify quantities, packing quantities and order fulfillment.",
+        "details": "We verify shipment quantities, packing quantities, labeling compliance, and order fulfillment accuracy.",
+        "included": ["Quantity counting", "Packing verification", "Label checking", "Fulfillment verification", "Documentation check"],
+        "deliverable": "Quantity verification report with packing and fulfillment details."
+      },
+      "dispatch-coordination": {
+        "title": "Dispatch Coordination",
+        "description": "Coordinate dispatch readiness and shipping handover.",
+        "details": "We coordinate dispatch preparation, shipping documentation, carrier handover, and shipment tracking initiation.",
+        "included": ["Dispatch preparation", "Shipping documentation", "Carrier coordination", "Handover management", "Tracking setup"],
+        "deliverable": "Dispatch confirmation with shipping documentation and tracking information."
+      },
+      "local-transportation": {
+        "title": "Local Transportation",
+        "description": "Coordinate movement of goods from supplier/factory to warehouse, consolidation point, port, etc.",
+        "details": "We manage inland transportation including pickup from factory, consolidation, and delivery to port/warehouse.",
+        "included": ["Factory pickup", "Consolidation", "Inland transport", "Port delivery", "Warehousing coordination"],
+        "deliverable": "Transportation coordination with tracking and delivery confirmation."
+      },
+      "receiving-delivery": {
+        "title": "Receiving & Delivery",
+        "description": "Coordinate receiving and final handover.",
+        "details": "We coordinate final receiving, delivery confirmation, documentation handover, and completion verification.",
+        "included": ["Receiving coordination", "Delivery confirmation", "Documentation handover", "Completion verification", "Issue resolution"],
+        "deliverable": "Delivery confirmation with complete documentation and completion report."
+      }
+    }
   }
 }

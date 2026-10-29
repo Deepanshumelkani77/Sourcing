@@ -275,6 +275,50 @@
       "description": "通过可靠的采购服务进入欧洲市场。"
     }
   },
+  "countryPages": {
+    "india": {
+      "title": "从中国为印度采购 | 印中桥",
+      "breadcrumb": "为印度采购",
+      "eyebrow": "您在中国的印度采购合作伙伴",
+      "headline": "中国的工厂。印度的市场。",
+      "description": "我们寻找经过验证的制造商，在发货前检查质量，并协调交付到您家门口，使从中国采购变得简单。"
+    },
+    "china": {
+      "title": "从中国为中国采购 | 印中桥",
+      "breadcrumb": "为中国采购",
+      "eyebrow": "您在中国的中国采购合作伙伴",
+      "headline": "中国的工厂。中国的市场。",
+      "description": "我们寻找经过验证的制造商，在发货前检查质量，并协调交付到您家门口，使从中国采购变得简单。"
+    },
+    "middleEast": {
+      "title": "从中国为中东采购 | 印中桥",
+      "breadcrumb": "为中东采购",
+      "eyebrow": "您在中国的中东采购合作伙伴",
+      "headline": "中国的工厂。中东的市场。",
+      "description": "我们寻找经过验证的制造商，在发货前检查质量，并协调交付到您家门口，使从中国采购变得简单。"
+    },
+    "southeastAsia": {
+      "title": "从中国为东南亚采购 | 印中桥",
+      "breadcrumb": "为东南亚采购",
+      "eyebrow": "您在中国的东南亚采购合作伙伴",
+      "headline": "中国的工厂。东南亚的市场。",
+      "description": "我们寻找经过验证的制造商，在发货前检查质量，并协调交付到您家门口，使从中国采购变得简单。"
+    },
+    "europe": {
+      "title": "从中国为欧洲采购 | 印中桥",
+      "breadcrumb": "为欧洲采购",
+      "eyebrow": "您在中国的欧洲采购合作伙伴",
+      "headline": "中国的工厂。欧洲的市场。",
+      "description": "我们寻找经过验证的制造商，在发货前检查质量，并协调交付到您家门口，使从中国采购变得简单。"
+    },
+    "africa": {
+      "title": "从中国为非洲采购 | 印中桥",
+      "breadcrumb": "为非洲采购",
+      "eyebrow": "您在中国的非洲采购合作伙伴",
+      "headline": "中国的工厂。非洲的市场。",
+      "description": "我们寻找经过验证的制造商，在发货前检查质量，并协调交付到您家门口，使从中国采购变得简单。"
+    }
+  },
   "footer": {
     "brandDescription": "您值得信赖的合作伙伴，从经过验证的中国供应商为全球市场采购机械、产品和制造解决方案。",
     "quickLinks": "快速链接",
@@ -387,7 +431,128 @@
   },
   "common": {
     "language": "语言",
-    "english": "English",
+    "english": "英语",
     "chinese": "中文"
+  },
+  "services": {
+    "title": "我们的服务",
+    "subtitle": "从工厂到您门口的完整采购管理",
+    "selectServices": "选择您需要的服务",
+    "viewDetails": "查看详情",
+    "add": "添加",
+    "added": "已添加",
+    "selectThisService": "选择此服务",
+    "serviceSelected": "服务已选择",
+    "submitRequest": "提交请求",
+    "yourSelectedServices": "您选择的服务",
+    "yourMessage": "您的留言",
+    "sendInquiry": "发送咨询",
+    "sending": "发送中...",
+    "inquirySent": "咨询发送成功！",
+    "error": "发送咨询失败，请重试。",
+    "phases": {
+      "source": {
+        "name": "采购",
+        "tagline": "寻找并验证合适的制造商"
+      },
+      "sample": {
+        "name": "样品",
+        "tagline": "在承诺之前测试和批准"
+      },
+      "order": {
+        "name": "订单与生产",
+        "tagline": "锁定条款并跟踪每个里程碑"
+      },
+      "quality": {
+        "name": "质量与交付",
+        "tagline": "验证、运输和接收，充满信心"
+      }
+    },
+    "service": {
+      "supplier-identification": {
+        "title": "供应商识别",
+        "description": "寻找符合您要求的合适制造商。",
+        "details": "我们根据您的产品规格、数量、质量要求、目标定价和目的地，识别合适的制造商。",
+        "included": ["制造商搜索", "能力匹配", "MOQ比较", "价格比较", "初步供应商筛选"],
+        "deliverable": "潜在供应商名单，包含相关供应商信息供您评估。"
+      },
+      "supplier-evaluation": {
+        "title": "供应商评估与验证",
+        "description": "评估能力、经验、产能、定价和可靠性。",
+        "details": "我们进行全面的供应商验证，包括工厂审计、能力评估、财务稳定性审查和质量系统评估。",
+        "included": ["工厂审计", "能力评估", "财务验证", "质量系统审查", "可靠性评估"],
+        "deliverable": "详细的供应商评估报告，包含验证结果和建议。"
+      },
+      "sample-inspection": {
+        "title": "样品检验",
+        "description": "在生产前检验样品。",
+        "details": "我们的质量专家在大规模生产开始前，根据您的规格、质量标准和技术要求检验生产样品。",
+        "included": ["视觉检验", "尺寸验证", "材料测试", "功能测试", "文件审查"],
+        "deliverable": "样品检验报告，包含详细发现和照片。"
+      },
+      "buyer-sample-approval": {
+        "title": "买方样品批准",
+        "description": "将样品/证据发送给买方批准。",
+        "details": "我们协调样品提交流程，提供检验证据，并通过全面的文件促进您的批准决定。",
+        "included": ["样品协调", "证据文件", "批准促进", "变更管理", "批准跟踪"],
+        "deliverable": "样品批准文件，包含检验证据和状态。"
+      },
+      "order-placement": {
+        "title": "订单下达",
+        "description": "与批准的供应商协调采购订单下达。",
+        "details": "我们管理整个订单下达流程，包括PO准备、供应商确认和时间表建立。",
+        "included": ["PO准备", "供应商确认", "时间表建立", "条款谈判", "订单文件"],
+        "deliverable": "确认的采购订单，包含商定的条款和交付时间表。"
+      },
+      "contract-documentation": {
+        "title": "合同与文件",
+        "description": "协调合同、规格、商业条款和所需文件。",
+        "details": "我们准备和管理所有必要的合同、规格、商业条款以及出口/进口文件。",
+        "included": ["合同准备", "规格文件", "商业条款", "出口文件", "进口文件"],
+        "deliverable": "完整的合同和文件包，用于法律和运营用途。"
+      },
+      "production-monitoring": {
+        "title": "生产监控",
+        "description": "跟踪生产进度并沟通更新。",
+        "details": "我们在关键里程碑监控生产进度，进行定期状态检查，并就时间表遵守情况提供及时更新。",
+        "included": ["生产跟踪", "里程碑监控", "状态报告", "问题解决", "时间表管理"],
+        "deliverable": "定期生产状态报告，包含里程碑进度和风险警报。"
+      },
+      "quality-inspection": {
+        "title": "质量检验",
+        "description": "根据商定的规格和质量要求检查生产。",
+        "details": "根据规格、质量标准和验收标准，对成品进行全面质量检验。",
+        "included": ["质量检验", "规格验证", "缺陷检测", "合规检查", "检验报告"],
+        "deliverable": "质量检验报告，包含缺陷分析和验收状态。"
+      },
+      "quantity-verification": {
+        "title": "数量验证",
+        "description": "验证数量、包装数量和订单履行。",
+        "details": "我们验证装运数量、包装数量、标签合规性和订单履行准确性。",
+        "included": ["数量计数", "包装验证", "标签检查", "履行验证", "文件检查"],
+        "deliverable": "数量验证报告，包含包装和履行详情。"
+      },
+      "dispatch-coordination": {
+        "title": "发货协调",
+        "description": "协调发货准备和运输交接。",
+        "details": "我们协调发货准备、运输文件、承运人交接和运输跟踪启动。",
+        "included": ["发货准备", "运输文件", "承运人协调", "交接管理", "跟踪设置"],
+        "deliverable": "发货确认，包含运输文件和跟踪信息。"
+      },
+      "local-transportation": {
+        "title": "本地运输",
+        "description": "协调货物从供应商/工厂到仓库、集散点、港口等的移动。",
+        "details": "我们管理内陆运输，包括从工厂提货、集散和交付到港口/仓库。",
+        "included": ["工厂提货", "集散", "内陆运输", "港口交付", "仓储协调"],
+        "deliverable": "运输协调，包含跟踪和交付确认。"
+      },
+      "receiving-delivery": {
+        "title": "接收与交付",
+        "description": "协调最终接收和交接。",
+        "details": "我们协调最终接收、交付确认、文件交接和完成验证。",
+        "included": ["接收协调", "交付确认", "文件交接", "完成验证", "问题解决"],
+        "deliverable": "交付确认，包含完整文件和完成报告。"
+      }
+    }
   }
 }
