@@ -6,7 +6,7 @@ const getAllServices = async (req, res) => {
     const language = req.query.language || 'en';
     const status = req.query.status || 'active';
 
-    const services = await Service.find({ status }).sort({ phaseId: 1, order: 1 });
+    const services = await Service.find({ status }).sort({ phaseNumber: 1, order: 1 });
 
     // Group services by phase
     const groupedServices = {};
@@ -37,8 +37,10 @@ const getAllServices = async (req, res) => {
       });
     });
 
-    // Convert to array
-    const phasesArray = Object.values(groupedServices);
+    // Convert to array and sort by phaseNumber
+    const phasesArray = Object.values(groupedServices).sort((a, b) => {
+      return parseInt(a.number) - parseInt(b.number);
+    });
 
     res.json({
       success: true,

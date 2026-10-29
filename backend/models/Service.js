@@ -146,6 +146,7 @@ serviceSchema.methods.getLocalizedData = function (language = "en") {
 };
 
 // Index for faster queries
+serviceSchema.index({ phaseNumber: 1, order: 1 });
 serviceSchema.index({ phaseId: 1, order: 1 });
 serviceSchema.index({ serviceId: 1 });
 serviceSchema.index({ status: 1 });
