@@ -87,95 +87,13 @@ const I = {
 }
 
 /* ------------------------------------------------------------------ */
-/* Content                                                            */
+/* Content - Now using translations                                     */
 /* ------------------------------------------------------------------ */
-const TICKER = [
-  'Machinery & equipment',
-  'Electronics & components',
-  'LED & electrical',
-  'Auto & spare parts',
-  'Hardware & tools',
-  'Packaging materials',
-  'Textiles & apparel',
-  'Home & consumer goods',
-  'Solar & energy'
-]
-
-const PHASES = [
-  {
-    number: '01',
-    name: 'Source',
-    tagline: 'Find and vet the right manufacturers',
-    text: 'You tell us the product, quantity and target price. We search for manufacturers that fit, compare MOQs and pricing, and then check who is genuinely capable.',
-    services: ['Supplier Identification', 'Supplier Evaluation & Verification'],
-    receive: 'A supplier shortlist and a detailed verification report.',
-    icon: 'search',
-    photo: 'https://images.unsplash.com/photo-1565043666747-69f6646db940?auto=format&fit=crop&w=1200&q=70'
-  },
-  {
-    number: '02',
-    name: 'Sample',
-    tagline: 'Test and approve before you commit',
-    text: 'Nothing goes into mass production on a promise. Samples are inspected against your specifications and sent to you with evidence for your approval.',
-    services: ['Sample Inspection', 'Buyer Sample Approval'],
-    receive: 'An inspection report with photographs, plus approval documentation.',
-    icon: 'flask',
-    photo: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1200&q=70'
-  },
-  {
-    number: '03',
-    name: 'Order & Production',
-    tagline: 'Lock in terms and track every milestone',
-    text: 'We coordinate the purchase order, contract and specifications, then follow production at key milestones so you always know where your order stands.',
-    services: ['Order Placement', 'Contract & Documentation', 'Production Monitoring'],
-    receive: 'A confirmed purchase order, your documentation package and regular status reports.',
-    icon: 'file',
-    photo: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&q=70'
-  },
-  {
-    number: '04',
-    name: 'Quality & Delivery',
-    tagline: 'Verify, ship and receive with confidence',
-    text: 'Finished goods are checked for quality and quantity before dispatch. We coordinate transport and shipping, then the handover at your end.',
-    services: ['Quality Inspection', 'Quantity Verification', 'Dispatch Coordination', 'Local Transportation', 'Receiving & Delivery'],
-    receive: 'Quality and quantity reports, dispatch tracking and delivery confirmation.',
-    icon: 'ship',
-    photo: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1200&q=70'
-  }
-]
-
-const CHECKLIST = [
-  { title: 'Import License verified', hint: 'Check if your product category requires import licensing in your country.' },
-  { title: 'Product approvals checked', hint: 'Some categories need specific certifications or approvals.' },
-  { title: 'Duties and taxes budgeted', hint: 'Landed cost includes customs duty and taxes, not just product and freight.' },
-  { title: 'Shipping terms decided', hint: 'For example FOB or CIF, agreed with the supplier.' },
-  { title: 'Quantity and delivery date known', hint: 'So suppliers can quote and plan accurately.' }
-]
-
-const PORTS = ['Shanghai', 'Shenzhen', 'Ningbo', 'Qingdao', 'Guangzhou']
-
-const FAQS = [
-  {
-    q: 'What do I need to start sourcing from China?',
-    a: 'Tell us what you need made or bought: the product or category, specifications, quantity, target price, destination and the delivery date you are aiming for. Submit a proposal request and our team will get back to you.'
-  },
-  {
-    q: 'Can I use only some of your services?',
-    a: 'Yes. Pick individual services, such as supplier verification or pre-shipment inspection, or choose Complete Sourcing Management and let us run the process from supplier identification to final receiving.'
-  },
-  {
-    q: 'Do you inspect goods before they ship to Europe?',
-    a: 'Yes. We inspect samples before production and check finished goods for quality and quantity before dispatch, and you receive written reports with the findings.'
-  },
-  {
-    q: 'Do you handle customs clearance in Europe?',
-    a: 'We coordinate dispatch, shipping and import documentation. Final customs clearance in Europe is usually handled by a licensed customs broker, and we can align the documents with yours. Tell us how you import today and we will confirm the setup.'
-  },
-  {
-    q: 'How do I know the supplier is genuine?',
-    a: 'Our verification covers capability assessment, factory audits, financial verification and a quality system review. You get a report with the results and recommendations before you place an order.'
-  }
-]
+const TICKER_KEY = 'countryPageContent.ticker'
+const PHASES_KEY = 'countryPageContent.phases'
+const CHECKLIST_KEY = 'countryPageContent.checklist'
+const PORTS_KEY = 'countryPageContent.ports.china'
+const FAQS_KEY = 'countryPageContent.faqs.items'
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                            */
@@ -369,6 +287,38 @@ const Europe = () => {
   const [openFaq, setOpenFaq] = useState(0)
   const [checked, setChecked] = useState([])
 
+  // Get translated content
+  const ticker = t(TICKER_KEY, { returnObjects: true })
+  const phases = [
+    {
+      number: '01',
+      ...t(`${PHASES_KEY}.source`, { returnObjects: true }),
+      icon: 'search',
+      photo: 'https://images.unsplash.com/photo-1565043666747-69f6646db940?auto=format&fit=crop&w=1200&q=70'
+    },
+    {
+      number: '02',
+      ...t(`${PHASES_KEY}.sample`, { returnObjects: true }),
+      icon: 'flask',
+      photo: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1200&q=70'
+    },
+    {
+      number: '03',
+      ...t(`${PHASES_KEY}.order`, { returnObjects: true }),
+      icon: 'file',
+      photo: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&q=70'
+    },
+    {
+      number: '04',
+      ...t(`${PHASES_KEY}.quality`, { returnObjects: true }),
+      icon: 'ship',
+      photo: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1200&q=70'
+    }
+  ]
+  const checklist = t(`${CHECKLIST_KEY}.items`, { returnObjects: true })
+  const ports = t(PORTS_KEY, { returnObjects: true })
+  const faqs = t(FAQS_KEY, { returnObjects: true })
+
   useEffect(() => {
     window.scrollTo(0, 0)
     const previous = document.title
@@ -380,13 +330,13 @@ const Europe = () => {
 
   const toggleCheck = (i) => setChecked((prev) => (prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]))
   const done = checked.length
-  const total = CHECKLIST.length
+  const total = checklist.length
   const R = 54
   const C = 2 * Math.PI * R
 
   const readiness =
     done === 0
-      ? 'Tick what you have already covered.'
+      ? t('countryPageContent.checklist.title') || 'Tick what you have already covered.'
       : done < total
       ? 'Good start. We can help you with the rest.'
       : "You're ready. Request your proposal."
@@ -471,7 +421,7 @@ const Europe = () => {
         <div className="eu-ticker flex w-max">
           {[0, 1].map((copy) => (
             <ul key={copy} className="flex items-center" aria-hidden={copy === 1}>
-              {TICKER.map((item) => (
+              {ticker.map((item) => (
                 <li key={item} className="flex items-center whitespace-nowrap text-lg font-semibold text-white">
                   <span className="px-8">{item}</span>
                   <span className="h-2 w-2 rotate-45 bg-white/60" />
@@ -613,7 +563,7 @@ const Europe = () => {
           </Reveal>
 
           <div className="space-y-24 md:space-y-32">
-            {PHASES.map((p, i) => {
+            {phases.map((p, i) => {
               const flip = i % 2 === 1
               return (
                 <div key={p.number} className="grid items-center gap-10 lg:grid-cols-2 lg:gap-20">

@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthProvider'
 import AdminLayout from './components/AdminLayout'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminProducts from './pages/AdminProducts'
+import AdminServices from './pages/AdminServices'
 import AdminContainers from './pages/AdminContainers'
 import AdminOrders from './pages/AdminOrders'
 import AdminCustomers from './pages/AdminCustomers'
@@ -54,6 +55,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<AdminDashboard />} />
                 <Route path="/products" element={<AdminProducts />} />
+                <Route path="/services" element={<AdminServices />} />
                 <Route path="/containers" element={<AdminContainers />} />
                 <Route path="/orders" element={<AdminOrders />} />
                 <Route path="/customers" element={<AdminCustomers />} />

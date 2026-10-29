@@ -319,6 +319,93 @@
       "description": "We find verified manufacturers, inspect quality before anything ships, and coordinate delivery to your door, so importing from China feels simple."
     }
   },
+  "countryPageContent": {
+    "ticker": [
+      "Machinery & equipment",
+      "Electronics & components",
+      "LED & electrical",
+      "Auto & spare parts",
+      "Hardware & tools",
+      "Packaging materials",
+      "Textiles & apparel",
+      "Home & consumer goods",
+      "Solar & energy"
+    ],
+    "phases": {
+      "source": {
+        "name": "Source",
+        "tagline": "Find and vet the right manufacturers",
+        "text": "You tell us the product, quantity and target price. We search for manufacturers that fit, compare MOQs and pricing, and then check who is genuinely capable.",
+        "services": ["Supplier Identification", "Supplier Evaluation & Verification"],
+        "receive": "A supplier shortlist and a detailed verification report."
+      },
+      "sample": {
+        "name": "Sample",
+        "tagline": "Test and approve before you commit",
+        "text": "Nothing goes into mass production on a promise. Samples are inspected against your specifications and sent to you with evidence for your approval.",
+        "services": ["Sample Inspection", "Buyer Sample Approval"],
+        "receive": "An inspection report with photographs, plus approval documentation."
+      },
+      "order": {
+        "name": "Order & Production",
+        "tagline": "Lock in terms and track every milestone",
+        "text": "We coordinate the purchase order, contract and specifications, then follow production at key milestones so you always know where your order stands.",
+        "services": ["Order Placement", "Contract & Documentation", "Production Monitoring"],
+        "receive": "A confirmed purchase order, your documentation package and regular status reports."
+      },
+      "quality": {
+        "name": "Quality & Delivery",
+        "tagline": "Verify, ship and receive with confidence",
+        "text": "Finished goods are checked for quality and quantity before dispatch. We coordinate transport and shipping, then the handover at your end.",
+        "services": ["Quality Inspection", "Quantity Verification", "Dispatch Coordination", "Local Transportation", "Receiving & Delivery"],
+        "receive": "Quality and quantity reports, dispatch tracking and delivery confirmation."
+      }
+    },
+    "checklist": {
+      "title": "Before you start",
+      "items": [
+        { "title": "Importer Exporter Code (IEC)", "hint": "Most commercial imports into India need one from the DGFT." },
+        { "title": "Product approvals checked", "hint": "Some categories need BIS certification or other approvals." },
+        { "title": "Duties and IGST budgeted", "hint": "Landed cost includes customs duty and IGST, not just product and freight." },
+        { "title": "Shipping terms decided", "hint": "For example FOB or CIF, agreed with the supplier." },
+        { "title": "Quantity and delivery date known", "hint": "So suppliers can quote and plan accurately." }
+      ]
+    },
+    "ports": {
+      "title": "Key ports",
+      "china": ["Shanghai", "Shenzhen", "Ningbo", "Qingdao", "Guangzhou"]
+    },
+    "faqs": {
+      "title": "Frequently Asked Questions",
+      "items": [
+        {
+          "q": "What do I need to start sourcing from China?",
+          "a": "Tell us what you need made or bought: the product or category, specifications, quantity, target price, destination and the delivery date you are aiming for. Submit a proposal request and our team will get back to you."
+        },
+        {
+          "q": "Can I use only some of your services?",
+          "a": "Yes. Pick individual services, such as supplier verification or pre-shipment inspection, or choose Complete Sourcing Management and let us run the process from supplier identification to final receiving."
+        },
+        {
+          "q": "Do you inspect goods before they ship?",
+          "a": "Yes. We inspect samples before production and check finished goods for quality and quantity before dispatch, and you receive written reports with the findings."
+        },
+        {
+          "q": "Do you handle customs clearance?",
+          "a": "We coordinate dispatch, shipping and import documentation. Final customs clearance is usually handled by a licensed customs broker (CHA), and we can align the documents with yours. Tell us how you import today and we will confirm the setup."
+        },
+        {
+          "q": "How do I know the supplier is genuine?",
+          "a": "Our verification covers capability assessment, factory audits, financial verification and a quality system review. You get a report with the results and recommendations before you place an order."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready to start sourcing?",
+      "subtitle": "Tell us what you need and we'll find the right suppliers in China.",
+      "button": "Request a Quote"
+    }
+  },
   "footer": {
     "brandDescription": "Your trusted partner in sourcing machinery, products, and manufacturing solutions from verified Chinese suppliers to global markets.",
     "quickLinks": "Quick Links",

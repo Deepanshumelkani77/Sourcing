@@ -2,159 +2,16 @@ import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthProvider'
 import { AppContext } from '../context/AppContext'
 import { useTranslation } from 'react-i18next'
+import { getAllServices } from '../services/serviceApi'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://sourcing-x379.onrender.com'
 
 /* ------------------------------------------------------------------ */
-/* Data                                                               */
+/* Data - Will be fetched from API                                    */
 /* ------------------------------------------------------------------ */
-const SERVICE_PHASES = [
-  {
-    id: 'source',
-    number: '01',
-    name: 'Source',
-    tagline: 'Find and vet the right manufacturers',
-    services: [
-      {
-        id: 'supplier-identification',
-        number: '01',
-        title: 'Supplier Identification',
-        description: 'Find suitable manufacturers that match your requirements.',
-        details: 'We identify suitable manufacturers based on your product specifications, quantity, quality requirements, target pricing and destination.',
-        included: ['Manufacturer search', 'Capability matching', 'MOQ comparison', 'Price comparison', 'Initial supplier screening'],
-        deliverable: 'A shortlist of potential suppliers with relevant supplier information for your evaluation.'
-      },
-      {
-        id: 'supplier-evaluation',
-        number: '02',
-        title: 'Supplier Evaluation & Verification',
-        description: 'Evaluate capability, experience, capacity, pricing and reliability.',
-        details: 'We conduct comprehensive supplier verification including factory audits, capability assessment, financial stability review, and quality system evaluation.',
-        included: ['Factory audits', 'Capability assessment', 'Financial verification', 'Quality system review', 'Reliability assessment'],
-        deliverable: 'Detailed supplier evaluation report with verification results and recommendations.'
-      }
-    ]
-  },
-  {
-    id: 'sample',
-    number: '02',
-    name: 'Sample',
-    tagline: 'Test and approve before you commit',
-    services: [
-      {
-        id: 'sample-inspection',
-        number: '03',
-        title: 'Sample Inspection',
-        description: 'Inspect samples before production.',
-        details: 'Our quality experts inspect production samples against your specifications, quality standards, and technical requirements before mass production begins.',
-        included: ['Visual inspection', 'Dimensional verification', 'Material testing', 'Functionality testing', 'Documentation review'],
-        deliverable: 'Sample inspection report with detailed findings and photographs.'
-      },
-      {
-        id: 'buyer-sample-approval',
-        number: '04',
-        title: 'Buyer Sample Approval',
-        description: 'Send the sample/evidence to the buyer for approval.',
-        details: 'We coordinate the sample submission process, provide inspection evidence, and facilitate your approval decision with comprehensive documentation.',
-        included: ['Sample coordination', 'Evidence documentation', 'Approval facilitation', 'Change management', 'Approval tracking'],
-        deliverable: 'Sample approval documentation with inspection evidence and status.'
-      }
-    ]
-  },
-  {
-    id: 'order',
-    number: '03',
-    name: 'Order & Production',
-    tagline: 'Lock in terms and track every milestone',
-    services: [
-      {
-        id: 'order-placement',
-        number: '05',
-        title: 'Order Placement',
-        description: 'Coordinate purchase order placement with the approved supplier.',
-        details: 'We manage the entire order placement process including PO preparation, supplier confirmation, and timeline establishment.',
-        included: ['PO preparation', 'Supplier confirmation', 'Timeline establishment', 'Terms negotiation', 'Order documentation'],
-        deliverable: 'Confirmed purchase order with agreed terms and delivery schedule.'
-      },
-      {
-        id: 'contract-documentation',
-        number: '06',
-        title: 'Contract & Documentation',
-        description: 'Coordinate contracts, specifications, commercial terms and required documentation.',
-        details: 'We prepare and manage all necessary contracts, specifications, commercial terms, and export/import documentation.',
-        included: ['Contract preparation', 'Specification documents', 'Commercial terms', 'Export documentation', 'Import documentation'],
-        deliverable: 'Complete contract and documentation package for legal and operational use.'
-      },
-      {
-        id: 'production-monitoring',
-        number: '07',
-        title: 'Production Monitoring',
-        description: 'Track production progress and communicate updates.',
-        details: 'We monitor production progress at key milestones, conduct regular status checks, and provide timely updates on schedule adherence.',
-        included: ['Production tracking', 'Milestone monitoring', 'Status reporting', 'Issue resolution', 'Schedule management'],
-        deliverable: 'Regular production status reports with milestone progress and risk alerts.'
-      }
-    ]
-  },
-  {
-    id: 'quality',
-    number: '04',
-    name: 'Quality & Delivery',
-    tagline: 'Verify, ship and receive with confidence',
-    services: [
-      {
-        id: 'quality-inspection',
-        number: '08',
-        title: 'Quality Inspection',
-        description: 'Check production against agreed specifications and quality requirements.',
-        details: 'Comprehensive quality inspection of finished goods against specifications, quality standards, and acceptance criteria.',
-        included: ['Quality inspection', 'Specification verification', 'Defect detection', 'Compliance checking', 'Inspection reporting'],
-        deliverable: 'Quality inspection report with defect analysis and acceptance status.'
-      },
-      {
-        id: 'quantity-verification',
-        number: '09',
-        title: 'Quantity Verification',
-        description: 'Verify quantities, packing quantities and order fulfillment.',
-        details: 'We verify shipment quantities, packing quantities, labeling compliance, and order fulfillment accuracy.',
-        included: ['Quantity counting', 'Packing verification', 'Label checking', 'Fulfillment verification', 'Documentation check'],
-        deliverable: 'Quantity verification report with packing and fulfillment details.'
-      },
-      {
-        id: 'dispatch-coordination',
-        number: '10',
-        title: 'Dispatch Coordination',
-        description: 'Coordinate dispatch readiness and shipping handover.',
-        details: 'We coordinate dispatch preparation, shipping documentation, carrier handover, and shipment tracking initiation.',
-        included: ['Dispatch preparation', 'Shipping documentation', 'Carrier coordination', 'Handover management', 'Tracking setup'],
-        deliverable: 'Dispatch confirmation with shipping documentation and tracking information.'
-      },
-      {
-        id: 'local-transportation',
-        number: '11',
-        title: 'Local Transportation',
-        description: 'Coordinate movement of goods from supplier/factory to warehouse, consolidation point, port, etc.',
-        details: 'We manage inland transportation including pickup from factory, consolidation, and delivery to port/warehouse.',
-        included: ['Factory pickup', 'Consolidation', 'Inland transport', 'Port delivery', 'Warehousing coordination'],
-        deliverable: 'Transportation coordination with tracking and delivery confirmation.'
-      },
-      {
-        id: 'receiving-delivery',
-        number: '12',
-        title: 'Receiving & Delivery',
-        description: 'Coordinate receiving and final handover.',
-        details: 'We coordinate final receiving, delivery confirmation, documentation handover, and completion verification.',
-        included: ['Receiving coordination', 'Delivery confirmation', 'Documentation handover', 'Completion verification', 'Issue resolution'],
-        deliverable: 'Delivery confirmation with complete documentation and completion report.'
-      }
-    ]
-  }
-]
-
-const ALL_SERVICES = SERVICE_PHASES.flatMap((phase) =>
-  phase.services.map((s) => ({ ...s, phaseId: phase.id, phaseName: phase.name, phaseNumber: phase.number }))
-)
-const ALL_IDS = ALL_SERVICES.map((s) => s.id)
+const SERVICE_PHASES = []
+const ALL_SERVICES = []
+const ALL_IDS = []
 
 const PIPELINE = ['Supplier', 'Sample', 'Order', 'Production', 'QC', 'Dispatch', 'Delivery']
 
@@ -293,10 +150,10 @@ const ServiceCard = ({ service, selected, onToggle, onOpen, wide, t }) => (
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="mb-1 text-xl font-bold leading-snug text-gray-900 group-hover:text-[#F41703] transition-colors">
-            {t(`services.service.${service.id}.title`)}
+            {service.title}
           </h3>
           <p className="leading-relaxed text-gray-600 text-sm">
-            {t(`services.service.${service.id}.description`)}
+            {service.description}
           </p>
         </div>
         {selected && (
@@ -371,9 +228,9 @@ const DetailModal = ({ service, selected, onToggle, onClose, t }) => (
         <div className="relative flex items-start justify-between gap-4">
           <div>
             <span className="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur">
-              {t('services.phases.source.name')} {service.phaseNumber} · {t(`services.phases.${service.phaseId}.name`)}
+              {service.phaseName} {service.phaseNumber} · {service.phaseName}
             </span>
-            <h3 className="mt-3 text-2xl font-bold leading-tight sm:text-3xl">{t(`services.service.${service.id}.title`)}</h3>
+            <h3 className="mt-3 text-2xl font-bold leading-tight sm:text-3xl">{service.title}</h3>
           </div>
           <button
             onClick={onClose}
@@ -389,7 +246,7 @@ const DetailModal = ({ service, selected, onToggle, onClose, t }) => (
       <div className="flex-1 space-y-8 overflow-y-auto px-6 py-7 sm:px-8">
         <section>
           <h4 className="mb-2 text-sm font-bold uppercase tracking-wider text-[#F41703]">What we do</h4>
-          <p className="leading-relaxed text-gray-700">{t(`services.service.${service.id}.details`)}</p>
+          <p className="leading-relaxed text-gray-700">{service.details}</p>
         </section>
 
         <section>
@@ -408,7 +265,7 @@ const DetailModal = ({ service, selected, onToggle, onClose, t }) => (
 
         <section className="rounded-2xl border border-[#F41703]/15 bg-gradient-to-br from-[#FFF3EE] to-white p-5">
           <h4 className="mb-1.5 text-sm font-bold uppercase tracking-wider text-[#F41703]">You receive</h4>
-          <p className="leading-relaxed text-gray-800">{t(`services.service.${service.id}.deliverable`)}</p>
+          <p className="leading-relaxed text-gray-800">{service.deliverable}</p>
         </section>
       </div>
 
@@ -505,7 +362,7 @@ const RequestModal = ({ selectedIds, user, loading, submitted, error, onRemove, 
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedIds.map((id) => {
-                    const s = ALL_SERVICES.find((x) => x.id === id)
+                    const s = allServices.find((x) => x.id === id)
                     if (!s) return null
                     return (
                       <span
@@ -622,7 +479,12 @@ const Services = () => {
   const { user } = useAuth()
   const { openSignup } = React.useContext(AppContext)
   const { t } = useTranslation()
+  const { i18n } = useTranslation()
 
+  const [servicePhases, setServicePhases] = useState([])
+  const [allServices, setAllServices] = useState([])
+  const [allServiceIds, setAllServiceIds] = useState([])
+  const [servicesLoading, setServicesLoading] = useState(true)
   const [selectedServices, setSelectedServices] = useState([])
   const [activeService, setActiveService] = useState(null) // detail modal
   const [showRequest, setShowRequest] = useState(false) // request form modal
@@ -630,13 +492,37 @@ const Services = () => {
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const allSelected = selectedServices.length === ALL_SERVICES.length
+  // Fetch services from API
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setServicesLoading(true)
+        const result = await getAllServices({ language: i18n.language })
+        if (result.success && result.phases) {
+          setServicePhases(result.phases)
+          const allSvcs = result.phases.flatMap((phase) =>
+            phase.services.map((s) => ({ ...s, phaseId: phase.id, phaseName: phase.name, phaseNumber: phase.number }))
+          )
+          setAllServices(allSvcs)
+          setAllServiceIds(allSvcs.map((s) => s.id))
+        }
+      } catch (error) {
+        console.error('Error fetching services:', error)
+      } finally {
+        setServicesLoading(false)
+      }
+    }
+
+    fetchServices()
+  }, [i18n.language])
+
+  const allSelected = allServices.length > 0 && selectedServices.length === allServices.length
   const isSelected = (id) => selectedServices.includes(id)
 
   const toggleService = (id) =>
     setSelectedServices((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
 
-  const toggleSelectAll = () => setSelectedServices(allSelected ? [] : ALL_IDS)
+  const toggleSelectAll = () => setSelectedServices(allSelected ? [] : allServiceIds)
 
   const togglePhase = (phase) => {
     const ids = phase.services.map((s) => s.id)
@@ -725,6 +611,17 @@ const Services = () => {
     return () => window.removeEventListener('keydown', onKey)
   }, [modalOpen, activeService, submitted, loading])
 
+  if (servicesLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-[#F41703] border-r-transparent"></div>
+          <p className="mt-4 text-gray-600">Loading services...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <style>{`
@@ -764,7 +661,7 @@ const Services = () => {
       {/* ===================== PHASE OVERVIEW STRIP ==================== */}
       <div className="relative z-10 mx-auto -mt-20 max-w-7xl px-4 sm:px-6 lg:px-8">
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {SERVICE_PHASES.map((phase) => {
+          {servicePhases.map((phase) => {
             const count = phaseCount(phase)
             const total = phase.services.length
             return (
@@ -859,7 +756,7 @@ const Services = () => {
 
           <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <p className="text-lg text-gray-600">
-              <span className="font-bold text-gray-900">{ALL_SERVICES.length}</span> services available
+              <span className="font-bold text-gray-900">{allServices.length}</span> services available
               {selectedServices.length > 0 && (
                 <span className="text-[#F41703]"> · {selectedServices.length} selected</span>
               )}
@@ -872,7 +769,7 @@ const Services = () => {
             </button>
           </div>
 
-          {SERVICE_PHASES.map((phase, phaseIndex) => {
+          {servicePhases.map((phase, phaseIndex) => {
             const count = phase.services.length
             const phaseAll = phaseCount(phase) === count
             const gridCols = count === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'
@@ -886,7 +783,7 @@ const Services = () => {
                       {phase.number}
                     </span>
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{t('services.phases.source.name')}</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{phase.name}</p>
                       <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{t(`services.phases.${phase.id}.name`)}</h2>
                       <p className="mt-0.5 text-gray-500">{t(`services.phases.${phase.id}.tagline`)}</p>
                     </div>
@@ -913,7 +810,7 @@ const Services = () => {
                   ))}
                 </div>
 
-                {phaseIndex < SERVICE_PHASES.length - 1 && (
+                {phaseIndex < servicePhases.length - 1 && (
                   <div className="flex justify-center py-10" aria-hidden="true">
                     <div className="h-14 border-l-2 border-dashed border-[#F41703]/30" />
                   </div>
@@ -934,12 +831,12 @@ const Services = () => {
             <div className="min-w-0 sm:w-64">
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold">{selectedServices.length}</span>
-                <span className="text-white/60">of {ALL_SERVICES.length} services selected</span>
+                <span className="text-white/60">of {allServices.length} services selected</span>
               </div>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${brandGrad}`}
-                  style={{ width: `${(selectedServices.length / ALL_SERVICES.length) * 100}%` }}
+                  style={{ width: `${(selectedServices.length / allServices.length) * 100}%` }}
                 />
               </div>
             </div>

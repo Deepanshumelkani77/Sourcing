@@ -20,6 +20,7 @@ const crmRoutes = require("./routes/crmRoutes");
 const chatRoutes = require("./routes/chat");
 const sourcingRequestRoutes = require("./routes/sourcingRequestRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
+const serviceRoutes = require("./routes/serviceRoutes");
 const passport = require("./config/passport");
 const { googleCallback, facebookCallback } = require("./controllers/userAuthController");
 
@@ -178,6 +179,11 @@ app.use(
 app.use(
   "/api/admin/employees",
   employeeRoutes
+);
+
+app.use(
+  "/api/services",
+  serviceRoutes
 );
 
 app.use(
