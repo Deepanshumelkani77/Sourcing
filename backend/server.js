@@ -21,6 +21,7 @@ const chatRoutes = require("./routes/chat");
 const sourcingRequestRoutes = require("./routes/sourcingRequestRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const serviceRoutes = require("./routes/serviceRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
 const passport = require("./config/passport");
 const { googleCallback, facebookCallback } = require("./controllers/userAuthController");
 
@@ -184,6 +185,11 @@ app.use(
 app.use(
   "/api/services",
   serviceRoutes
+);
+
+app.use(
+  "/api/upload",
+  uploadRoutes
 );
 
 app.use(
