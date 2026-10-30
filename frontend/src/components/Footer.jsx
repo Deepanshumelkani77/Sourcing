@@ -1,119 +1,8 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AppContext } from '../context/AppContext'
-
-/* Services data - imported from Services page structure */
-const SERVICE_PHASES = [
-  {
-    id: 'source',
-    number: '01',
-    name: 'Source',
-    tagline: 'Find and vet the right manufacturers',
-    services: [
-      {
-        id: 'supplier-identification',
-        number: '01',
-        title: 'Supplier Identification',
-        description: 'Find suitable manufacturers that match your requirements.',
-      },
-      {
-        id: 'supplier-evaluation',
-        number: '02',
-        title: 'Supplier Evaluation & Verification',
-        description: 'Evaluate capability, experience, capacity, pricing and reliability.',
-      }
-    ]
-  },
-  {
-    id: 'sample',
-    number: '02',
-    name: 'Sample',
-    tagline: 'Test and approve before you commit',
-    services: [
-      {
-        id: 'sample-inspection',
-        number: '03',
-        title: 'Sample Inspection',
-        description: 'Inspect samples before production.',
-      },
-      {
-        id: 'buyer-sample-approval',
-        number: '04',
-        title: 'Buyer Sample Approval',
-        description: 'Send the sample/evidence to the buyer for approval.',
-      }
-    ]
-  },
-  {
-    id: 'order',
-    number: '03',
-    name: 'Order & Production',
-    tagline: 'Lock in terms and track every milestone',
-    services: [
-      {
-        id: 'order-placement',
-        number: '05',
-        title: 'Order Placement',
-        description: 'Coordinate purchase order placement with the approved supplier.',
-      },
-      {
-        id: 'contract-documentation',
-        number: '06',
-        title: 'Contract & Documentation',
-        description: 'Coordinate contracts, specifications, commercial terms and required documentation.',
-      },
-      {
-        id: 'production-monitoring',
-        number: '07',
-        title: 'Production Monitoring',
-        description: 'Track production progress and communicate updates.',
-      }
-    ]
-  },
-  {
-    id: 'quality',
-    number: '04',
-    name: 'Quality & Delivery',
-    tagline: 'Verify, ship and receive with confidence',
-    services: [
-      {
-        id: 'quality-inspection',
-        number: '08',
-        title: 'Quality Inspection',
-        description: 'Check production against agreed specifications and quality requirements.',
-      },
-      {
-        id: 'quantity-verification',
-        number: '09',
-        title: 'Quantity Verification',
-        description: 'Verify quantities, packing quantities and order fulfillment.',
-      },
-      {
-        id: 'dispatch-coordination',
-        number: '10',
-        title: 'Dispatch Coordination',
-        description: 'Coordinate dispatch readiness and shipping handover.',
-      },
-      {
-        id: 'local-transportation',
-        number: '11',
-        title: 'Local Transportation',
-        description: 'Coordinate movement of goods from supplier/factory to warehouse, consolidation point, port, etc.',
-      },
-      {
-        id: 'receiving-delivery',
-        number: '12',
-        title: 'Receiving & Delivery',
-        description: 'Coordinate receiving and final handover.',
-      }
-    ]
-  }
-]
-
-const ALL_SERVICES = SERVICE_PHASES.flatMap((phase) =>
-  phase.services.map((s) => ({ ...s, phaseId: phase.id, phaseName: phase.name, phaseNumber: phase.number }))
-)
+import { getAllServices } from '../services/serviceApi'
 
 /* ---------------- Icons (same stroke style used across the site) ---------------- */
 const IconMail = (p) => (
@@ -165,13 +54,6 @@ const quickLinks = [
   { to: '/contact', labelKey: 'nav.contact' },
   { to: '/career', labelKey: 'nav.career' },
 ]
-
-const services = ALL_SERVICES.slice(0, 6).map((service) => ({
-  id: service.id,
-  title: service.title,
-  phase: service.phaseName,
-  number: service.number,
-}))
 
 const socials = [
   { 
@@ -247,11 +129,32 @@ const socials = [
 ]
 
 const Footer = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { openSignup } = useContext(AppContext)
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const [services, setServices] = useState([])
   const year = new Date().getFullYear()
+
+  // Fetch services from API
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const result = await getAllServices({ language: i18n.language })
+        if (result.success && result.phases) {
+          const allSvcs = result.phases.flatMap((phase) =>
+            phase.services.map((s) => ({ ...s, phaseId: phase.id, phaseName: phase.name, phaseNumber: phase.number }))
+          )
+          // Take first 6 services for footer
+          setServices(allSvcs.slice(0, 6))
+        }
+      } catch (error) {
+        console.error('Error fetching services for footer:', error)
+      }
+    }
+
+    fetchServices()
+  }, [i18n.language])
 
   const handleSubscribe = (e) => {
     e.preventDefault()

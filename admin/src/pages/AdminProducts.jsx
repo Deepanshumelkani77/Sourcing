@@ -4,8 +4,11 @@ import ProductForm from '../components/ProductForm'
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([])
+  const [allProducts, setAllProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedMainCategory, setSelectedMainCategory] = useState('Main Category')
+  const [selectedCategory, setSelectedCategory] = useState('Category')
   const [showModal, setShowModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -13,14 +16,25 @@ const AdminProducts = () => {
 
   useEffect(() => {
     fetchProducts()
-  }, [searchTerm])
+  }, [searchTerm, selectedCategory, selectedMainCategory])
 
   const fetchProducts = async () => {
     try {
       setLoading(true)
       const result = await getAllProducts({ search: searchTerm })
       if (result.success) {
-        setProducts(result.products || result)
+        const allProductsData = result.products || result
+        setAllProducts(allProductsData)
+
+        // Filter products based on selected category and main category
+        let filtered = allProductsData
+        if (selectedMainCategory && selectedMainCategory !== 'Main Category') {
+          filtered = filtered.filter(p => p.mainCategory === selectedMainCategory)
+        }
+        if (selectedCategory && selectedCategory !== 'Category') {
+          filtered = filtered.filter(p => p.category === selectedCategory)
+        }
+        setProducts(filtered)
       }
     } catch (error) {
       console.error('Error fetching products:', error)
@@ -28,6 +42,11 @@ const AdminProducts = () => {
       setLoading(false)
     }
   }
+
+  // Reset category when main category changes
+  useEffect(() => {
+    setSelectedCategory('Category')
+  }, [selectedMainCategory])
 
   const handleEdit = (product) => {
     setEditingProduct(product)
@@ -49,6 +68,18 @@ const AdminProducts = () => {
       }
     } catch (error) {
       console.error('Error deleting product:', error)
+    }
+  }
+
+  const handleToggleStatus = async (product) => {
+    try {
+      const newStatus = product.status === 'active' ? 'inactive' : 'active'
+      const result = await updateProduct(product.slug, { ...product, status: newStatus })
+      if (result.success) {
+        setProducts(products.map(p => p.slug === product.slug ? { ...p, status: newStatus } : p))
+      }
+    } catch (error) {
+      console.error('Error toggling product status:', error)
     }
   }
 
@@ -98,6 +129,18 @@ const AdminProducts = () => {
     })
   }
 
+  // Get unique main categories and their categories from all products
+  const mainCategories = ['Main Category', ...new Set(allProducts.map(p => p.mainCategory).filter(Boolean))]
+
+  // Get categories for selected main category
+  const categoriesForMainCategory = selectedMainCategory && selectedMainCategory !== 'Main Category'
+    ? ['Category', ...new Set(allProducts
+        .filter(p => p.mainCategory === selectedMainCategory)
+        .map(p => p.category)
+        .filter(Boolean)
+      )]
+    : ['Category', ...new Set(allProducts.map(p => p.category).filter(Boolean))]
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -110,15 +153,39 @@ const AdminProducts = () => {
         </button>
       </div>
 
-      {/* Search */}
+      {/* Search and Filter */}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-        />
+        <div className="flex gap-4">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+          />
+          <select
+            value={selectedMainCategory || 'Main Category'}
+            onChange={(e) => setSelectedMainCategory(e.target.value === 'Main Category' ? '' : e.target.value)}
+            className="w-48 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none bg-white"
+          >
+            {mainCategories.map(mainCat => (
+              <option key={mainCat} value={mainCat}>
+                {mainCat}
+              </option>
+            ))}
+          </select>
+          <select
+            value={selectedCategory || 'Category'}
+            onChange={(e) => setSelectedCategory(e.target.value === 'Category' ? '' : e.target.value)}
+            className="w-48 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none bg-white"
+          >
+            {categoriesForMainCategory.map(category => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Products Grid */}
@@ -192,6 +259,17 @@ const AdminProducts = () => {
                     className="flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
                   >
                     Edit
+                  </button>
+                  <button
+                    onClick={() => handleToggleStatus(product)}
+                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      product.status === 'active'
+                        ? 'text-orange-600 bg-orange-50 hover:bg-orange-100'
+                        : 'text-green-600 bg-green-50 hover:bg-green-100'
+                    }`}
+                    title={product.status === 'active' ? 'Deactivate' : 'Activate'}
+                  >
+                    {product.status === 'active' ? '🔴' : '🟢'}
                   </button>
                   <button
                     onClick={() => handleDelete(product)}
