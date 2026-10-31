@@ -21,6 +21,17 @@ const AdminOrders = () => {
   const [newOrder, setNewOrder] = useState({
     userId: '',
     items: [{ productId: '', quantity: 1, price: 0, productName: '' }],
+    shipperInfo: {
+      name: '',
+      address: '',
+      subDistrict: '',
+      district: '',
+      province: '',
+      country: '',
+      pinCode: '',
+      contactPerson: '',
+      contactNo: ''
+    },
     shippingAddress: '',
     billingAddress: '',
     notes: ''
@@ -131,6 +142,17 @@ const AdminOrders = () => {
         setNewOrder({
           userId: '',
           items: [{ productId: '', quantity: 1, price: 0, productName: '' }],
+          shipperInfo: {
+            name: '',
+            address: '',
+            subDistrict: '',
+            district: '',
+            province: '',
+            country: '',
+            pinCode: '',
+            contactPerson: '',
+            contactNo: ''
+          },
           shippingAddress: '',
           billingAddress: '',
           notes: ''
@@ -377,6 +399,138 @@ const AdminOrders = () => {
                     ))}
                   </select>
                 )}
+              </div>
+
+              {/* Corresponding Buyer */}
+              <div className="border-t pt-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Corresponding Buyer</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.name}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, name: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Company Name"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.address}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, address: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Full Address"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Sub District</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.subDistrict}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, subDistrict: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Sub District"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.district}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, district: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="District"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Province</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.province}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, province: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Province"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.country}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, country: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Country"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">PIN Code</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.pinCode}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, pinCode: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="PIN Code"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Contact Person</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.contactPerson}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, contactPerson: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Contact Person"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Contact No.</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.contactNo}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, contactNo: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Contact Number"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div>

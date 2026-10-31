@@ -65,6 +65,54 @@ const orderSchema = new mongoose.Schema(
       ],
       default: 'Pending'
     },
+    // Shipper/Exporter Information
+    shipperInfo: {
+      name: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      address: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      subDistrict: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      district: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      province: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      country: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      pinCode: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      contactPerson: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      contactNo: {
+        type: String,
+        trim: true,
+        default: ''
+      }
+    },
     shippingAddress: {
       type: String,
       trim: true

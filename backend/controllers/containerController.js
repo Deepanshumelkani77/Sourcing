@@ -7,73 +7,104 @@ const Product = require('../models/Product');
 const createContainer = async (req, res) => {
   try {
     const {
+      // New fields
+      blNo,
+      vesselName,
+      voyageNo,
+      pol,
+      etd,
+      pod,
+      eta,
+      containerNo,
+      sealNo,
+      transitRoute,
+      noOfShippers,
+      shippers,
+      // Legacy fields
       containerNumber,
       shippingType,
       origin,
       destination,
-      etd,
-      eta,
-      vesselName,
       voyageNumber,
       goods
     } = req.body;
 
-    // Check if container number already exists
-    const existingContainer = await Container.findOne({ containerNumber });
-    if (existingContainer) {
-      return res.status(400).json({
-        success: false,
-        message: 'Container number already exists'
+    // Check if container number already exists (if provided)
+    if (containerNo || containerNumber) {
+      const existingContainer = await Container.findOne({
+        $or: [
+          { containerNo: containerNo || containerNumber },
+          { containerNumber: containerNo || containerNumber }
+        ]
       });
+      if (existingContainer) {
+        return res.status(400).json({
+          success: false,
+          message: 'Container number already exists'
+        });
+      }
     }
 
-    // Validate and process goods
-    const processedGoods = [];
-    for (const item of goods) {
-      // Verify order exists
-      const order = await Order.findById(item.orderId);
-      if (!order) {
-        return res.status(400).json({
-          success: false,
-          message: `Order ${item.orderId} not found`
+    // Validate and process goods if provided
+    let processedGoods = [];
+    if (goods && goods.length > 0) {
+      for (const item of goods) {
+        // Verify order exists
+        const order = await Order.findById(item.orderId);
+        if (!order) {
+          return res.status(400).json({
+            success: false,
+            message: `Order ${item.orderId} not found`
+          });
+        }
+
+        // Verify user exists
+        const user = await User.findById(item.userId);
+        if (!user) {
+          return res.status(400).json({
+            success: false,
+            message: `User ${item.userId} not found`
+          });
+        }
+
+        // Verify product exists
+        const product = await Product.findById(item.productId);
+        if (!product) {
+          return res.status(400).json({
+            success: false,
+            message: `Product ${item.productId} not found`
+          });
+        }
+
+        processedGoods.push({
+          orderId: item.orderId,
+          userId: item.userId,
+          productId: item.productId,
+          quantity: item.quantity
         });
       }
-
-      // Verify user exists
-      const user = await User.findById(item.userId);
-      if (!user) {
-        return res.status(400).json({
-          success: false,
-          message: `User ${item.userId} not found`
-        });
-      }
-
-      // Verify product exists
-      const product = await Product.findById(item.productId);
-      if (!product) {
-        return res.status(400).json({
-          success: false,
-          message: `Product ${item.productId} not found`
-        });
-      }
-
-      processedGoods.push({
-        orderId: item.orderId,
-        userId: item.userId,
-        productId: item.productId,
-        quantity: item.quantity
-      });
     }
 
     const container = await Container.create({
-      containerNumber,
-      shippingType,
-      origin,
-      destination,
-      etd: etd ? new Date(etd) : null,
-      eta: eta ? new Date(eta) : null,
+      // New fields
+      blNo: blNo || '',
       vesselName: vesselName || '',
-      voyageNumber: voyageNumber || '',
+      voyageNo: voyageNo || '',
+      pol: pol || origin || '',
+      etd: etd ? new Date(etd) : null,
+      pod: pod || destination || '',
+      eta: eta ? new Date(eta) : null,
+      containerNo: containerNo || containerNumber || '',
+      sealNo: sealNo || '',
+      transitRoute: transitRoute || '',
+      noOfShippers: noOfShippers || (shippers ? shippers.length : 0),
+      shippers: shippers || [],
+      // Legacy fields (for backward compatibility)
+      containerNumber: containerNumber || containerNo || '',
+      shippingType: shippingType || 'Sea',
+      origin: origin || pol || '',
+      destination: destination || pod || '',
+      voyageNumber: voyageNumber || voyageNo || '',
       goods: processedGoods,
       currentStatus: 'Goods Under Stuffing',
       createdBy: req.user._id,
@@ -81,7 +112,7 @@ const createContainer = async (req, res) => {
         {
           status: 'Goods Under Stuffing',
           notes: 'Container created',
-          location: origin,
+          location: pol || origin || '',
           updatedBy: req.user._id
         }
       ]
@@ -111,22 +142,51 @@ const createContainer = async (req, res) => {
 // Get all containers (admin)
 const getAllContainers = async (req, res) => {
   try {
-    const { status, destination, search } = req.query;
+    const { status, destination, search, blNo, containerNo, shipper, buyer } = req.query;
     const filter = {};
 
     if (status) {
       filter.currentStatus = status;
     }
 
-    if (destination) {
-      filter.destination = { $regex: destination, $options: 'i' };
+    // Specific field searches
+    if (blNo) {
+      filter.blNo = { $regex: blNo, $options: 'i' };
     }
 
-    if (search) {
+    if (containerNo) {
+      filter.$or = [
+        { containerNo: { $regex: containerNo, $options: 'i' } },
+        { containerNumber: { $regex: containerNo, $options: 'i' } }
+      ];
+    }
+
+    if (shipper) {
+      filter['shippers.name'] = { $regex: shipper, $options: 'i' };
+    }
+
+    if (buyer) {
+      filter['shippers.contactPerson'] = { $regex: buyer, $options: 'i' };
+    }
+
+    // General search across all fields
+    if (search && !blNo && !containerNo && !shipper && !buyer) {
       filter.$or = [
         { containerNumber: { $regex: search, $options: 'i' } },
+        { containerNo: { $regex: search, $options: 'i' } },
+        { blNo: { $regex: search, $options: 'i' } },
+        { vesselName: { $regex: search, $options: 'i' } },
         { origin: { $regex: search, $options: 'i' } },
-        { destination: { $regex: search, $options: 'i' } }
+        { pol: { $regex: search, $options: 'i' } },
+        { destination: { $regex: search, $options: 'i' } },
+        { pod: { $regex: search, $options: 'i' } },
+        { 'shippers.name': { $regex: search, $options: 'i' } },
+        { 'shippers.contactPerson': { $regex: search, $options: 'i' } }
+      ];
+    } else if (destination) {
+      filter.$or = [
+        { destination: { $regex: destination, $options: 'i' } },
+        { pod: { $regex: destination, $options: 'i' } }
       ];
     }
 
@@ -262,13 +322,24 @@ const updateContainerStatus = async (req, res) => {
 const updateContainer = async (req, res) => {
   try {
     const {
+      // New fields
+      blNo,
+      vesselName,
+      voyageNo,
+      pol,
+      etd,
+      pod,
+      eta,
+      containerNo,
+      sealNo,
+      transitRoute,
+      noOfShippers,
+      shippers,
+      // Legacy fields
       containerNumber,
       shippingType,
       origin,
       destination,
-      etd,
-      eta,
-      vesselName,
       voyageNumber
     } = req.body;
 
@@ -282,8 +353,15 @@ const updateContainer = async (req, res) => {
     }
 
     // Check if new container number conflicts with existing
-    if (containerNumber && containerNumber !== container.containerNumber) {
-      const existingContainer = await Container.findOne({ containerNumber });
+    const newContainerNo = containerNo || containerNumber;
+    if (newContainerNo && newContainerNo !== container.containerNo && newContainerNo !== container.containerNo) {
+      const existingContainer = await Container.findOne({
+        $or: [
+          { containerNo: newContainerNo },
+          { containerNumber: newContainerNo }
+        ],
+        _id: { $ne: req.params.id }
+      });
       if (existingContainer) {
         return res.status(400).json({
           success: false,
@@ -292,13 +370,25 @@ const updateContainer = async (req, res) => {
       }
     }
 
-    if (containerNumber) container.containerNumber = containerNumber;
-    if (shippingType) container.shippingType = shippingType;
-    if (origin) container.origin = origin;
-    if (destination) container.destination = destination;
-    if (etd) container.etd = new Date(etd);
-    if (eta) container.eta = new Date(eta);
+    // Update new fields
+    if (blNo !== undefined) container.blNo = blNo;
     if (vesselName !== undefined) container.vesselName = vesselName;
+    if (voyageNo !== undefined) container.voyageNo = voyageNo;
+    if (pol !== undefined) container.pol = pol;
+    if (etd !== undefined) container.etd = etd ? new Date(etd) : null;
+    if (pod !== undefined) container.pod = pod;
+    if (eta !== undefined) container.eta = eta ? new Date(eta) : null;
+    if (containerNo !== undefined) container.containerNo = containerNo;
+    if (sealNo !== undefined) container.sealNo = sealNo;
+    if (transitRoute !== undefined) container.transitRoute = transitRoute;
+    if (noOfShippers !== undefined) container.noOfShippers = noOfShippers;
+    if (shippers !== undefined) container.shippers = shippers;
+
+    // Update legacy fields (for backward compatibility)
+    if (containerNumber !== undefined) container.containerNumber = containerNumber;
+    if (shippingType !== undefined) container.shippingType = shippingType;
+    if (origin !== undefined) container.origin = origin;
+    if (destination !== undefined) container.destination = destination;
     if (voyageNumber !== undefined) container.voyageNumber = voyageNumber;
 
     await container.save();

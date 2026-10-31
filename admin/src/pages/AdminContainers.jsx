@@ -9,18 +9,24 @@ const AdminContainers = () => {
   const [showStatusModal, setShowStatusModal] = useState(false)
   const [selectedContainer, setSelectedContainer] = useState(null)
   const [newStatus, setNewStatus] = useState('')
-  const [searchTerm, setSearchTerm] = useState('')
+  const [blNoFilter, setBlNoFilter] = useState('')
+  const [containerNoFilter, setContainerNoFilter] = useState('')
+  const [shipperFilter, setShipperFilter] = useState('')
+  const [buyerFilter, setBuyerFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
 
   useEffect(() => {
     fetchContainers()
-  }, [searchTerm, statusFilter])
+  }, [blNoFilter, containerNoFilter, shipperFilter, buyerFilter, statusFilter])
 
   const fetchContainers = async () => {
     try {
       setLoading(true)
       const params = {}
-      if (searchTerm) params.search = searchTerm
+      if (blNoFilter) params.blNo = blNoFilter
+      if (containerNoFilter) params.containerNo = containerNoFilter
+      if (shipperFilter) params.shipper = shipperFilter
+      if (buyerFilter) params.buyer = buyerFilter
       if (statusFilter) params.status = statusFilter
 
       const result = await getAllContainers(params)
@@ -89,29 +95,77 @@ const AdminContainers = () => {
 
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Bill of Lading</label>
             <input
               type="text"
-              placeholder="Search containers..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search BL No..."
+              value={blNoFilter}
+              onChange={(e) => setBlNoFilter(e.target.value)}
               className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
             />
           </div>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-          >
-            <option value="">All Statuses</option>
-            <option value="Goods Under Stuffing">Goods Under Stuffing</option>
-            <option value="Container Loaded">Container Loaded</option>
-            <option value="Under Shipment">Under Shipment</option>
-            <option value="Arrival Port Added">Arrival Port Added</option>
-            <option value="Custom Clearance">Custom Clearance</option>
-            <option value="Under Transportation">Under Transportation</option>
-          </select>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Container No.</label>
+            <input
+              type="text"
+              placeholder="Search Container No..."
+              value={containerNoFilter}
+              onChange={(e) => setContainerNoFilter(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Shipper/Exporter</label>
+            <input
+              type="text"
+              placeholder="Search Shipper..."
+              value={shipperFilter}
+              onChange={(e) => setShipperFilter(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Buyer</label>
+            <input
+              type="text"
+              placeholder="Search Buyer..."
+              value={buyerFilter}
+              onChange={(e) => setBuyerFilter(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+            >
+              <option value="">All Statuses</option>
+              <option value="Goods Under Stuffing">Goods Under Stuffing</option>
+              <option value="Container Loaded">Container Loaded</option>
+              <option value="Under Shipment">Under Shipment</option>
+              <option value="Arrival Port Added">Arrival Port Added</option>
+              <option value="Custom Clearance">Custom Clearance</option>
+              <option value="Under Transportation">Under Transportation</option>
+            </select>
+          </div>
+          <div className="flex items-end">
+            <button
+              onClick={() => {
+                setBlNoFilter('')
+                setContainerNoFilter('')
+                setShipperFilter('')
+                setBuyerFilter('')
+                setStatusFilter('')
+              }}
+              className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+            >
+              Clear Filters
+            </button>
+          </div>
         </div>
       </div>
 
@@ -126,27 +180,38 @@ const AdminContainers = () => {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Container No.</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Origin</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Destination</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Customers</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ETA</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Sr. No.</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">BL No.</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Vessel Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Voyage No.</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">POL</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ETD</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">POD</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ETA</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Container No.</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Seal No.</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Transit Route</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">No. of Shippers</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {containers.map((container) => (
+                {containers.map((container, index) => (
                   <tr key={container._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-800">{container.containerNumber}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{container.shippingType}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{container.origin}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{container.destination}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {new Set(container.goods.map(g => g.userId?.toString())).size}
-                    </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-800">{index + 1}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{container.blNo || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{container.vesselName || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{container.voyageNo || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{container.pol || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{formatDate(container.etd)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{container.pod || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{formatDate(container.eta)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{container.containerNo || container.containerNumber || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{container.sealNo || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{container.transitRoute || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{container.noOfShippers || container.shippers?.length || 0}</td>
+                    <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         container.currentStatus === 'Delivered'
                           ? 'bg-green-100 text-green-700'
@@ -169,8 +234,7 @@ const AdminContainers = () => {
                         {container.currentStatus}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{formatDate(container.eta)}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         {container.currentStatus !== 'Completed' && (
                           <button
@@ -234,7 +298,7 @@ const AdminContainers = () => {
 
             <div className="p-6">
               <p className="text-sm text-gray-600 mb-4">
-                Container: <span className="font-medium">{selectedContainer.containerNumber}</span>
+                Container: <span className="font-medium">{selectedContainer.containerNo || selectedContainer.containerNumber}</span>
               </p>
               <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
               <select

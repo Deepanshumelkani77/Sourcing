@@ -4,7 +4,7 @@ const Product = require('../models/Product');
 // Create order
 const createOrder = async (req, res) => {
   try {
-    const { userId, items, shippingAddress, billingAddress, notes } = req.body;
+    const { userId, items, shippingAddress, billingAddress, notes, shipperInfo } = req.body;
 
     if (!userId || !items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
@@ -58,6 +58,17 @@ const createOrder = async (req, res) => {
       totalQuantity,
       totalAmount,
       status: 'Pending',
+      shipperInfo: shipperInfo || {
+        name: '',
+        address: '',
+        subDistrict: '',
+        district: '',
+        province: '',
+        country: '',
+        pinCode: '',
+        contactPerson: '',
+        contactNo: ''
+      },
       shippingAddress: shippingAddress || '',
       billingAddress: billingAddress || '',
       notes: notes || ''
@@ -89,7 +100,9 @@ const getAllOrders = async (req, res) => {
 
     if (search) {
       query.$or = [
-        { orderNumber: { $regex: search, $options: 'i' } }
+        { orderNumber: { $regex: search, $options: 'i' } },
+        { 'shipperInfo.name': { $regex: search, $options: 'i' } },
+        { 'shipperInfo.contactNo': { $regex: search, $options: 'i' } }
       ];
     }
 

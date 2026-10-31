@@ -3,14 +3,43 @@ import { createContainer, getAvailableOrders } from '../services/containerApi'
 
 const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
-    containerNumber: '',
-    shippingType: 'Sea',
-    origin: '',
-    destination: '',
-    etd: '',
-    eta: '',
+    // Container Information
+    blNo: '',
     vesselName: '',
-    voyageNumber: '',
+    voyageNo: '',
+    pol: '',
+    etd: '',
+    pod: '',
+    eta: '',
+    containerNo: '',
+    sealNo: '',
+    transitRoute: '',
+    noOfShippers: 0,
+    // Shipper/Exporter Information
+    shippers: [{
+      name: '',
+      address: '',
+      subDistrict: '',
+      district: '',
+      province: '',
+      country: '',
+      pinCode: '',
+      contactPerson: '',
+      contactNo: '',
+      packingList: '',
+      invoiceNo: '',
+      dateOfInvoice: '',
+      hsnCode: '',
+      descriptionOfGoods: '',
+      quantity: '',
+      weight: '',
+      dimension: '',
+      packageType: '',
+      identifiersOnPackage: '',
+      cooNo: '',
+      agreementNo: '',
+      dateOfAgreement: ''
+    }],
     goods: []
   })
   const [availableOrders, setAvailableOrders] = useState([])
@@ -94,14 +123,41 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
 
   const resetForm = () => {
     setFormData({
-      containerNumber: '',
-      shippingType: 'Sea',
-      origin: '',
-      destination: '',
-      etd: '',
-      eta: '',
+      blNo: '',
       vesselName: '',
-      voyageNumber: '',
+      voyageNo: '',
+      pol: '',
+      etd: '',
+      pod: '',
+      eta: '',
+      containerNo: '',
+      sealNo: '',
+      transitRoute: '',
+      noOfShippers: 0,
+      shippers: [{
+        name: '',
+        address: '',
+        subDistrict: '',
+        district: '',
+        province: '',
+        country: '',
+        pinCode: '',
+        contactPerson: '',
+        contactNo: '',
+        packingList: '',
+        invoiceNo: '',
+        dateOfInvoice: '',
+        hsnCode: '',
+        descriptionOfGoods: '',
+        quantity: '',
+        weight: '',
+        dimension: '',
+        packageType: '',
+        identifiersOnPackage: '',
+        cooNo: '',
+        agreementNo: '',
+        dateOfAgreement: ''
+      }],
       goods: []
     })
     setSelectedOrders([])
@@ -145,91 +201,18 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
             {/* Container Information */}
             <div>
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Container Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Container Number *
+                    BL No. (Bill of Lading No.)
                   </label>
                   <input
                     type="text"
-                    name="containerNumber"
-                    required
-                    value={formData.containerNumber}
+                    name="blNo"
+                    value={formData.blNo}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
-                    placeholder="MSCU1234567"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Shipping Type *
-                  </label>
-                  <select
-                    name="shippingType"
-                    required
-                    value={formData.shippingType}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
-                  >
-                    <option value="Sea">Sea</option>
-                    <option value="Air">Air</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Origin *
-                  </label>
-                  <input
-                    type="text"
-                    name="origin"
-                    required
-                    value={formData.origin}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
-                    placeholder="Shenzhen, China"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Destination *
-                  </label>
-                  <input
-                    type="text"
-                    name="destination"
-                    required
-                    value={formData.destination}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
-                    placeholder="Mundra, India"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    ETD
-                  </label>
-                  <input
-                    type="date"
-                    name="etd"
-                    value={formData.etd}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    ETA
-                  </label>
-                  <input
-                    type="date"
-                    name="eta"
-                    value={formData.eta}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                    placeholder="BL123456"
                   />
                 </div>
 
@@ -249,18 +232,518 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Voyage Number
+                    Voyage No.
                   </label>
                   <input
                     type="text"
-                    name="voyageNumber"
-                    value={formData.voyageNumber}
+                    name="voyageNo"
+                    value={formData.voyageNo}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
                     placeholder="MSC12345"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    POL (Port of Loading)
+                  </label>
+                  <input
+                    type="text"
+                    name="pol"
+                    value={formData.pol}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                    placeholder="Shenzhen, China"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    ETD (Estimated Time of Departure)
+                  </label>
+                  <input
+                    type="date"
+                    name="etd"
+                    value={formData.etd}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    POD (Port of Discharge)
+                  </label>
+                  <input
+                    type="text"
+                    name="pod"
+                    value={formData.pod}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                    placeholder="Mundra, India"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    ETA (Estimated Time of Arrival)
+                  </label>
+                  <input
+                    type="date"
+                    name="eta"
+                    value={formData.eta}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Container No.
+                  </label>
+                  <input
+                    type="text"
+                    name="containerNo"
+                    value={formData.containerNo}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                    placeholder="MSCU1234567"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Seal No.
+                  </label>
+                  <input
+                    type="text"
+                    name="sealNo"
+                    value={formData.sealNo}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                    placeholder="SEAL123456"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Transit Route
+                  </label>
+                  <input
+                    type="text"
+                    name="transitRoute"
+                    value={formData.transitRoute}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                    placeholder="Shenzhen -> Singapore -> Mundra"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    No. of Shipper/Exporter
+                  </label>
+                  <input
+                    type="number"
+                    name="noOfShippers"
+                    value={formData.noOfShippers}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                    placeholder="1"
+                  />
+                </div>
               </div>
+            </div>
+
+            {/* Shipper/Exporter Information */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Shipper/Exporter Information</h3>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({
+                      ...formData,
+                      shippers: [...formData.shippers, {
+                        name: '',
+                        address: '',
+                        subDistrict: '',
+                        district: '',
+                        province: '',
+                        country: '',
+                        pinCode: '',
+                        contactPerson: '',
+                        contactNo: '',
+                        packingList: '',
+                        invoiceNo: '',
+                        dateOfInvoice: '',
+                        hsnCode: '',
+                        descriptionOfGoods: '',
+                        quantity: '',
+                        weight: '',
+                        dimension: '',
+                        packageType: '',
+                        identifiersOnPackage: '',
+                        cooNo: '',
+                        agreementNo: '',
+                        dateOfAgreement: ''
+                      }]
+                    })
+                  }}
+                  className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
+                >
+                  + Add Shipper
+                </button>
+              </div>
+              {formData.shippers.map((shipper, shipperIndex) => (
+                <div key={shipperIndex} className="bg-gray-50 rounded-xl p-6 mb-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-md font-semibold text-gray-700">Shipper {shipperIndex + 1}</h4>
+                    {formData.shippers.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newShippers = formData.shippers.filter((_, i) => i !== shipperIndex)
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                      <input
+                        type="text"
+                        value={shipper.name}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].name = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Company Name"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                      <input
+                        type="text"
+                        value={shipper.address}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].address = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Full Address"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Sub District</label>
+                      <input
+                        type="text"
+                        value={shipper.subDistrict}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].subDistrict = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Sub District"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
+                      <input
+                        type="text"
+                        value={shipper.district}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].district = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="District"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Province</label>
+                      <input
+                        type="text"
+                        value={shipper.province}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].province = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Province"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                      <input
+                        type="text"
+                        value={shipper.country}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].country = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Country"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">PIN Code</label>
+                      <input
+                        type="text"
+                        value={shipper.pinCode}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].pinCode = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="PIN Code"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Contact Person</label>
+                      <input
+                        type="text"
+                        value={shipper.contactPerson}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].contactPerson = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Contact Person"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Contact No.</label>
+                      <input
+                        type="text"
+                        value={shipper.contactNo}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].contactNo = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Contact Number"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Packing List</label>
+                      <input
+                        type="text"
+                        value={shipper.packingList}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].packingList = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Packing List Reference"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Invoice No.</label>
+                      <input
+                        type="text"
+                        value={shipper.invoiceNo}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].invoiceNo = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Invoice Number"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Date of Invoice</label>
+                      <input
+                        type="date"
+                        value={shipper.dateOfInvoice}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].dateOfInvoice = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">HSN Code</label>
+                      <input
+                        type="text"
+                        value={shipper.hsnCode}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].hsnCode = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="HSN Code"
+                      />
+                    </div>
+
+                    <div className="md:col-span-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Description of Goods</label>
+                      <textarea
+                        value={shipper.descriptionOfGoods}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].descriptionOfGoods = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        rows={2}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Goods Description"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                      <input
+                        type="text"
+                        value={shipper.quantity}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].quantity = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Quantity"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Weight</label>
+                      <input
+                        type="text"
+                        value={shipper.weight}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].weight = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Weight"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Dimension</label>
+                      <input
+                        type="text"
+                        value={shipper.dimension}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].dimension = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="L x W x H"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Package Type</label>
+                      <input
+                        type="text"
+                        value={shipper.packageType}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].packageType = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Package Type"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Identifiers on Package</label>
+                      <input
+                        type="text"
+                        value={shipper.identifiersOnPackage}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].identifiersOnPackage = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Package Identifiers"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">COO No.</label>
+                      <input
+                        type="text"
+                        value={shipper.cooNo}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].cooNo = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Certificate of Origin No."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Agreement No.</label>
+                      <input
+                        type="text"
+                        value={shipper.agreementNo}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].agreementNo = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                        placeholder="Agreement Number"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Date of Agreement</label>
+                      <input
+                        type="date"
+                        value={shipper.dateOfAgreement}
+                        onChange={(e) => {
+                          const newShippers = [...formData.shippers]
+                          newShippers[shipperIndex].dateOfAgreement = e.target.value
+                          setFormData({ ...formData, shippers: newShippers })
+                        }}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Add Goods */}

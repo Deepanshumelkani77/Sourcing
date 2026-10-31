@@ -58,44 +58,194 @@ const containerGoodsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const shipperSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    address: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    subDistrict: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    district: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    province: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    country: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    pinCode: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    contactPerson: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    contactNo: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    packingList: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    invoiceNo: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    dateOfInvoice: {
+      type: Date,
+      default: null
+    },
+    hsnCode: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    descriptionOfGoods: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    quantity: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    weight: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    dimension: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    packageType: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    identifiersOnPackage: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    cooNo: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    agreementNo: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    dateOfAgreement: {
+      type: Date,
+      default: null
+    }
+  },
+  { timestamps: true }
+);
+
 const containerSchema = new mongoose.Schema(
   {
-    containerNumber: {
+    // Container Information
+    blNo: {
       type: String,
-      required: true,
-      unique: true,
       trim: true,
-      uppercase: true
-    },
-    shippingType: {
-      type: String,
-      required: true,
-      enum: ['Sea', 'Air']
-    },
-    origin: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    destination: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    etd: {
-      type: Date,
-      required: false
-    },
-    eta: {
-      type: Date,
-      required: false
+      default: ''
     },
     vesselName: {
       type: String,
       trim: true,
       default: ''
     },
-    voyageNumber: {
+    voyageNo: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    pol: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    etd: {
+      type: Date,
+      required: false
+    },
+    pod: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    eta: {
+      type: Date,
+      required: false
+    },
+    containerNo: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    sealNo: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    transitRoute: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    noOfShippers: {
+      type: Number,
+      default: 0
+    },
+    // Shipper/Exporter Information
+    shippers: [shipperSchema],
+    // Legacy fields (for backward compatibility)
+    containerNumber: {
+      type: String,
+      trim: true,
+      uppercase: true
+    },
+    shippingType: {
+      type: String,
+      enum: ['Sea', 'Air'],
+      default: 'Sea'
+    },
+    origin: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    destination: {
       type: String,
       trim: true,
       default: ''
@@ -128,6 +278,9 @@ const containerSchema = new mongoose.Schema(
 // Index for faster queries
 containerSchema.index({ currentStatus: 1 });
 containerSchema.index({ destination: 1 });
+containerSchema.index({ pod: 1 });
+containerSchema.index({ containerNo: 1 });
+containerSchema.index({ blNo: 1 });
 containerSchema.index({ 'goods.userId': 1 });
 containerSchema.index({ 'goods.orderId': 1 });
 

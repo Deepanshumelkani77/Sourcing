@@ -278,6 +278,125 @@ const ShipmentCard = ({ container }) => {
               </p>
             </div>
 
+            {/* Container Details */}
+            <div className="mt-5 p-4 bg-slate-50 rounded-lg">
+              <h4 className="text-sm font-semibold text-slate-900 mb-3">Container Details</h4>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                {container.blNo && (
+                  <div>
+                    <p className="text-slate-500">BL No.</p>
+                    <p className="font-medium text-slate-800">{container.blNo}</p>
+                  </div>
+                )}
+                {container.vesselName && (
+                  <div>
+                    <p className="text-slate-500">Vessel Name</p>
+                    <p className="font-medium text-slate-800">{container.vesselName}</p>
+                  </div>
+                )}
+                {container.voyageNo && (
+                  <div>
+                    <p className="text-slate-500">Voyage No.</p>
+                    <p className="font-medium text-slate-800">{container.voyageNo}</p>
+                  </div>
+                )}
+                {container.pol && (
+                  <div>
+                    <p className="text-slate-500">POL (Port of Loading)</p>
+                    <p className="font-medium text-slate-800">{container.pol}</p>
+                  </div>
+                )}
+                {container.etd && (
+                  <div>
+                    <p className="text-slate-500">ETD</p>
+                    <p className="font-medium text-slate-800">{formatDate(container.etd)}</p>
+                  </div>
+                )}
+                {container.pod && (
+                  <div>
+                    <p className="text-slate-500">POD (Port of Discharge)</p>
+                    <p className="font-medium text-slate-800">{container.pod}</p>
+                  </div>
+                )}
+                {container.eta && (
+                  <div>
+                    <p className="text-slate-500">ETA</p>
+                    <p className="font-medium text-slate-800">{formatDate(container.eta)}</p>
+                  </div>
+                )}
+                {container.containerNo && (
+                  <div>
+                    <p className="text-slate-500">Container No.</p>
+                    <p className="font-medium text-slate-800">{container.containerNo}</p>
+                  </div>
+                )}
+                {container.sealNo && (
+                  <div>
+                    <p className="text-slate-500">Seal No.</p>
+                    <p className="font-medium text-slate-800">{container.sealNo}</p>
+                  </div>
+                )}
+                {container.transitRoute && (
+                  <div className="col-span-2">
+                    <p className="text-slate-500">Transit Route</p>
+                    <p className="font-medium text-slate-800">{container.transitRoute}</p>
+                  </div>
+                )}
+                {container.noOfShippers !== undefined && (
+                  <div>
+                    <p className="text-slate-500">No. of Shippers</p>
+                    <p className="font-medium text-slate-800">{container.noOfShippers}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Shipper/Exporter Information */}
+            {container.shippers && container.shippers.length > 0 && (
+              <div className="mt-4 p-4 bg-slate-50 rounded-lg">
+                <h4 className="text-sm font-semibold text-slate-900 mb-3">Shipper/Exporter Information</h4>
+                <div className="space-y-3">
+                  {container.shippers.map((shipper, idx) => (
+                    <div key={idx} className="border-b border-slate-200 pb-3 last:border-0 last:pb-0">
+                      <p className="font-medium text-slate-800 text-sm">{shipper.name || `Shipper ${idx + 1}`}</p>
+                      <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
+                        {shipper.address && (
+                          <div className="col-span-2">
+                            <p className="text-slate-500">Address</p>
+                            <p className="text-slate-700">{shipper.address}</p>
+                          </div>
+                        )}
+                        {shipper.contactPerson && (
+                          <div>
+                            <p className="text-slate-500">Contact Person</p>
+                            <p className="text-slate-700">{shipper.contactPerson}</p>
+                          </div>
+                        )}
+                        {shipper.contactNo && (
+                          <div>
+                            <p className="text-slate-500">Contact No.</p>
+                            <p className="text-slate-700">{shipper.contactNo}</p>
+                          </div>
+                        )}
+                        {shipper.country && (
+                          <div>
+                            <p className="text-slate-500">Country</p>
+                            <p className="text-slate-700">{shipper.country}</p>
+                          </div>
+                        )}
+                        {shipper.district && (
+                          <div>
+                            <p className="text-slate-500">District</p>
+                            <p className="text-slate-700">{shipper.district}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Step list, revealed one by one after opening */}
             <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 mt-4">
               {CONTAINER_STAGES.map((s, i) => {
@@ -522,10 +641,11 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[820px]">
+              <table className="w-full min-w-[950px]">
                 <thead>
                   <tr className="text-left text-sm text-slate-500 border-b border-slate-200">
                     <th className="px-6 py-3 font-medium">Order</th>
+                    <th className="px-6 py-3 font-medium">Corresponding Buyer</th>
                     <th className="px-6 py-3 font-medium">Items</th>
                     <th className="px-6 py-3 font-medium text-right">Qty</th>
                     <th className="px-6 py-3 font-medium text-right">Amount</th>
@@ -543,6 +663,18 @@ const Dashboard = () => {
                       <tr key={order._id} className="hover:bg-slate-50 transition-colors">
                         <td className="px-6 py-4 text-sm font-semibold text-slate-900 whitespace-nowrap">
                           {order.orderNumber}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-600 max-w-xs">
+                          {order.shipperInfo?.name ? (
+                            <div>
+                              <p className="font-medium text-slate-800">{order.shipperInfo.name}</p>
+                              {order.shipperInfo.contactNo && (
+                                <p className="text-xs text-slate-500">{order.shipperInfo.contactNo}</p>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-slate-400">-</span>
+                          )}
                         </td>
                         <td className="px-6 py-4 text-sm text-slate-600 max-w-xs">
                           {items.slice(0, 2).map((item, i) => (
