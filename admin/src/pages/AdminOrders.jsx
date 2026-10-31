@@ -94,6 +94,17 @@ const AdminOrders = () => {
     setSelectedProductIndex(null)
   }
 
+  const handleProductClear = (index) => {
+    const items = [...newOrder.items]
+    items[index].productId = ''
+    items[index].productName = ''
+    items[index].price = 0
+    setNewOrder({ ...newOrder, items })
+    if (selectedProductIndex === index) {
+      setSelectedProductIndex(null)
+    }
+  }
+
   const fetchOrders = async () => {
     try {
       setLoading(true)
@@ -539,21 +550,36 @@ const AdminOrders = () => {
                   <div key={index} className="border border-gray-200 rounded-lg p-4 mb-3 bg-gray-50">
                     <div className="relative mb-3">
                       <label className="block text-xs font-medium text-gray-600 mb-1">Search Product</label>
-                      <input
-                        type="text"
-                        value={selectedProductIndex === index && item.productName ? item.productName : productSearch}
-                        onChange={(e) => {
-                          setProductSearch(e.target.value)
-                          setShowProductDropdown(true)
-                          setSelectedProductIndex(index)
-                        }}
-                        onFocus={() => {
-                          setShowProductDropdown(true)
-                          setSelectedProductIndex(index)
-                        }}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                        placeholder="Search products by name..."
-                      />
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={item.productName || productSearch}
+                          onChange={(e) => {
+                            setProductSearch(e.target.value)
+                            setShowProductDropdown(true)
+                            setSelectedProductIndex(index)
+                          }}
+                          onFocus={() => {
+                            setShowProductDropdown(true)
+                            setSelectedProductIndex(index)
+                          }}
+                          className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none ${
+                            item.productName ? 'bg-white border-green-300' : 'border-gray-300'
+                          }`}
+                          placeholder={item.productName ? '' : 'Search products by name...'}
+                        />
+                        {item.productName && (
+                          <button
+                            type="button"
+                            onClick={() => handleProductClear(index)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
                       {showProductDropdown && selectedProductIndex === index && (
                         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                           {loadingProducts ? (
