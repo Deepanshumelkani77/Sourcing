@@ -14,11 +14,11 @@ const { protectAdmin, protectUser, authorize } = require("../middleware/authMidd
 router.get("/my-orders", protectUser, getUserOrders);
 
 // Admin routes
-router.post("/", protectAdmin, authorize("admin"), createOrder);
-router.get("/", protectAdmin, authorize("admin"), getAllOrders);
-router.get("/:id", protectAdmin, authorize("admin"), getOrderById);
-router.patch("/:id", protectAdmin, authorize("admin"), updateOrderStatus);
-router.put("/:id/status", protectAdmin, authorize("admin"), updateOrderStatus);
-router.delete("/:id", protectAdmin, authorize("admin"), deleteOrder);
+router.post("/", protectAdmin, authorize("admin", "main_admin", "employee"), createOrder);
+router.get("/", protectAdmin, authorize("admin", "main_admin", "employee"), getAllOrders);
+router.get("/:id", protectAdmin, authorize("admin", "main_admin", "employee"), getOrderById);
+router.patch("/:id", protectAdmin, authorize("admin", "main_admin", "employee"), updateOrderStatus);
+router.put("/:id/status", protectAdmin, authorize("admin", "main_admin", "employee"), updateOrderStatus);
+router.delete("/:id", protectAdmin, authorize("admin", "main_admin", "employee"), deleteOrder);
 
 module.exports = router;
