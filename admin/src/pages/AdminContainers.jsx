@@ -14,10 +14,11 @@ const AdminContainers = () => {
   const [shipperFilter, setShipperFilter] = useState('')
   const [buyerFilter, setBuyerFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [yearFilter, setYearFilter] = useState('')
 
   useEffect(() => {
     fetchContainers()
-  }, [blNoFilter, containerNoFilter, shipperFilter, buyerFilter, statusFilter])
+  }, [blNoFilter, containerNoFilter, shipperFilter, buyerFilter, statusFilter, yearFilter])
 
   const fetchContainers = async () => {
     try {
@@ -28,6 +29,7 @@ const AdminContainers = () => {
       if (shipperFilter) params.shipper = shipperFilter
       if (buyerFilter) params.buyer = buyerFilter
       if (statusFilter) params.status = statusFilter
+      if (yearFilter) params.year = yearFilter
 
       const result = await getAllContainers(params)
       if (result.success) {
@@ -95,7 +97,7 @@ const AdminContainers = () => {
 
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Bill of Lading</label>
             <input
@@ -152,6 +154,24 @@ const AdminContainers = () => {
               <option value="Under Transportation">Under Transportation</option>
             </select>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+            <select
+              value={yearFilter}
+              onChange={(e) => setYearFilter(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+            >
+              <option value="">All Years</option>
+              {[...Array(10)].map((_, i) => {
+                const year = new Date().getFullYear() - i
+                return (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                )
+              })}
+            </select>
+          </div>
           <div className="flex items-end">
             <button
               onClick={() => {
@@ -160,6 +180,7 @@ const AdminContainers = () => {
                 setShipperFilter('')
                 setBuyerFilter('')
                 setStatusFilter('')
+                setYearFilter('')
               }}
               className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
             >

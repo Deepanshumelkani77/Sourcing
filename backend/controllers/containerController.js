@@ -144,11 +144,21 @@ const createContainer = async (req, res) => {
 // Get all containers (admin)
 const getAllContainers = async (req, res) => {
   try {
-    const { status, destination, search, blNo, containerNo, shipper, buyer } = req.query;
+    const { status, destination, search, blNo, containerNo, shipper, buyer, year } = req.query;
     const filter = {};
 
     if (status) {
       filter.currentStatus = status;
+    }
+
+    // Filter by year (based on creation date)
+    if (year) {
+      const startDate = new Date(year, 0, 1); // January 1st of the year
+      const endDate = new Date(parseInt(year) + 1, 0, 1); // January 1st of next year
+      filter.createdAt = {
+        $gte: startDate,
+        $lt: endDate
+      };
     }
 
     // Specific field searches

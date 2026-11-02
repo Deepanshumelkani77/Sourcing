@@ -3,11 +3,16 @@ const Product = require("../models/Product");
 
 const router = express.Router();
 
-// Get all active products with search
+// Get all products with search (admin can include inactive products)
 router.get("/", async (req, res) => {
   try {
-    const { search, category, lang = "en" } = req.query;
-    const query = { status: "active" };
+    const { search, category, lang = "en", includeAll } = req.query;
+    const query = {};
+
+    // Only filter by status if includeAll is not set
+    if (!includeAll) {
+      query.status = "active";
+    }
 
     if (search) {
       query.$or = [
@@ -25,7 +30,7 @@ router.get("/", async (req, res) => {
       .sort({ createdAt: -1 });
 
     // Return localized data for each product
-    const localizedProducts = products.map(product => 
+    const localizedProducts = products.map(product =>
       product.getLocalizedData(lang)
     );
 

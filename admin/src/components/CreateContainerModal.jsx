@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { createContainer, getAvailableOrders } from '../services/containerApi'
 import { uploadDocument } from '../services/uploadApi'
 
@@ -54,6 +54,9 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
   const [uploadingBL, setUploadingBL] = useState(false)
   const [uploadingInvoice, setUploadingInvoice] = useState(false)
   const [uploadingPackingList, setUploadingPackingList] = useState(null)
+  const blFileInputRef = useRef(null)
+  const invoiceFileInputRefs = useRef([])
+  const packingListFileInputRefs = useRef([])
 
   useEffect(() => {
     if (isOpen) {
@@ -279,6 +282,7 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
                   </label>
                   <div className="mt-1">
                     <input
+                      ref={blFileInputRef}
                       type="file"
                       accept=".pdf,image/*"
                       onChange={async (e) => {
@@ -309,7 +313,12 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
                         </a>
                         <button
                           type="button"
-                          onClick={() => setFormData({ ...formData, blUrl: '' })}
+                          onClick={() => {
+                            setFormData({ ...formData, blUrl: '' })
+                            if (blFileInputRef.current) {
+                              blFileInputRef.current.value = ''
+                            }
+                          }}
                           className="text-sm text-red-600 hover:text-red-800"
                         >
                           Remove
@@ -621,6 +630,11 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Upload Packing List</label>
                       <input
+                        ref={el => {
+                          if (el) {
+                            packingListFileInputRefs.current[shipperIndex] = el
+                          }
+                        }}
                         type="file"
                         accept=".pdf,image/*"
                         onChange={async (e) => {
@@ -657,6 +671,9 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
                               const newShippers = [...formData.shippers]
                               newShippers[shipperIndex].packingListUrl = ''
                               setFormData({ ...formData, shippers: newShippers })
+                              if (packingListFileInputRefs.current[shipperIndex]) {
+                                packingListFileInputRefs.current[shipperIndex].value = ''
+                              }
                             }}
                             className="text-sm text-red-600 hover:text-red-800"
                           >
@@ -684,6 +701,11 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Upload Invoice</label>
                       <input
+                        ref={el => {
+                          if (el) {
+                            invoiceFileInputRefs.current[shipperIndex] = el
+                          }
+                        }}
                         type="file"
                         accept=".pdf,image/*"
                         onChange={async (e) => {
@@ -720,6 +742,9 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
                               const newShippers = [...formData.shippers]
                               newShippers[shipperIndex].invoiceUrl = ''
                               setFormData({ ...formData, shippers: newShippers })
+                              if (invoiceFileInputRefs.current[shipperIndex]) {
+                                invoiceFileInputRefs.current[shipperIndex].value = ''
+                              }
                             }}
                             className="text-sm text-red-600 hover:text-red-800"
                           >

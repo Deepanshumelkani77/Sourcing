@@ -8,6 +8,7 @@ const AdminOrders = () => {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [yearFilter, setYearFilter] = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showStatusModal, setShowStatusModal] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
@@ -40,7 +41,7 @@ const AdminOrders = () => {
 
   useEffect(() => {
     fetchOrders()
-  }, [searchTerm, statusFilter])
+  }, [searchTerm, statusFilter, yearFilter])
 
   useEffect(() => {
     if (showCreateModal) {
@@ -108,7 +109,7 @@ const AdminOrders = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true)
-      const result = await getAllOrders({ search: searchTerm, status: statusFilter })
+      const result = await getAllOrders({ search: searchTerm, status: statusFilter, year: yearFilter })
       if (result.success) {
         setOrders(result.orders)
       }
@@ -276,6 +277,31 @@ const AdminOrders = () => {
             <option value="Under Delivery">Under Delivery</option>
             <option value="Delivered">Delivered</option>
           </select>
+          <select
+            value={yearFilter}
+            onChange={(e) => setYearFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+          >
+            <option value="">All Years</option>
+            {[...Array(10)].map((_, i) => {
+              const year = new Date().getFullYear() - i
+              return (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              )
+            })}
+          </select>
+          <button
+            onClick={() => {
+              setSearchTerm('')
+              setStatusFilter('')
+              setYearFilter('')
+            }}
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+          >
+            Clear Filters
+          </button>
         </div>
       </div>
 

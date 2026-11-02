@@ -6,13 +6,14 @@ const AdminDashboard = () => {
   const [containers, setContainers] = useState([])
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [yearFilter, setYearFilter] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true)
         const [containersResult, usersResult] = await Promise.all([
-          getAllContainers(),
+          getAllContainers(yearFilter ? { year: yearFilter } : {}),
           getAllUsers()
         ])
         if (containersResult.success) {
@@ -28,7 +29,7 @@ const AdminDashboard = () => {
       }
     }
     fetchData()
-  }, [])
+  }, [yearFilter])
 
   const stats = {
     totalContainers: containers.length,
@@ -47,7 +48,24 @@ const AdminDashboard = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Dashboard</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+        <select
+          value={yearFilter}
+          onChange={(e) => setYearFilter(e.target.value)}
+          className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+        >
+          <option value="">All Years</option>
+          {[...Array(10)].map((_, i) => {
+            const year = new Date().getFullYear() - i
+            return (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            )
+          })}
+        </select>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

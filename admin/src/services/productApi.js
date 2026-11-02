@@ -12,7 +12,9 @@ const getAuthHeader = () => {
 // Get all products
 export const getAllProducts = async (params = {}) => {
   try {
-    const queryString = new URLSearchParams(params).toString();
+    // Always include all products (active and inactive) for admin
+    const queryParams = { ...params, includeAll: true };
+    const queryString = new URLSearchParams(queryParams).toString();
     const url = `${API_URL}/api/products${queryString ? `?${queryString}` : ''}`;
 
     const response = await fetch(url, {

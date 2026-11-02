@@ -91,11 +91,21 @@ const createOrder = async (req, res) => {
 // Get all orders
 const getAllOrders = async (req, res) => {
   try {
-    const { status, search } = req.query;
+    const { status, search, year } = req.query;
     const query = {};
 
     if (status) {
       query.status = status;
+    }
+
+    // Filter by year (based on creation date)
+    if (year) {
+      const startDate = new Date(year, 0, 1); // January 1st of the year
+      const endDate = new Date(parseInt(year) + 1, 0, 1); // January 1st of next year
+      query.createdAt = {
+        $gte: startDate,
+        $lt: endDate
+      };
     }
 
     if (search) {

@@ -9,6 +9,7 @@ const AdminProducts = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedMainCategory, setSelectedMainCategory] = useState('Main Category')
   const [selectedCategory, setSelectedCategory] = useState('Category')
+  const [statusFilter, setStatusFilter] = useState('all')
   const [showModal, setShowModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -16,7 +17,7 @@ const AdminProducts = () => {
 
   useEffect(() => {
     fetchProducts()
-  }, [searchTerm, selectedCategory, selectedMainCategory])
+  }, [searchTerm, selectedCategory, selectedMainCategory, statusFilter])
 
   const fetchProducts = async () => {
     try {
@@ -26,13 +27,16 @@ const AdminProducts = () => {
         const allProductsData = result.products || result
         setAllProducts(allProductsData)
 
-        // Filter products based on selected category and main category
+        // Filter products based on selected category, main category, and status
         let filtered = allProductsData
         if (selectedMainCategory && selectedMainCategory !== 'Main Category') {
           filtered = filtered.filter(p => p.mainCategory === selectedMainCategory)
         }
         if (selectedCategory && selectedCategory !== 'Category') {
           filtered = filtered.filter(p => p.category === selectedCategory)
+        }
+        if (statusFilter !== 'all') {
+          filtered = filtered.filter(p => p.status === statusFilter)
         }
         setProducts(filtered)
       }
@@ -63,6 +67,7 @@ const AdminProducts = () => {
       const result = await deleteProduct(productToDelete.slug)
       if (result.success) {
         setProducts(products.filter(p => p.slug !== productToDelete.slug))
+        setAllProducts(allProducts.filter(p => p.slug !== productToDelete.slug))
         setShowDeleteModal(false)
         setProductToDelete(null)
       }
@@ -77,6 +82,7 @@ const AdminProducts = () => {
       const result = await updateProduct(product.slug, { ...product, status: newStatus })
       if (result.success) {
         setProducts(products.map(p => p.slug === product.slug ? { ...p, status: newStatus } : p))
+        setAllProducts(allProducts.map(p => p.slug === product.slug ? { ...p, status: newStatus } : p))
       }
     } catch (error) {
       console.error('Error toggling product status:', error)
@@ -94,6 +100,7 @@ const AdminProducts = () => {
         const result = await updateProduct(editingProduct.slug, productData)
         if (result.success) {
           setProducts(products.map(p => p.slug === editingProduct.slug ? result.product : p))
+          setAllProducts(allProducts.map(p => p.slug === editingProduct.slug ? result.product : p))
           setShowModal(false)
           setEditingProduct(null)
         }
@@ -101,6 +108,7 @@ const AdminProducts = () => {
         const result = await createProduct(productData)
         if (result.success) {
           setProducts([...products, result.product])
+          setAllProducts([...allProducts, result.product])
           setShowModal(false)
         }
       }
@@ -140,6 +148,14 @@ const AdminProducts = () => {
         .filter(Boolean)
       )]
     : ['Category', ...new Set(allProducts.map(p => p.category).filter(Boolean))]
+
+  // Count products by status
+  const statusCounts = {
+    all: allProducts.length,
+    active: allProducts.filter(p => p.status === 'active').length,
+    inactive: allProducts.filter(p => p.status === 'inactive').length,
+    draft: allProducts.filter(p => p.status === 'draft').length
+  }
 
   return (
     <div>
@@ -185,6 +201,16 @@ const AdminProducts = () => {
               </option>
             ))}
           </select>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-40 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none bg-white"
+          >
+            <option value="all">All ({statusCounts.all})</option>
+            <option value="active">Active ({statusCounts.active})</option>
+            <option value="inactive">Inactive ({statusCounts.inactive})</option>
+            <option value="draft">Draft ({statusCounts.draft})</option>
+          </select>
         </div>
       </div>
 
@@ -200,14 +226,23 @@ const AdminProducts = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
-            <div key={product._id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+            <div
+              key={product._id}
+              className={`bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow-md transition-shadow ${
+                product.status === 'inactive'
+                  ? 'border-gray-200 opacity-75'
+                  : 'border-gray-100'
+              }`}
+            >
               {/* Product Image */}
               <div className="h-48 bg-gray-100 relative">
                 {product.images && product.images.length > 0 ? (
                   <img
                     src={product.images[0]}
                     alt={product.productName}
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full object-cover ${
+                      product.status === 'inactive' ? 'grayscale' : ''
+                    }`}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -219,6 +254,13 @@ const AdminProducts = () => {
                     {product.status || 'draft'}
                   </span>
                 </div>
+                {product.status === 'inactive' && (
+                  <div className="absolute inset-0 bg-black/5 flex items-center justify-center">
+                    <span className="bg-gray-800/80 text-white px-3 py-1 rounded-full text-xs font-medium">
+                      Inactive
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Product Info */}
@@ -229,25 +271,35 @@ const AdminProducts = () => {
                       {product.mainCategory}
                     </span>
                   )}
-                  <span className="text-xs font-medium text-[#F41703] uppercase tracking-wider">
+                  <span className={`text-xs font-medium uppercase tracking-wider ${
+                    product.status === 'inactive' ? 'text-gray-400' : 'text-[#F41703]'
+                  }`}>
                     {product.category}
                   </span>
                   {product.subCategory && (
-                    <span className="text-xs text-gray-500 ml-2">
+                    <span className={`text-xs ml-2 ${
+                      product.status === 'inactive' ? 'text-gray-400' : 'text-gray-500'
+                    }`}>
                       {product.subCategory}
                     </span>
                   )}
                 </div>
-                
-                <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2">
+
+                <h3 className={`font-semibold mb-2 line-clamp-2 ${
+                  product.status === 'inactive' ? 'text-gray-500' : 'text-gray-800'
+                }`}>
                   {product.productName}
                 </h3>
-                
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+
+                <p className={`text-sm mb-3 line-clamp-2 ${
+                  product.status === 'inactive' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
                   {product.shortDescription}
                 </p>
 
-                <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                <div className={`flex items-center justify-between text-xs mb-4 ${
+                  product.status === 'inactive' ? 'text-gray-400' : 'text-gray-500'
+                }`}>
                   <span>{formatDate(product.createdAt)}</span>
                   <span>{product.features?.length || 0} features</span>
                 </div>
