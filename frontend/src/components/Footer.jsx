@@ -273,6 +273,18 @@ const Footer = () => {
             <Link to="/terms" className="hover:text-white transition-colors duration-200">
               {t('footer.termsOfService')}
             </Link>
+            <span className="text-gray-600">|</span>
+            <a
+              href="https://sourcingadmin.vercel.app/admin/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-gray-600 hover:text-[#F41703] transition-colors duration-200 flex items-center gap-1"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              Admin Login
+            </a>
           </div>
         </div>
       </div>

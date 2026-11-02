@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { getAllContainers, deleteContainer, updateContainerStatus } from '../services/containerApi'
 import CreateContainerModal from '../components/CreateContainerModal'
 
 const AdminContainers = () => {
+  const location = useLocation()
   const [containers, setContainers] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -17,6 +19,23 @@ const AdminContainers = () => {
   const [yearFilter, setYearFilter] = useState('')
 
   useEffect(() => {
+    // Check if navigation came from dashboard with filter
+    if (location.state?.fromDashboard) {
+      if (location.state.statusFilter === 'active') {
+        // For active shipments, we don't set a filter - show all non-completed
+        setStatusFilter('')
+      } else if (location.state.statusFilter === 'completed') {
+        setStatusFilter('Completed')
+      }
+    }
+    // Check if navigation came from order page after status update
+    if (location.state?.fromOrder) {
+      // No specific filter needed, just show all containers
+      console.log('Navigated from order page after status update')
+    }
+  }, [location.state])
+
+  useEffect(() => {
     fetchContainers()
   }, [blNoFilter, containerNoFilter, shipperFilter, buyerFilter, statusFilter, yearFilter])
 
@@ -28,12 +47,19 @@ const AdminContainers = () => {
       if (containerNoFilter) params.containerNo = containerNoFilter
       if (shipperFilter) params.shipper = shipperFilter
       if (buyerFilter) params.buyer = buyerFilter
-      if (statusFilter) params.status = statusFilter
+      if (statusFilter && statusFilter !== 'active') params.status = statusFilter
       if (yearFilter) params.year = yearFilter
 
       const result = await getAllContainers(params)
       if (result.success) {
-        setContainers(result.containers)
+        // Filter locally for active and specific statuses
+        let filteredContainers = result.containers
+        if (statusFilter === 'active') {
+          filteredContainers = result.containers.filter(c => c.currentStatus !== 'Completed')
+        } else if (statusFilter) {
+          filteredContainers = result.containers.filter(c => c.currentStatus === statusFilter)
+        }
+        setContainers(filteredContainers)
       }
     } catch (error) {
       console.error('Error fetching containers:', error)
@@ -86,7 +112,36 @@ const AdminContainers = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Containers</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Containers</h1>
+          {location.state?.fromDashboard && (
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-sm text-gray-500">
+                {location.state.statusFilter === 'active'
+                  ? 'Viewing active shipments from dashboard'
+                  : location.state.statusFilter === 'completed'
+                  ? 'Viewing delivered containers from dashboard'
+                  : 'Viewing all containers from dashboard'}
+              </p>
+              <button
+                onClick={() => {
+                  setStatusFilter('')
+                  setYearFilter('')
+                }}
+                className="text-xs text-[#F41703] hover:text-[#d10f02] font-medium"
+              >
+                Clear Filter
+              </button>
+            </div>
+          )}
+          {location.state?.fromOrder && (
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-sm text-gray-500">
+                Order status updated to "Transportation to Shipping Port/Airport" - Now manage the container
+              </p>
+            </div>
+          )}
+        </div>
         <button
           onClick={() => setShowModal(true)}
           className="bg-gradient-to-r from-[#F41703] to-[#F97316] text-white px-6 py-2.5 rounded-lg font-semibold hover:from-[#d10f02] hover:to-[#ea580c] transition-all shadow-lg"
@@ -146,12 +201,14 @@ const AdminContainers = () => {
               className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
             >
               <option value="">All Statuses</option>
+              <option value="active">Active (Not Completed)</option>
               <option value="Goods Under Stuffing">Goods Under Stuffing</option>
               <option value="Container Loaded">Container Loaded</option>
               <option value="Under Shipment">Under Shipment</option>
               <option value="Arrival Port Added">Arrival Port Added</option>
               <option value="Custom Clearance">Custom Clearance</option>
               <option value="Under Transportation">Under Transportation</option>
+              <option value="Completed">Completed</option>
             </select>
           </div>
           <div>
@@ -234,7 +291,7 @@ const AdminContainers = () => {
                     <td className="px-4 py-3 text-sm text-gray-600">{container.noOfShippers || container.shippers?.length || 0}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        container.currentStatus === 'Delivered'
+                        container.currentStatus === 'Completed' || container.currentStatus === 'Delivered'
                           ? 'bg-green-100 text-green-700'
                           : container.currentStatus === 'Under Delivery'
                           ? 'bg-teal-100 text-teal-700'
@@ -333,6 +390,7 @@ const AdminContainers = () => {
                 <option value="Arrival Port Added">Arrival Port Added</option>
                 <option value="Custom Clearance">Custom Clearance</option>
                 <option value="Under Transportation">Under Transportation</option>
+                <option value="Completed">Completed</option>
               </select>
             </div>
 

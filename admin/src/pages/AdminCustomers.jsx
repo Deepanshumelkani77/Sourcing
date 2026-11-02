@@ -1,10 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import { getAllUsers, deleteUser } from '../services/userApi'
+import { useLocation } from 'react-router-dom'
+import { getAllUsers, deleteUser, updateUser } from '../services/userApi'
 
 const AdminCustomers = () => {
+  const location = useLocation()
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [selectedCustomer, setSelectedCustomer] = useState(null)
+  const [editForm, setEditForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    emailVerified: false
+  })
+
+  useEffect(() => {
+    // Check if navigation came from dashboard
+    if (location.state?.fromDashboard) {
+      // No special filter needed for customers, just show all
+      console.log('Navigated from dashboard to customers')
+    }
+  }, [location.state])
 
   useEffect(() => {
     fetchCustomers()
@@ -40,6 +58,33 @@ const AdminCustomers = () => {
     }
   }
 
+  const handleEditCustomer = (customer) => {
+    setSelectedCustomer(customer)
+    setEditForm({
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: customer.email,
+      emailVerified: customer.emailVerified || false
+    })
+    setShowEditModal(true)
+  }
+
+  const handleUpdateCustomer = async () => {
+    try {
+      const result = await updateUser(selectedCustomer._id, editForm)
+      if (result.success) {
+        setShowEditModal(false)
+        setSelectedCustomer(null)
+        fetchCustomers()
+      } else {
+        alert(result.message || 'Failed to update customer')
+      }
+    } catch (error) {
+      console.error('Error updating customer:', error)
+      alert('Failed to update customer')
+    }
+  }
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {
       day: '2-digit',
@@ -51,7 +96,12 @@ const AdminCustomers = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Customers</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Customers</h1>
+          {location.state?.fromDashboard && (
+            <p className="text-sm text-gray-500 mt-1">Viewing all customers from dashboard</p>
+          )}
+        </div>
       </div>
 
       {/* Search */}
@@ -118,12 +168,20 @@ const AdminCustomers = () => {
                     <td className="px-6 py-4 text-sm font-medium text-gray-800">${(customer.totalSpent || 0).toLocaleString()}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{formatDate(customer.createdAt)}</td>
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => handleDeleteCustomer(customer._id)}
-                        className="text-red-600 hover:text-red-800 text-sm font-medium"
-                      >
-                        Delete
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => handleEditCustomer(customer)}
+                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteCustomer(customer._id)}
+                          className="text-red-600 hover:text-red-800 text-sm font-medium"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -132,6 +190,93 @@ const AdminCustomers = () => {
           </div>
         )}
       </div>
+
+      {/* Edit Customer Modal */}
+      {showEditModal && selectedCustomer && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-gray-800">Edit Customer</h2>
+                <button
+                  onClick={() => {
+                    setShowEditModal(false)
+                    setSelectedCustomer(null)
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                <input
+                  type="text"
+                  value={editForm.firstName}
+                  onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                <input
+                  type="text"
+                  value={editForm.lastName}
+                  onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={editForm.email}
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                />
+              </div>
+
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="emailVerified"
+                  checked={editForm.emailVerified}
+                  onChange={(e) => setEditForm({ ...editForm, emailVerified: e.target.checked })}
+                  className="w-4 h-4 text-[#F41703] border-gray-300 rounded focus:ring-[#F41703]"
+                />
+                <label htmlFor="emailVerified" className="text-sm text-gray-700">
+                  Email Verified
+                </label>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowEditModal(false)
+                  setSelectedCustomer(null)
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateCustomer}
+                className="px-4 py-2 bg-gradient-to-r from-[#F41703] to-[#F97316] text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
+              >
+                Update Customer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -3,7 +3,8 @@ const router = express.Router();
 const {
   getAllUsers,
   getUserById,
-  deleteUser
+  deleteUser,
+  updateUser
 } = require('../controllers/userController');
 const { protectAdmin, authorize } = require('../middleware/authMiddleware');
 
@@ -13,6 +14,7 @@ router.route('/')
 
 router.route('/:id')
   .get(protectAdmin, authorize('admin', 'main_admin', 'employee'), getUserById)
+  .put(protectAdmin, authorize('admin', 'main_admin', 'employee'), updateUser)
   .delete(protectAdmin, authorize('admin', 'main_admin', 'employee'), deleteUser);
 
 module.exports = router;

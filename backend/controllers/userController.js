@@ -108,8 +108,61 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Update user
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { firstName, lastName, email, emailVerified } = req.body;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Update fields
+    if (firstName !== undefined) user.firstName = firstName;
+    if (lastName !== undefined) user.lastName = lastName;
+    if (email !== undefined) user.email = email;
+    if (emailVerified !== undefined) user.emailVerified = emailVerified;
+
+    await user.save();
+
+    // Recalculate totals
+    const deliveredOrders = await Order.find({
+      userId: user._id,
+      status: 'Delivered'
+    });
+
+    const totalOrders = deliveredOrders.length;
+    const totalSpent = deliveredOrders.reduce((sum, order) => {
+      return sum + order.items.reduce((itemSum, item) => itemSum + (item.price * item.quantity), 0);
+    }, 0);
+
+    const updatedUser = user.toObject();
+    updatedUser.totalOrders = totalOrders;
+    updatedUser.totalSpent = totalSpent;
+
+    return res.status(200).json({
+      success: true,
+      user: updatedUser,
+      message: 'User updated successfully'
+    });
+  } catch (error) {
+    console.error('updateUser:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Unable to update user'
+    });
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUserById,
-  deleteUser
+  deleteUser,
+  updateUser
 };

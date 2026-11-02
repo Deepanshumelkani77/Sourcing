@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getAllContainers } from '../services/containerApi'
 import { getAllUsers } from '../services/userApi'
 
 const AdminDashboard = () => {
+  const navigate = useNavigate()
   const [containers, setContainers] = useState([])
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -69,13 +71,17 @@ const AdminDashboard = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div
+          onClick={() => navigate('/containers', { state: { fromDashboard: true } })}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-lg hover:border-blue-300 transition-all duration-300 group"
+          title="View all containers"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Total Containers</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">{stats.totalContainers}</p>
+              <p className="text-sm text-gray-500 group-hover:text-blue-600 transition-colors">Total Containers</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2 group-hover:text-blue-700 transition-colors">{stats.totalContainers}</p>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
               <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
@@ -83,13 +89,17 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div
+          onClick={() => navigate('/containers', { state: { fromDashboard: true, statusFilter: 'active' } })}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-lg hover:border-green-300 transition-all duration-300 group"
+          title="View all active shipments"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Active Shipments</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">{stats.activeShipments}</p>
+              <p className="text-sm text-gray-500 group-hover:text-green-600 transition-colors">Active Shipments</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2 group-hover:text-green-700 transition-colors">{stats.activeShipments}</p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
               <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
@@ -97,13 +107,17 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div
+          onClick={() => navigate('/containers', { state: { fromDashboard: true, statusFilter: 'completed' } })}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-lg hover:border-purple-300 transition-all duration-300 group"
+          title="View all delivered containers"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Delivered</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">{stats.delivered}</p>
+              <p className="text-sm text-gray-500 group-hover:text-purple-600 transition-colors">Delivered</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2 group-hover:text-purple-700 transition-colors">{stats.delivered}</p>
             </div>
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors">
               <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
@@ -111,13 +125,17 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div
+          onClick={() => navigate('/customers', { state: { fromDashboard: true } })}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-lg hover:border-orange-300 transition-all duration-300 group"
+          title="View all customers"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Total Customers</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">{stats.totalCustomers}</p>
+              <p className="text-sm text-gray-500 group-hover:text-orange-600 transition-colors">Total Customers</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2 group-hover:text-orange-700 transition-colors">{stats.totalCustomers}</p>
             </div>
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center group-hover:bg-orange-200 transition-colors">
               <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>

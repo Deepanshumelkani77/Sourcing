@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getAllOrders, createOrder, updateOrderStatus, deleteOrder } from '../services/orderApi'
 import { getAllUsers } from '../services/userApi'
 import { getAllProducts } from '../services/productApi'
 
 const AdminOrders = () => {
+  const navigate = useNavigate()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -187,6 +189,25 @@ const AdminOrders = () => {
         setSelectedOrder(null)
         setNewStatus('')
         fetchOrders()
+      } else {
+        alert(result.message || 'Failed to update status')
+      }
+    } catch (error) {
+      console.error('Error updating status:', error)
+      alert('Failed to update status')
+    }
+  }
+
+  const handleUpdateStatusAndNavigate = async () => {
+    try {
+      const result = await updateOrderStatus(selectedOrder._id, newStatus)
+      if (result.success) {
+        setShowStatusModal(false)
+        setSelectedOrder(null)
+        setNewStatus('')
+        fetchOrders()
+        // Navigate to container page after successful status update
+        navigate('/containers', { state: { fromOrder: true, orderId: selectedOrder._id } })
       } else {
         alert(result.message || 'Failed to update status')
       }
@@ -452,7 +473,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, name: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Company Name"
+                      placeholder="Enter company name (Chinese)"
                     />
                   </div>
 
@@ -466,7 +487,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, address: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Full Address"
+                      placeholder="Enter full address (Chinese)"
                     />
                   </div>
 
@@ -480,7 +501,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, subDistrict: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Sub District"
+                      placeholder="Enter sub district (Chinese)"
                     />
                   </div>
 
@@ -494,7 +515,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, district: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="District"
+                      placeholder="Enter district (Chinese)"
                     />
                   </div>
 
@@ -508,7 +529,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, province: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Province"
+                      placeholder="Enter province (Chinese)"
                     />
                   </div>
 
@@ -522,7 +543,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, country: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Country"
+                      placeholder="Enter country (Chinese)"
                     />
                   </div>
 
@@ -536,7 +557,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, pinCode: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="PIN Code"
+                      placeholder="Enter PIN code"
                     />
                   </div>
 
@@ -550,7 +571,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, contactPerson: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Contact Person"
+                      placeholder="Enter contact person name (Chinese)"
                     />
                   </div>
 
@@ -564,7 +585,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, contactNo: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Contact Number"
+                      placeholder="Enter contact number"
                     />
                   </div>
                 </div>
@@ -771,17 +792,9 @@ const AdminOrders = () => {
               </select>
               {newStatus === 'Transportation to Shipping Port/Airport' && (
                 <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-800 mb-2">
-                    Order is ready for container management.
+                  <p className="text-sm text-blue-800">
+                    ✓ This status will allow you to manage the order in the container page after updating.
                   </p>
-                  <button
-                    onClick={() => {
-                      window.location.href = '/admin/containers'
-                    }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
-                  >
-                    Go to Container Page
-                  </button>
                 </div>
               )}
             </div>
@@ -802,6 +815,14 @@ const AdminOrders = () => {
               >
                 Update Status
               </button>
+              {newStatus === 'Transportation to Shipping Port/Airport' && (
+                <button
+                  onClick={handleUpdateStatusAndNavigate}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                  Update & Go to Container
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -69,3 +69,23 @@ export const deleteUser = async (id) => {
     return { success: false, message: error.message };
   }
 };
+
+// Update user
+export const updateUser = async (id, userData) => {
+  try {
+    const response = await fetch(`${API_URL}/api/users/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader()
+      },
+      credentials: 'include',
+      body: JSON.stringify(userData)
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
