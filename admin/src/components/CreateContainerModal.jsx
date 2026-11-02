@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { createContainer, getAvailableOrders } from '../services/containerApi'
+import { uploadDocument } from '../services/uploadApi'
 
 const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     // Container Information
     blNo: '',
+    blUrl: '',
     vesselName: '',
     voyageNo: '',
     pol: '',
@@ -27,7 +29,9 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
       contactPerson: '',
       contactNo: '',
       packingList: '',
+      packingListUrl: '',
       invoiceNo: '',
+      invoiceUrl: '',
       dateOfInvoice: '',
       hsnCode: '',
       descriptionOfGoods: '',
@@ -47,12 +51,59 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [uploadingBL, setUploadingBL] = useState(false)
+  const [uploadingInvoice, setUploadingInvoice] = useState(false)
+  const [uploadingPackingList, setUploadingPackingList] = useState(null)
 
   useEffect(() => {
     if (isOpen) {
       fetchAvailableOrders()
     }
   }, [isOpen, searchTerm])
+
+  // Auto-update shippers array when noOfShippers changes
+  useEffect(() => {
+    const currentCount = formData.shippers.length
+    const targetCount = formData.noOfShippers || 0
+
+    if (targetCount > currentCount) {
+      // Add new shipper entries
+      const newShippers = [...formData.shippers]
+      for (let i = currentCount; i < targetCount; i++) {
+        newShippers.push({
+          name: '',
+          address: '',
+          subDistrict: '',
+          district: '',
+          province: '',
+          country: '',
+          pinCode: '',
+          contactPerson: '',
+          contactNo: '',
+          packingList: '',
+          packingListUrl: '',
+          invoiceNo: '',
+          invoiceUrl: '',
+          dateOfInvoice: '',
+          hsnCode: '',
+          descriptionOfGoods: '',
+          quantity: '',
+          weight: '',
+          dimension: '',
+          packageType: '',
+          identifiersOnPackage: '',
+          cooNo: '',
+          agreementNo: '',
+          dateOfAgreement: ''
+        })
+      }
+      setFormData(prev => ({ ...prev, shippers: newShippers }))
+    } else if (targetCount < currentCount) {
+      // Remove excess shipper entries
+      const newShippers = formData.shippers.slice(0, targetCount)
+      setFormData(prev => ({ ...prev, shippers: newShippers }))
+    }
+  }, [formData.noOfShippers])
 
   const fetchAvailableOrders = async () => {
     try {
@@ -124,6 +175,7 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
   const resetForm = () => {
     setFormData({
       blNo: '',
+      blUrl: '',
       vesselName: '',
       voyageNo: '',
       pol: '',
@@ -145,7 +197,9 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
         contactPerson: '',
         contactNo: '',
         packingList: '',
+        packingListUrl: '',
         invoiceNo: '',
+        invoiceUrl: '',
         dateOfInvoice: '',
         hsnCode: '',
         descriptionOfGoods: '',
@@ -163,6 +217,9 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
     setSelectedOrders([])
     setSearchTerm('')
     setError('')
+    setUploadingBL(false)
+    setUploadingInvoice(null)
+    setUploadingPackingList(null)
   }
 
   if (!isOpen) return null
@@ -214,6 +271,52 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
                     placeholder="BL123456"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Upload Bill of Lading
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files[0]
+                        if (file) {
+                          setUploadingBL(true)
+                          const result = await uploadDocument(file)
+                          if (result.success) {
+                            setFormData({ ...formData, blUrl: result.documentUrl })
+                          } else {
+                            alert('Failed to upload BL: ' + result.message)
+                          }
+                          setUploadingBL(false)
+                        }
+                      }}
+                      disabled={uploadingBL}
+                      className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                    />
+                    {formData.blUrl && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <a
+                          href={formData.blUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:text-blue-800 underline"
+                        >
+                          View uploaded BL
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, blUrl: '' })}
+                          className="text-sm text-red-600 hover:text-red-800"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div>
@@ -358,60 +461,11 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
 
             {/* Shipper/Exporter Information */}
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">Shipper/Exporter Information</h3>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData({
-                      ...formData,
-                      shippers: [...formData.shippers, {
-                        name: '',
-                        address: '',
-                        subDistrict: '',
-                        district: '',
-                        province: '',
-                        country: '',
-                        pinCode: '',
-                        contactPerson: '',
-                        contactNo: '',
-                        packingList: '',
-                        invoiceNo: '',
-                        dateOfInvoice: '',
-                        hsnCode: '',
-                        descriptionOfGoods: '',
-                        quantity: '',
-                        weight: '',
-                        dimension: '',
-                        packageType: '',
-                        identifiersOnPackage: '',
-                        cooNo: '',
-                        agreementNo: '',
-                        dateOfAgreement: ''
-                      }]
-                    })
-                  }}
-                  className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
-                >
-                  + Add Shipper
-                </button>
-              </div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Shipper/Exporter Information</h3>
               {formData.shippers.map((shipper, shipperIndex) => (
                 <div key={shipperIndex} className="bg-gray-50 rounded-xl p-6 mb-4">
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-md font-semibold text-gray-700">Shipper {shipperIndex + 1}</h4>
-                    {formData.shippers.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newShippers = formData.shippers.filter((_, i) => i !== shipperIndex)
-                          setFormData({ ...formData, shippers: newShippers })
-                        }}
-                        className="text-red-600 hover:text-red-800 text-sm font-medium"
-                      >
-                        Remove
-                      </button>
-                    )}
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
@@ -565,6 +619,54 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
                     </div>
 
                     <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Upload Packing List</label>
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files[0]
+                          if (file) {
+                            setUploadingPackingList(shipperIndex)
+                            const result = await uploadDocument(file)
+                            if (result.success) {
+                              const newShippers = [...formData.shippers]
+                              newShippers[shipperIndex].packingListUrl = result.documentUrl
+                              setFormData({ ...formData, shippers: newShippers })
+                            } else {
+                              alert('Failed to upload packing list: ' + result.message)
+                            }
+                            setUploadingPackingList(null)
+                          }
+                        }}
+                        disabled={uploadingPackingList === shipperIndex}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      />
+                      {shipper.packingListUrl && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <a
+                            href={shipper.packingListUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 hover:text-blue-800 underline"
+                          >
+                            View uploaded file
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newShippers = [...formData.shippers]
+                              newShippers[shipperIndex].packingListUrl = ''
+                              setFormData({ ...formData, shippers: newShippers })
+                            }}
+                            className="text-sm text-red-600 hover:text-red-800"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Invoice No.</label>
                       <input
                         type="text"
@@ -577,6 +679,54 @@ const CreateContainerModal = ({ isOpen, onClose, onSuccess }) => {
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none transition-all bg-white"
                         placeholder="Invoice Number"
                       />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Upload Invoice</label>
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files[0]
+                          if (file) {
+                            setUploadingInvoice(shipperIndex)
+                            const result = await uploadDocument(file)
+                            if (result.success) {
+                              const newShippers = [...formData.shippers]
+                              newShippers[shipperIndex].invoiceUrl = result.documentUrl
+                              setFormData({ ...formData, shippers: newShippers })
+                            } else {
+                              alert('Failed to upload invoice: ' + result.message)
+                            }
+                            setUploadingInvoice(null)
+                          }
+                        }}
+                        disabled={uploadingInvoice === shipperIndex}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      />
+                      {shipper.invoiceUrl && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <a
+                            href={shipper.invoiceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 hover:text-blue-800 underline"
+                          >
+                            View uploaded file
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newShippers = [...formData.shippers]
+                              newShippers[shipperIndex].invoiceUrl = ''
+                              setFormData({ ...formData, shippers: newShippers })
+                            }}
+                            className="text-sm text-red-600 hover:text-red-800"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     <div>

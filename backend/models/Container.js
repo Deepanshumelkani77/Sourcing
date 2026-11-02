@@ -110,7 +110,17 @@ const shipperSchema = new mongoose.Schema(
       trim: true,
       default: ''
     },
+    packingListUrl: {
+      type: String,
+      trim: true,
+      default: ''
+    },
     invoiceNo: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    invoiceUrl: {
       type: String,
       trim: true,
       default: ''
@@ -176,6 +186,11 @@ const containerSchema = new mongoose.Schema(
   {
     // Container Information
     blNo: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    blUrl: {
       type: String,
       trim: true,
       default: ''

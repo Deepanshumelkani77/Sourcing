@@ -74,3 +74,25 @@ export const deleteImage = async (publicId) => {
     return { success: false, message: error.message };
   }
 };
+
+// Upload document (BL, Invoice, Packing List)
+export const uploadDocument = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('document', file);
+
+    const response = await fetch(`${API_URL}/api/upload/document`, {
+      method: 'POST',
+      headers: {
+        ...getAuthHeader()
+      },
+      credentials: 'include',
+      body: formData
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};

@@ -9,6 +9,7 @@ const createContainer = async (req, res) => {
     const {
       // New fields
       blNo,
+      blUrl,
       vesselName,
       voyageNo,
       pol,
@@ -88,6 +89,7 @@ const createContainer = async (req, res) => {
     const container = await Container.create({
       // New fields
       blNo: blNo || '',
+      blUrl: blUrl || '',
       vesselName: vesselName || '',
       voyageNo: voyageNo || '',
       pol: pol || origin || '',

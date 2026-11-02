@@ -13,7 +13,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'products', // Folder name in Cloudinary
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'pdf'],
     public_id: (req, file) => {
       // Generate unique filename
       const timestamp = Date.now();
@@ -23,7 +23,22 @@ const storage = new CloudinaryStorage({
   },
 });
 
+// Configure storage for documents (PDFs)
+const documentStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'documents', // Folder for documents
+    allowed_formats: ['pdf', 'jpg', 'jpeg', 'png'],
+    public_id: (req, file) => {
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(7);
+      return `doc_${timestamp}_${random}`;
+    },
+  },
+});
+
 module.exports = {
   cloudinary,
   storage,
+  documentStorage,
 };

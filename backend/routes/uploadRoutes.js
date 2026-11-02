@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { cloudinary, storage } = require('../config/cloudinary');
+const { cloudinary, storage, documentStorage } = require('../config/cloudinary');
 const { protect, authorize } = require('../middleware/adminAuthMiddleware');
 
-// Initialize multer with Cloudinary storage
+// Initialize multer with Cloudinary storage for images
 const upload = multer({
   storage: storage,
   limits: {
@@ -16,6 +16,22 @@ const upload = multer({
       cb(null, true);
     } else {
       cb(new Error('Only image files are allowed'), false);
+    }
+  },
+});
+
+// Initialize multer with Cloudinary storage for documents
+const uploadDocument = multer({
+  storage: documentStorage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit for documents
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept PDF and images
+    if (file.mimetype === 'application/pdf' || file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF and image files are allowed'), false);
     }
   },
 });
@@ -99,6 +115,32 @@ router.delete('/delete', protect, authorize('admin'), async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to delete image',
+      error: error.message
+    });
+  }
+});
+
+// Upload document (BL, Invoice, Packing List)
+router.post('/document', protect, authorize('admin'), uploadDocument.single('document'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded'
+      });
+    }
+
+    res.json({
+      success: true,
+      documentUrl: req.file.path, // Cloudinary URL
+      publicId: req.file.filename,
+      message: 'Document uploaded successfully'
+    });
+  } catch (error) {
+    console.error('Error uploading document:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to upload document',
       error: error.message
     });
   }
