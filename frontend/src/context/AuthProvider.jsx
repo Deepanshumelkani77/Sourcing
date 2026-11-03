@@ -29,24 +29,25 @@ export const AuthProvider = ({
 
 
   const loadUser = async () => {
+    // Only check auth if there's a token in localStorage
+    const token = localStorage.getItem('auth_token')
+    if (!token) {
+      setLoading(false)
+      return
+    }
 
     try {
-
-      const result =
-        await getMe()
-
+      const result = await getMe()
       if (result.success) {
         setUser(result.user)
+      } else {
+        setUser(null)
       }
-
-    } catch {
-
+    } catch (error) {
+      // Silently handle auth errors - don't block page rendering
       setUser(null)
-
     } finally {
-
       setLoading(false)
-
     }
   }
 

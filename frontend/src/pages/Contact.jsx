@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { useTranslation } from 'react-i18next'
 import { AppContext } from '../context/AppContext'
+import { AuthContext } from '../context/AuthProvider'
 
 const BRAND_COLOR = '#F41703'
 const SECONDARY_COLOR = '#F97316'
@@ -152,7 +153,8 @@ const FaqItem = ({ q, a, isOpen, onToggle }) => (
 
 const Contact = () => {
   const { t } = useTranslation()
-  const { user, openSignup } = useContext(AppContext)
+  const { user } = useContext(AuthContext)
+  const { openSignup } = useContext(AppContext)
   const [formData, setFormData] = useState({ firstName: '', middleName: '', lastName: '', subject: '', subSubject: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
   const [openFaq, setOpenFaq] = useState(0)
