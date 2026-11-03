@@ -1,0 +1,15 @@
+# Robots.txt for IndoChinaBridge
+# Allow all crawlers to access the site
+
+User-agent: *
+Allow: /
+
+# Disallow admin and dashboard sections (if they exist)
+Disallow: /dashboard
+Disallow: /admin
+
+# Disallow auth callback
+Disallow: /auth/callback
+
+# Point to the sitemap
+Sitemap: https://www.indochinabridge.com/sitemap.xml

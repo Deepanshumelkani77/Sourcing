@@ -7,7 +7,7 @@ import {
   initializeDefaultFields
 } from '../services/formFieldApi'
 
-const FieldManager = ({ formType, onClose }) => {
+const FieldManager = ({ formType, onClose, onFieldsUpdated }) => {
   const [fields, setFields] = useState([])
   const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
@@ -91,6 +91,7 @@ const FieldManager = ({ formType, onClose }) => {
           description: ''
         })
         fetchFields()
+        onFieldsUpdated?.()
       } else {
         alert(result.message || 'Failed to create field')
       }
@@ -105,6 +106,7 @@ const FieldManager = ({ formType, onClose }) => {
       if (result.success) {
         setEditingField(null)
         fetchFields()
+        onFieldsUpdated?.()
       } else {
         alert(result.message || 'Failed to update field')
       }
@@ -120,6 +122,7 @@ const FieldManager = ({ formType, onClose }) => {
       const result = await deleteFieldConfiguration(fieldId)
       if (result.success) {
         fetchFields()
+        onFieldsUpdated?.()
       } else {
         alert(result.message || 'Failed to delete field')
       }
@@ -133,6 +136,7 @@ const FieldManager = ({ formType, onClose }) => {
       const result = await updateFieldConfiguration(field._id, { visible: !field.visible })
       if (result.success) {
         fetchFields()
+        onFieldsUpdated?.()
       }
     } catch (error) {
       alert('Failed to update field')
@@ -170,7 +174,10 @@ const FieldManager = ({ formType, onClose }) => {
               + Add Field
             </button>
             <button
-              onClick={onClose}
+              onClick={() => {
+                onFieldsUpdated?.()
+                onClose()
+              }}
               className="text-gray-400 hover:text-gray-600"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
