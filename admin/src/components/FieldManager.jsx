@@ -35,7 +35,19 @@ const FieldManager = ({ formType, onClose }) => {
       setLoading(true)
       const result = await getFieldConfigurations(formType)
       if (result.success) {
-        setFields(result.fields)
+        setFields(result.fields || [])
+
+        // Auto-initialize if no fields exist
+        if (!result.fields || result.fields.length === 0) {
+          console.log('No fields found, initializing defaults...')
+          const initResult = await initializeDefaultFields(formType)
+          if (initResult.success) {
+            const fetchAgain = await getFieldConfigurations(formType)
+            if (fetchAgain.success) {
+              setFields(fetchAgain.fields || [])
+            }
+          }
+        }
       }
     } catch (error) {
       console.error('Error fetching fields:', error)
