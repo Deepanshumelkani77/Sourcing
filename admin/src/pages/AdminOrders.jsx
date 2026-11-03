@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthProvider'
 import { getAllOrders, createOrder, updateOrderStatus, deleteOrder } from '../services/orderApi'
 import { getAllUsers } from '../services/userApi'
 import { getAllProducts } from '../services/productApi'
+import FieldManager from '../components/FieldManager'
+import { getFieldConfigurations, initializeDefaultFields } from '../services/formFieldApi'
 
 const AdminOrders = () => {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -13,6 +17,7 @@ const AdminOrders = () => {
   const [yearFilter, setYearFilter] = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showStatusModal, setShowStatusModal] = useState(false)
+  const [showFieldManager, setShowFieldManager] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [users, setUsers] = useState([])
   const [loadingUsers, setLoadingUsers] = useState(false)
@@ -21,6 +26,8 @@ const AdminOrders = () => {
   const [productSearch, setProductSearch] = useState('')
   const [showProductDropdown, setShowProductDropdown] = useState(false)
   const [selectedProductIndex, setSelectedProductIndex] = useState(null)
+  const [fieldConfigurations, setFieldConfigurations] = useState([])
+  const [loadingFields, setLoadingFields] = useState(false)
   const [newOrder, setNewOrder] = useState({
     userId: '',
     items: [{ productId: '', quantity: 1, price: 0, productName: '' }],
@@ -49,8 +56,29 @@ const AdminOrders = () => {
     if (showCreateModal) {
       fetchUsers()
       fetchProducts()
+      fetchFieldConfigurations()
     }
   }, [showCreateModal])
+
+  const fetchFieldConfigurations = async () => {
+    try {
+      setLoadingFields(true)
+      let result = await getFieldConfigurations('order')
+
+      // If no fields exist, initialize defaults
+      if (result.success && (!result.fields || result.fields.length === 0)) {
+        result = await initializeDefaultFields('order')
+      }
+
+      if (result.success) {
+        setFieldConfigurations(result.fields || [])
+      }
+    } catch (error) {
+      console.error('Error fetching field configurations:', error)
+    } finally {
+      setLoadingFields(false)
+    }
+  }
 
   useEffect(() => {
     if (productSearch && showProductDropdown) {
@@ -263,12 +291,26 @@ const AdminOrders = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="bg-[#F41703] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#D41503] transition"
-        >
-          Create Order
-        </button>
+        <div className="flex items-center gap-3">
+          {user?.role === 'main_admin' && (
+            <button
+              onClick={() => setShowFieldManager(true)}
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.572 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.572c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.572-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.572c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Manage Fields
+            </button>
+          )}
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="bg-[#F41703] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#D41503] transition"
+          >
+            Create Order
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -426,7 +468,21 @@ const AdminOrders = () => {
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-800">Create New Order</h2>
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-bold text-gray-800">Create New Order</h2>
+                  {user?.role === 'main_admin' && (
+                    <button
+                      onClick={() => setShowFieldManager(true)}
+                      className="px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium hover:bg-purple-200 transition flex items-center gap-1"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.572 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.572c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.572-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.572c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      Manage Fields
+                    </button>
+                  )}
+                </div>
                 <button
                   onClick={() => setShowCreateModal(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -826,6 +882,14 @@ const AdminOrders = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Field Manager Modal for main_admin */}
+      {showFieldManager && (
+        <FieldManager
+          formType="order"
+          onClose={() => setShowFieldManager(false)}
+        />
       )}
     </div>
   )
