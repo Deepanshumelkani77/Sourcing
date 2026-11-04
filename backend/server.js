@@ -22,7 +22,7 @@ const sourcingRequestRoutes = require("./routes/sourcingRequestRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const serviceRoutes = require("./routes/serviceRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
-const formFieldRoutes = require("./routes/formFieldRoutes");
+const blogRoutes = require("./routes/blogRoutes");
 const passport = require("./config/passport");
 const { googleCallback, facebookCallback } = require("./controllers/userAuthController");
 
@@ -194,8 +194,8 @@ app.use(
 );
 
 app.use(
-  "/api/form-fields",
-  formFieldRoutes
+  "/api/blogs",
+  blogRoutes
 );
 
 app.use(

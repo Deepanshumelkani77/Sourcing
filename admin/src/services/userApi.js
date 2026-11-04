@@ -1,28 +1,15 @@
 const API_URL = 'https://sourcing-x379.onrender.com';
 
-// Get auth token from localStorage
-const getAuthHeader = () => {
-  const token = localStorage.getItem('admin_token');
-  if (token) {
-    return { 'Authorization': `Bearer ${token}` };
-  }
-  return {};
-};
-
 // Get all users
 export const getAllUsers = async (params = {}) => {
   try {
     const queryString = new URLSearchParams(params).toString();
     const url = `${API_URL}/api/users${queryString ? `?${queryString}` : ''}`;
 
-    const headers = getAuthHeader();
-    console.log('getAllUsers - Headers:', headers);
-    console.log('getAllUsers - Token in localStorage:', !!localStorage.getItem('admin_token'));
-
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        ...headers
+        'Content-Type': 'application/json'
       },
       credentials: 'include'
     });
@@ -40,7 +27,7 @@ export const getUserById = async (id) => {
     const response = await fetch(`${API_URL}/api/users/${id}`, {
       method: 'GET',
       headers: {
-        ...getAuthHeader()
+        'Content-Type': 'application/json'
       },
       credentials: 'include'
     });
@@ -58,7 +45,7 @@ export const deleteUser = async (id) => {
     const response = await fetch(`${API_URL}/api/users/${id}`, {
       method: 'DELETE',
       headers: {
-        ...getAuthHeader()
+        'Content-Type': 'application/json'
       },
       credentials: 'include'
     });
@@ -76,8 +63,7 @@ export const updateUser = async (id, userData) => {
     const response = await fetch(`${API_URL}/api/users/${id}`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json',
-        ...getAuthHeader()
+        'Content-Type': 'application/json'
       },
       credentials: 'include',
       body: JSON.stringify(userData)

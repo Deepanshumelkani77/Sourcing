@@ -1,14 +1,5 @@
 const API_URL = "https://sourcing-x379.onrender.com";
 
-// Get auth token from localStorage
-const getAuthHeader = () => {
-  const token = localStorage.getItem('admin_token');
-  if (token) {
-    return { 'Authorization': `Bearer ${token}` };
-  }
-  return {};
-};
-
 // Upload single image
 export const uploadImage = async (file) => {
   try {
@@ -17,9 +8,6 @@ export const uploadImage = async (file) => {
 
     const response = await fetch(`${API_URL}/api/upload/single`, {
       method: 'POST',
-      headers: {
-        ...getAuthHeader()
-      },
       credentials: 'include',
       body: formData
     });
@@ -41,9 +29,6 @@ export const uploadMultipleImages = async (files) => {
 
     const response = await fetch(`${API_URL}/api/upload/multiple`, {
       method: 'POST',
-      headers: {
-        ...getAuthHeader()
-      },
       credentials: 'include',
       body: formData
     });
@@ -61,8 +46,7 @@ export const deleteImage = async (publicId) => {
     const response = await fetch(`${API_URL}/api/upload/delete`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json',
-        ...getAuthHeader()
+        'Content-Type': 'application/json'
       },
       credentials: 'include',
       body: JSON.stringify({ publicId })
@@ -83,9 +67,6 @@ export const uploadDocument = async (file) => {
 
     const response = await fetch(`${API_URL}/api/upload/document`, {
       method: 'POST',
-      headers: {
-        ...getAuthHeader()
-      },
       credentials: 'include',
       body: formData
     });

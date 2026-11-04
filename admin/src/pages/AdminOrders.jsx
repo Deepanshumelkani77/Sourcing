@@ -4,9 +4,6 @@ import { useAuth } from '../context/AuthProvider'
 import { getAllOrders, createOrder, updateOrderStatus, deleteOrder } from '../services/orderApi'
 import { getAllUsers } from '../services/userApi'
 import { getAllProducts } from '../services/productApi'
-import FieldManager from '../components/FieldManager'
-import DynamicForm from '../components/DynamicForm'
-import { getFieldConfigurations, initializeDefaultFields } from '../services/formFieldApi'
 
 const AdminOrders = () => {
   const navigate = useNavigate()
@@ -18,7 +15,6 @@ const AdminOrders = () => {
   const [yearFilter, setYearFilter] = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showStatusModal, setShowStatusModal] = useState(false)
-  const [showFieldManager, setShowFieldManager] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [users, setUsers] = useState([])
   const [loadingUsers, setLoadingUsers] = useState(false)
@@ -27,8 +23,6 @@ const AdminOrders = () => {
   const [productSearch, setProductSearch] = useState('')
   const [showProductDropdown, setShowProductDropdown] = useState(false)
   const [selectedProductIndex, setSelectedProductIndex] = useState(null)
-  const [fieldConfigurations, setFieldConfigurations] = useState([])
-  const [loadingFields, setLoadingFields] = useState(false)
   const [newOrder, setNewOrder] = useState({
     userId: '',
     items: [{ productId: '', quantity: 1, price: 0, productName: '' }],
@@ -57,29 +51,8 @@ const AdminOrders = () => {
     if (showCreateModal) {
       fetchUsers()
       fetchProducts()
-      fetchFieldConfigurations()
     }
-  }, [showCreateModal, showFieldManager])
-
-  const fetchFieldConfigurations = async () => {
-    try {
-      setLoadingFields(true)
-      let result = await getFieldConfigurations('order')
-
-      // If no fields exist, initialize defaults
-      if (result.success && (!result.fields || result.fields.length === 0)) {
-        result = await initializeDefaultFields('order')
-      }
-
-      if (result.success) {
-        setFieldConfigurations(result.fields || [])
-      }
-    } catch (error) {
-      console.error('Error fetching field configurations:', error)
-    } finally {
-      setLoadingFields(false)
-    }
-  }
+  }, [showCreateModal])
 
   useEffect(() => {
     if (productSearch && showProductDropdown) {
@@ -246,22 +219,6 @@ const AdminOrders = () => {
     }
   }
 
-  const handleDynamicFormChange = (fieldPath, value) => {
-    const keys = fieldPath.split('.')
-    setNewOrder(prev => {
-      const updated = { ...prev }
-      let current = updated
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) {
-          current[keys[i]] = {}
-        }
-        current = current[keys[i]]
-      }
-      current[keys[keys.length - 1]] = value
-      return updated
-    })
-  }
-
   const handleDeleteOrder = async (orderId) => {
     if (!window.confirm('Are you sure you want to delete this order?')) return
 
@@ -309,18 +266,6 @@ const AdminOrders = () => {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
         <div className="flex items-center gap-3">
-          {user?.role === 'main_admin' && (
-            <button
-              onClick={() => setShowFieldManager(true)}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition flex items-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.572 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.572c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.572-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.572c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Manage Fields
-            </button>
-          )}
           <button
             onClick={() => setShowCreateModal(true)}
             className="bg-[#F41703] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#D41503] transition"
@@ -485,21 +430,7 @@ const AdminOrders = () => {
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <h2 className="text-xl font-bold text-gray-800">Create New Order</h2>
-                  {user?.role === 'main_admin' && (
-                    <button
-                      onClick={() => setShowFieldManager(true)}
-                      className="px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium hover:bg-purple-200 transition flex items-center gap-1"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.572 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.572c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.572-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.572c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      Manage Fields
-                    </button>
-                  )}
-                </div>
+                <h2 className="text-xl font-bold text-gray-800">Create New Order</h2>
                 <button
                   onClick={() => setShowCreateModal(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -532,20 +463,170 @@ const AdminOrders = () => {
                 )}
               </div>
 
-              {/* Dynamic Form Fields */}
-              {loadingFields ? (
-                <div className="text-sm text-gray-500">Loading form fields...</div>
-              ) : fieldConfigurations.length > 0 ? (
-                <DynamicForm
-                  fields={fieldConfigurations}
-                  data={newOrder}
-                  onChange={handleDynamicFormChange}
-                />
-              ) : (
-                <div className="text-sm text-gray-500">
-                  No form fields configured. Click "Manage Fields" to set up the form.
+              {/* Corresponding Buyer */}
+              <div className="border-t pt-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Corresponding Buyer</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.name}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, name: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Enter company name (Chinese)"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.address}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, address: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Enter full address (Chinese)"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Sub District</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.subDistrict}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, subDistrict: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Enter sub district (Chinese)"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.district}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, district: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Enter district (Chinese)"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Province</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.province}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, province: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Enter province (Chinese)"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.country}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, country: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Enter country (Chinese)"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">PIN Code</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.pinCode}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, pinCode: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Enter PIN code"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Contact Person</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.contactPerson}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, contactPerson: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Enter contact person name (Chinese)"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Contact No.</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.contactNo}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, contactNo: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Enter contact number"
+                    />
+                  </div>
                 </div>
-              )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Shipping Address</label>
+                <textarea
+                  value={newOrder.shippingAddress}
+                  onChange={(e) => setNewOrder({ ...newOrder, shippingAddress: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                  placeholder="Enter shipping address"
+                  rows={2}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Billing Address</label>
+                <textarea
+                  value={newOrder.billingAddress}
+                  onChange={(e) => setNewOrder({ ...newOrder, billingAddress: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                  placeholder="Enter billing address"
+                  rows={2}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                <textarea
+                  value={newOrder.notes}
+                  onChange={(e) => setNewOrder({ ...newOrder, notes: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                  placeholder="Enter notes"
+                  rows={2}
+                />
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Items</label>
@@ -751,18 +832,6 @@ const AdminOrders = () => {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Field Manager Modal for main_admin */}
-      {showFieldManager && (
-        <FieldManager
-          formType="order"
-          onClose={() => {
-            setShowFieldManager(false)
-            fetchFieldConfigurations()
-          }}
-          onFieldsUpdated={fetchFieldConfigurations}
-        />
       )}
     </div>
   )

@@ -14,6 +14,7 @@ import AdminJobs from './pages/AdminJobs'
 import AdminContactSubmissions from './pages/AdminContactSubmissions'
 import AdminQuotations from './pages/AdminQuotations'
 import AdminReviews from './pages/AdminReviews'
+import AdminBlogs from './pages/AdminBlogs'
 import Login from './pages/Login'
 import CRMDashboard from './pages/crm/CRMDashboard'
 import CRMLeads from './pages/crm/Leads'
@@ -65,6 +66,7 @@ const App = () => {
                 <Route path="/contact-submissions" element={<AdminContactSubmissions />} />
                 <Route path="/quotations" element={<AdminQuotations />} />
                 <Route path="/reviews" element={<AdminReviews />} />
+                <Route path="/blogs" element={<AdminBlogs />} />
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />
                 <Route path="/crm/leads" element={<CRMLeads />} />
