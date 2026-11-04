@@ -11,9 +11,16 @@ const {
 } = require("../controllers/blogController");
 const { protect } = require("../middleware/adminAuthMiddleware");
 
-// Public routes (no authentication required)
-router.get("/published", getPublishedBlogs);
-router.get("/slug/:slug", getBlogBySlug);
+// Public routes (no authentication required) - Allow CORS for all origins
+router.get("/published", (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  getPublishedBlogs(req, res, next);
+});
+
+router.get("/slug/:slug", (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  getBlogBySlug(req, res, next);
+});
 
 // Admin routes (protected by authentication)
 router.get("/", protect, getAllBlogs);
