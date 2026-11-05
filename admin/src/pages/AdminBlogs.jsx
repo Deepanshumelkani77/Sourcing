@@ -31,7 +31,6 @@ const AdminBlogs = () => {
     tags: '',
     coverImage: '',
     coverImageAlt: '',
-    thumbnailImage: '',
     status: 'draft',
     isFeatured: false,
     seoTitle: '',
@@ -40,6 +39,25 @@ const AdminBlogs = () => {
     canonicalUrl: '',
     ogImage: ''
   })
+
+  // Function to generate slug from title
+  const generateSlug = (title) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+      .substring(0, 100)
+  }
+
+  // Auto-generate slug when title changes
+  const handleTitleChange = (e) => {
+    const newTitle = e.target.value
+    setFormData({
+      ...formData,
+      title: newTitle,
+      slug: generateSlug(newTitle)
+    })
+  }
 
   useEffect(() => {
     fetchBlogs()
@@ -64,7 +82,8 @@ const AdminBlogs = () => {
 
     const blogData = {
       ...formData,
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
+      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+      thumbnailImage: '' // Always send empty string for thumbnailImage
     }
 
     try {
@@ -106,7 +125,6 @@ const AdminBlogs = () => {
       tags: blog.tags.join(', '),
       coverImage: blog.coverImage,
       coverImageAlt: blog.coverImageAlt,
-      thumbnailImage: blog.thumbnailImage,
       status: blog.status,
       isFeatured: blog.isFeatured,
       seoTitle: blog.seoTitle,
@@ -145,7 +163,6 @@ const AdminBlogs = () => {
       tags: '',
       coverImage: '',
       coverImageAlt: '',
-      thumbnailImage: '',
       status: 'draft',
       isFeatured: false,
       seoTitle: '',
@@ -354,7 +371,7 @@ const AdminBlogs = () => {
                     <input
                       type="text"
                       value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      onChange={handleTitleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
                       placeholder="Enter blog title"
                       required
@@ -366,10 +383,11 @@ const AdminBlogs = () => {
                       type="text"
                       value={formData.slug}
                       onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none bg-gray-50"
                       placeholder="blog-title-slug"
                       required
                     />
+                    <p className="text-xs text-gray-500 mt-1">Automatically generated from title. You can edit it manually if needed.</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Excerpt *</label>
@@ -460,31 +478,6 @@ const AdminBlogs = () => {
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
                       placeholder="Image description for accessibility"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Thumbnail Image (optional)</label>
-                    <div className="space-y-2">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload('thumbnailImage', e.target.files[0])}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      />
-                      <input
-                        type="text"
-                        value={formData.thumbnailImage}
-                        onChange={(e) => setFormData({ ...formData, thumbnailImage: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                        placeholder="Or paste thumbnail URL here"
-                      />
-                      {formData.thumbnailImage && (
-                        <img
-                          src={formData.thumbnailImage}
-                          alt="Thumbnail Preview"
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                      )}
-                    </div>
                   </div>
                 </div>
               </div>

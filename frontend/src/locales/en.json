@@ -496,11 +496,13 @@
     },
     "categories": {
       "all": "All",
-      "sourcingTips": "Sourcing Tips",
-      "industryNews": "Industry News",
-      "caseStudies": "Case Studies",
+      "machinerySourcing": "Machinery Sourcing",
+      "manufacturing": "Manufacturing",
       "logistics": "Logistics",
-      "qualityControl": "Quality Control"
+      "qualityControl": "Quality Control",
+      "industryInsights": "Industry Insights",
+      "caseStudies": "Case Studies",
+      "globalSourcing": "Global Sourcing"
     },
     "readMore": "Read More →"
   },

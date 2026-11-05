@@ -496,11 +496,13 @@
     },
     "categories": {
       "all": "全部",
-      "sourcingTips": "采购技巧",
-      "industryNews": "行业新闻",
-      "caseStudies": "案例研究",
+      "machinerySourcing": "机械采购",
+      "manufacturing": "制造业",
       "logistics": "物流",
-      "qualityControl": "质量控制"
+      "qualityControl": "质量控制",
+      "industryInsights": "行业洞察",
+      "caseStudies": "案例研究",
+      "globalSourcing": "全球采购"
     },
     "readMore": "阅读更多 →"
   },

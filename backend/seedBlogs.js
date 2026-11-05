@@ -205,6 +205,84 @@ const seedBlogs = async () => {
         seoDescription: "How Industry 4.0 technologies are transforming manufacturing with IoT, AI, robotics, and digital twins.",
         focusKeyword: "smart manufacturing",
         readingTime: 5
+      },
+      {
+        title: "Complete Guide to Machinery Sourcing for Manufacturing",
+        slug: "complete-guide-machinery-sourcing",
+        excerpt: "Learn the essential steps and best practices for sourcing industrial machinery that meets your quality requirements and budget constraints.",
+        content: `
+          <h2>Understanding Your Machinery Requirements</h2>
+          <p>Before beginning the sourcing process, it's crucial to have a clear understanding of your machinery needs. This includes technical specifications, production capacity requirements, quality standards, and budget constraints. A well-defined requirements document serves as the foundation for successful sourcing.</p>
+
+          <h2>Researching Potential Suppliers</h2>
+          <p>The machinery sourcing market is global, with suppliers spread across Asia, Europe, and the Americas. Research should include online directories, industry trade shows, manufacturer websites, and professional networks. Look for suppliers with proven track records, relevant certifications, and positive customer reviews.</p>
+
+          <h2>Evaluating Supplier Capabilities</h2>
+          <p>Supplier evaluation goes beyond price. Key factors include manufacturing capacity, quality control systems, technical support capabilities, after-sales service, and financial stability. Request detailed information about their production processes, quality certifications, and previous projects.</p>
+
+          <h2>Quality Assurance and Testing</h2>
+          <p>Quality assurance is critical in machinery sourcing. Implement a comprehensive testing program that includes factory acceptance testing (FAT), site acceptance testing (SAT), and ongoing performance monitoring. Consider third-party inspection services for objective verification.</p>
+
+          <h2>Negotiating Contracts and Terms</h2>
+          <p>Clear contracts protect both parties and ensure expectations are met. Include detailed specifications, delivery schedules, payment terms, warranty conditions, and performance guarantees. Work with legal experts familiar with international trade regulations.</p>
+
+          <h2>Logistics and Installation</h2>
+          <p>Planning for machinery delivery and installation is essential. Consider transportation requirements, customs clearance, on-site preparation, and installation timelines. Coordinate with the supplier to ensure smooth delivery and commissioning.</p>
+
+          <h2>Conclusion</h2>
+          <p>Successful machinery sourcing requires careful planning, thorough evaluation, and ongoing relationship management. By following these best practices, companies can source machinery that delivers value and supports their manufacturing objectives.</p>
+        `,
+        category: "Machinery Sourcing",
+        tags: ["machinery", "sourcing", "manufacturing", "quality"],
+        coverImage: "https://images.unsplash.com/photo-1565043666747-69f6646db940?w=1200&h=600&fit=crop",
+        coverImageAlt: "Industrial machinery in factory",
+        thumbnailImage: "https://images.unsplash.com/photo-1565043666747-69f6646db940?w=400&h=300&fit=crop",
+        author: admin._id,
+        status: "published",
+        isFeatured: true,
+        seoTitle: "Complete Guide to Machinery Sourcing",
+        seoDescription: "Essential steps and best practices for sourcing industrial machinery for manufacturing operations.",
+        focusKeyword: "machinery sourcing",
+        readingTime: 6
+      },
+      {
+        title: "Modern Manufacturing Processes and Technologies",
+        slug: "modern-manufacturing-processes-technologies",
+        excerpt: "Discover the latest manufacturing processes and technologies that are improving efficiency, quality, and productivity in today's factories.",
+        content: `
+          <h2>Evolution of Manufacturing</h2>
+          <p>Manufacturing has evolved dramatically from traditional manual processes to highly automated, digitally integrated systems. This evolution has been driven by advances in technology, changing market demands, and the need for greater efficiency and quality.</p>
+
+          <h2>Additive Manufacturing</h2>
+          <p>Additive manufacturing, commonly known as 3D printing, is revolutionizing production. It enables rapid prototyping, complex geometries, and distributed manufacturing models. Applications range from aerospace components to medical devices and consumer products.</p>
+
+          <h2>Advanced Machining Technologies</h2>
+          <p>CNC machining continues to advance with multi-axis capabilities, high-speed machining, and integrated automation. These technologies enable precise, efficient production of complex parts with minimal human intervention.</p>
+
+          <h2>Automated Assembly Lines</h2>
+          <p>Modern assembly lines use robotics, vision systems, and real-time monitoring to achieve high throughput and consistent quality. Flexible manufacturing systems allow rapid changeovers between different products, supporting mass customization.</p>
+
+          <h2>Lean Manufacturing Principles</h2>
+          <p>Lean manufacturing focuses on eliminating waste and optimizing flow. Key principles include just-in-time production, continuous improvement (Kaizen), and respect for people. These practices reduce costs while improving quality and delivery performance.</p>
+
+          <h2>Quality Management Systems</h2>
+          <p>Integrated quality management systems ensure consistent product quality through process control, statistical methods, and continuous monitoring. ISO 9001 and other standards provide frameworks for effective quality management.</p>
+
+          <h2>Conclusion</h2>
+          <p>The future of manufacturing lies in the intelligent integration of advanced processes, automation, and data analytics. Companies that embrace these technologies and practices will be well-positioned to compete in global markets.</p>
+        `,
+        category: "Manufacturing",
+        tags: ["manufacturing", "automation", "CNC", "lean manufacturing"],
+        coverImage: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&h=600&fit=crop",
+        coverImageAlt: "Modern manufacturing equipment",
+        thumbnailImage: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop",
+        author: admin._id,
+        status: "published",
+        isFeatured: false,
+        seoTitle: "Modern Manufacturing Processes Technologies",
+        seoDescription: "Latest manufacturing processes and technologies improving efficiency, quality, and productivity in factories.",
+        focusKeyword: "manufacturing processes",
+        readingTime: 5
       }
     ];
 

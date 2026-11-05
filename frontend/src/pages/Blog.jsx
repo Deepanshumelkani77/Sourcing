@@ -21,6 +21,16 @@ const ChevronDivider = () => (
 const BLOG_HERO_IMAGE = 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600&h=800&fit=crop'
 
 const Blog = () => {
+  // Add custom scrollbar styles
+  const scrollbarStyles = `
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  `
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [selectedCategory, setSelectedCategory] = useState('All')
@@ -40,27 +50,56 @@ const Blog = () => {
     { key: 'blog.categories.globalSourcing', label: 'Global Sourcing' }
   ]
 
+  const getCategoryLabel = (category) => {
+    const found = categories.find(c => c.label === category)
+    return found ? found.label : category
+  }
+
   useEffect(() => {
     fetchBlogs()
+    fetchFeaturedBlogs()
   }, [selectedCategory])
+
+  const fetchFeaturedBlogs = async () => {
+    try {
+      // Fetch all featured blogs (no category filter)
+      const result = await getPublishedBlogs({ featured: 'true' })
+      if (result.success) {
+        const featured = result.blogs || []
+        setFeaturedBlogs(featured)
+      }
+    } catch (error) {
+      console.error('Error fetching featured blogs:', error)
+    }
+  }
 
   const fetchBlogs = async () => {
     try {
       setLoading(true)
       setError(null)
 
-      // Fetch featured blogs separately
-      const featuredResult = await getPublishedBlogs({ featured: 'true' })
-      if (featuredResult.success) {
-        setFeaturedBlogs(featuredResult.blogs.slice(0, 3))
-      }
-
       // Fetch all blogs with category filter
-      const category = selectedCategory === 'All' ? undefined : selectedCategory
-      const result = await getPublishedBlogs({ category })
+      // When "All" is selected, don't send category parameter
+      const category = selectedCategory === 'All' ? null : selectedCategory
+      const params = category ? { category } : {}
+
+      console.log('=== BLOG FETCH DEBUG ===')
+      console.log('Selected category:', selectedCategory)
+      console.log('Category filter sent to API:', category)
+      console.log('Params object:', params)
+
+      const result = await getPublishedBlogs(params)
+
+      console.log('API result:', result)
+      console.log('API success:', result.success)
+      console.log('Blogs array:', result.blogs)
+      console.log('Blogs count:', result.blogs?.length)
+
       if (result.success) {
-        setBlogs(result.blogs)
+        const allBlogs = result.blogs || []
+        setBlogs(allBlogs)
       } else {
+        console.error('API returned error:', result.message)
         setError(result.message || 'Failed to fetch blogs')
       }
     } catch (error) {
@@ -81,7 +120,7 @@ const Blog = () => {
 
   const FeaturedBlogCard = ({ post }) => (
     <div
-      className="relative h-full min-h-[300px] rounded-xl overflow-hidden group cursor-pointer"
+      className="relative h-[320px] rounded-xl overflow-hidden group cursor-pointer"
       onClick={() => navigate(`/blog/${post.slug}`)}
     >
       <img
@@ -158,7 +197,7 @@ const Blog = () => {
             </span>
           </div>
           <button className="text-[#F41703] font-medium hover:underline text-sm flex items-center">
-            {t('blog.readMore')}
+            Read More
             <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -170,6 +209,7 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <style>{scrollbarStyles}</style>
       {/* Hero Section */}
       <div className="relative w-full h-[340px] sm:h-[420px] overflow-hidden">
         <img
@@ -191,36 +231,65 @@ const Blog = () => {
             <span className="text-white font-medium">{t('nav.blog')}</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold text-white max-w-xl leading-tight">
-            {t('blog.hero.title')}
+            Insights, Tips, and Industry News
           </h1>
           <p className="text-white/85 text-base sm:text-lg mt-4 max-w-xl leading-relaxed">
-            {t('blog.hero.subtitle')}
+            Stay updated with the latest sourcing strategies, industry trends, and expert insights from our team.
           </p>
         </div>
       </div>
 
       {/* Featured Blogs Section */}
-      {featuredBlogs.length > 0 && selectedCategory === 'All' && (
+      {featuredBlogs.length > 0 && (
         <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
                 Featured Articles
               </h2>
-              <button
-                onClick={() => navigate('/blog')}
-                className="text-[#F41703] font-medium hover:underline"
-              >
-                View All
-              </button>
+              <div className="flex items-center gap-1.5 text-xs text-gray-400 font-medium">
+                <span>{featuredBlogs.length}</span>
+                <span>•</span>
+                <span>Swipe to explore</span>
+              </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {featuredBlogs.map((post) => (
-                <FeaturedBlogCard key={post._id} post={post} />
-              ))}
+            <div className="relative">
+              {/* Scrollable container */}
+              <div className="flex overflow-x-auto gap-6 pb-6 snap-x scroll-smooth">
+                {featuredBlogs.map((post, index) => (
+                  <div key={post._id} className="flex-shrink-0 w-[85vw] md:w-[calc(33.333%-16px)] snap-start">
+                    <FeaturedBlogCard post={post} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Dot indicators */}
+              <div className="flex justify-center gap-2 mt-4">
+                {featuredBlogs.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      const container = document.querySelector('.featured-scroll-container')
+                      const card = container.children[index]
+                      if (card) {
+                        card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+                      }
+                    }}
+                    className="w-2 h-2 rounded-full bg-gray-300 hover:bg-[#F41703] transition-colors duration-200"
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </section>
+      )}
+
+      {/* Divider only if featured section exists */}
+      {featuredBlogs.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <hr className="border-gray-200 my-8" />
+        </div>
       )}
 
       {/* Category Filter */}
@@ -248,12 +317,30 @@ const Blog = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              {selectedCategory === 'All' ? 'All Articles' : selectedCategory}
-            </h2>
-            <p className="text-gray-600 mt-2">
-              {loading ? 'Loading...' : `${blogs.length} article${blogs.length !== 1 ? 's' : ''} found`}
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  {selectedCategory === 'All' ? 'All Articles' : getCategoryLabel(selectedCategory)}
+                </h2>
+                <p className="text-gray-600 mt-2">
+                  {loading ? 'Loading...' : `${blogs.length} article${blogs.length !== 1 ? 's' : ''} found`}
+                </p>
+              </div>
+              <button
+                onClick={fetchBlogs}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+              >
+                Refresh
+              </button>
+            </div>
+            {!loading && blogs.length === 0 && (
+              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-yellow-800 text-sm">
+                  <strong>Debug Info:</strong> No blogs found. Check browser console (F12) for detailed logs.
+                  Make sure you've run <code className="bg-yellow-100 px-2 py-1 rounded">npm run seed:blogs</code> in the backend.
+                </p>
+              </div>
+            )}
           </div>
 
           {loading ? (
