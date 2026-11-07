@@ -1,8 +1,11 @@
 const API_BASE = "https://sourcing-x379.onrender.com"
 
-const getIssues = async () => {
+const getIssues = async (params = {}) => {
   try {
-    const response = await fetch(`${API_BASE}/api/issues`, {
+    const queryString = new URLSearchParams(params).toString();
+    const url = `${API_BASE}/api/issues${queryString ? `?${queryString}` : ''}`;
+    
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
