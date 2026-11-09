@@ -3,6 +3,16 @@ import { useLocation } from 'react-router-dom'
 import { getAllContainers, deleteContainer, updateContainerStatus } from '../services/containerApi'
 import CreateContainerModal from '../components/CreateContainerModal'
 
+const STAGES = [
+  { id: 'all', label: 'Total Containers', statuses: null },
+  { id: 'pol', label: 'Shipment at POL', statuses: ['Goods Under Stuffing', 'Container Loaded'] },
+  { id: 'transit', label: 'Shipment in-transit', statuses: ['Under Shipment'] },
+  { id: 'pod', label: 'Shipment at POD', statuses: ['Arrival Port Added'] },
+  { id: 'clearance', label: 'Under Custom Clearance', statuses: ['Custom Clearance'] },
+  { id: 'delivery', label: 'Under Delivery', statuses: ['Under Transportation'] },
+  { id: 'delivered', label: 'Delivered', statuses: ['Completed'] }
+]
+
 const AdminContainers = () => {
   const location = useLocation()
   const [containers, setContainers] = useState([])
@@ -17,6 +27,8 @@ const AdminContainers = () => {
   const [buyerFilter, setBuyerFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [yearFilter, setYearFilter] = useState('')
+  const [stageFilter, setStageFilter] = useState('all')
+  const [stageCounts, setStageCounts] = useState({})
 
   useEffect(() => {
     // Check if navigation came from dashboard with filter
@@ -36,8 +48,31 @@ const AdminContainers = () => {
   }, [location.state])
 
   useEffect(() => {
+    fetchStageCounts()
+  }, [])
+
+  useEffect(() => {
     fetchContainers()
-  }, [blNoFilter, containerNoFilter, shipperFilter, buyerFilter, statusFilter, yearFilter])
+  }, [blNoFilter, containerNoFilter, shipperFilter, buyerFilter, statusFilter, yearFilter, stageFilter])
+
+  const fetchStageCounts = async () => {
+    try {
+      const result = await getAllContainers()
+      if (result.success) {
+        const counts = { all: result.containers.length }
+        STAGES.forEach((stage) => {
+          if (stage.statuses) {
+            counts[stage.id] = result.containers.filter((c) =>
+              stage.statuses.includes(c.currentStatus)
+            ).length
+          }
+        })
+        setStageCounts(counts)
+      }
+    } catch (error) {
+      console.error('Error fetching stage counts:', error)
+    }
+  }
 
   const fetchContainers = async () => {
     try {
@@ -59,6 +94,12 @@ const AdminContainers = () => {
         } else if (statusFilter) {
           filteredContainers = result.containers.filter(c => c.currentStatus === statusFilter)
         }
+        const stage = STAGES.find((s) => s.id === stageFilter)
+        if (stage?.statuses) {
+          filteredContainers = filteredContainers.filter((c) =>
+            stage.statuses.includes(c.currentStatus)
+          )
+        }
         setContainers(filteredContainers)
       }
     } catch (error) {
@@ -74,6 +115,7 @@ const AdminContainers = () => {
         const result = await deleteContainer(id)
         if (result.success) {
           fetchContainers()
+          fetchStageCounts()
         } else {
           alert(result.message || 'Failed to delete container')
         }
@@ -91,6 +133,7 @@ const AdminContainers = () => {
         setSelectedContainer(null)
         setNewStatus('')
         fetchContainers()
+        fetchStageCounts()
       } else {
         alert(result.message || 'Failed to update status')
       }
@@ -148,6 +191,31 @@ const AdminContainers = () => {
         >
           + Create Container
         </button>
+      </div>
+
+      {/* Stage Filter Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
+        {STAGES.map((stage) => {
+          const isActive = stageFilter === stage.id
+          return (
+            <button
+              key={stage.id}
+              onClick={() => setStageFilter(stage.id)}
+              className={`rounded-xl border p-3 text-left transition-all ${
+                isActive
+                  ? 'border-[#F41703] bg-gradient-to-br from-[#F41703] to-[#F97316] text-white shadow-md'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-[#F41703]/50 hover:shadow-sm'
+              }`}
+            >
+              <p className={`text-xs font-medium ${isActive ? 'text-red-100' : 'text-gray-500'}`}>
+                {stage.label}
+              </p>
+              <p className="text-xl font-bold mt-1">
+                {stageCounts[stage.id] ?? '–'}
+              </p>
+            </button>
+          )
+        })}
       </div>
 
       {/* Filters */}
@@ -238,6 +306,7 @@ const AdminContainers = () => {
                 setBuyerFilter('')
                 setStatusFilter('')
                 setYearFilter('')
+                setStageFilter('all')
               }}
               className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
             >
@@ -349,6 +418,7 @@ const AdminContainers = () => {
           onSuccess={() => {
             setShowModal(false)
             fetchContainers()
+            fetchStageCounts()
           }}
         />
       )}

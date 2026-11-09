@@ -5,6 +5,15 @@ import { getAllOrders, createOrder, updateOrderStatus, deleteOrder } from '../se
 import { getAllUsers } from '../services/userApi'
 import { getAllProducts } from '../services/productApi'
 
+const STAGES = [
+  { id: 'all', label: 'All Orders', statuses: null },
+  { id: 'agreement', label: 'Under Agreement Signing', statuses: ['Under Agreement Signing'] },
+  { id: 'sample', label: 'Under Sample Approval', statuses: ['Under Sample Approval'] },
+  { id: 'production', label: 'Under Production', statuses: ['Under Production', 'Under Manufacturing'] },
+  { id: 'inspection', label: 'Under Inspection', statuses: ['Under Inspection'] },
+  { id: 'packing', label: 'Under Packing', statuses: ['Under Packing'] }
+]
+
 const AdminOrders = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -13,6 +22,8 @@ const AdminOrders = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [yearFilter, setYearFilter] = useState('')
+  const [stageFilter, setStageFilter] = useState('all')
+  const [stageCounts, setStageCounts] = useState({})
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showStatusModal, setShowStatusModal] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
@@ -44,8 +55,12 @@ const AdminOrders = () => {
   const [newStatus, setNewStatus] = useState('')
 
   useEffect(() => {
+    fetchStageCounts()
+  }, [])
+
+  useEffect(() => {
     fetchOrders()
-  }, [searchTerm, statusFilter, yearFilter])
+  }, [searchTerm, statusFilter, yearFilter, stageFilter])
 
   useEffect(() => {
     if (showCreateModal) {
@@ -110,12 +125,36 @@ const AdminOrders = () => {
     }
   }
 
+  const fetchStageCounts = async () => {
+    try {
+      const result = await getAllOrders()
+      if (result.success) {
+        const counts = { all: result.orders.length }
+        STAGES.forEach((stage) => {
+          if (stage.statuses) {
+            counts[stage.id] = result.orders.filter((o) =>
+              stage.statuses.includes(o.status)
+            ).length
+          }
+        })
+        setStageCounts(counts)
+      }
+    } catch (error) {
+      console.error('Error fetching stage counts:', error)
+    }
+  }
+
   const fetchOrders = async () => {
     try {
       setLoading(true)
       const result = await getAllOrders({ search: searchTerm, status: statusFilter, year: yearFilter })
       if (result.success) {
-        setOrders(result.orders)
+        let filteredOrders = result.orders
+        const stage = STAGES.find((s) => s.id === stageFilter)
+        if (stage?.statuses) {
+          filteredOrders = filteredOrders.filter((o) => stage.statuses.includes(o.status))
+        }
+        setOrders(filteredOrders)
       }
     } catch (error) {
       console.error('Error fetching orders:', error)
@@ -174,6 +213,7 @@ const AdminOrders = () => {
           notes: ''
         })
         fetchOrders()
+        fetchStageCounts()
       } else {
         alert(result.message || 'Failed to create order')
       }
@@ -191,6 +231,7 @@ const AdminOrders = () => {
         setSelectedOrder(null)
         setNewStatus('')
         fetchOrders()
+        fetchStageCounts()
       } else {
         alert(result.message || 'Failed to update status')
       }
@@ -208,6 +249,7 @@ const AdminOrders = () => {
         setSelectedOrder(null)
         setNewStatus('')
         fetchOrders()
+        fetchStageCounts()
         // Navigate to container page after successful status update
         navigate('/containers', { state: { fromOrder: true, orderId: selectedOrder._id } })
       } else {
@@ -226,6 +268,7 @@ const AdminOrders = () => {
       const result = await deleteOrder(orderId)
       if (result.success) {
         fetchOrders()
+        fetchStageCounts()
       } else {
         alert(result.message || 'Failed to delete order')
       }
@@ -275,6 +318,31 @@ const AdminOrders = () => {
         </div>
       </div>
 
+      {/* Stage Filter Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+        {STAGES.map((stage) => {
+          const isActive = stageFilter === stage.id
+          return (
+            <button
+              key={stage.id}
+              onClick={() => setStageFilter(stage.id)}
+              className={`rounded-xl border p-3 text-left transition-all ${
+                isActive
+                  ? 'border-[#F41703] bg-gradient-to-br from-[#F41703] to-[#F97316] text-white shadow-md'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-[#F41703]/50 hover:shadow-sm'
+              }`}
+            >
+              <p className={`text-xs font-medium ${isActive ? 'text-red-100' : 'text-gray-500'}`}>
+                {stage.label}
+              </p>
+              <p className="text-xl font-bold mt-1">
+                {stageCounts[stage.id] ?? '–'}
+              </p>
+            </button>
+          )
+        })}
+      </div>
+
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
         <div className="flex flex-col md:flex-row gap-4">
@@ -295,6 +363,9 @@ const AdminOrders = () => {
             <option value="">All Statuses</option>
             <option value="Pending">Pending</option>
             <option value="Order Placed">Order Placed</option>
+            <option value="Under Agreement Signing">Under Agreement Signing</option>
+            <option value="Under Sample Approval">Under Sample Approval</option>
+            <option value="Under Production">Under Production</option>
             <option value="Under Manufacturing">Under Manufacturing</option>
             <option value="Under Inspection">Under Inspection</option>
             <option value="Under Packing">Under Packing</option>
@@ -322,6 +393,7 @@ const AdminOrders = () => {
               setSearchTerm('')
               setStatusFilter('')
               setYearFilter('')
+              setStageFilter('all')
             }}
             className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
           >
@@ -382,8 +454,12 @@ const AdminOrders = () => {
                           ? 'bg-orange-100 text-orange-700'
                           : order.status === 'Under Inspection'
                           ? 'bg-yellow-100 text-yellow-700'
-                          : order.status === 'Under Manufacturing'
+                          : order.status === 'Under Production' || order.status === 'Under Manufacturing'
                           ? 'bg-blue-100 text-blue-700'
+                          : order.status === 'Under Sample Approval'
+                          ? 'bg-cyan-100 text-cyan-700'
+                          : order.status === 'Under Agreement Signing'
+                          ? 'bg-indigo-100 text-indigo-700'
                           : order.status === 'Order Placed'
                           ? 'bg-gray-100 text-gray-700'
                           : order.status === 'Pending'
@@ -789,6 +865,9 @@ const AdminOrders = () => {
               >
                 <option value="Pending">Pending</option>
                 <option value="Order Placed">Order Placed</option>
+                <option value="Under Agreement Signing">Under Agreement Signing</option>
+                <option value="Under Sample Approval">Under Sample Approval</option>
+                <option value="Under Production">Under Production</option>
                 <option value="Under Manufacturing">Under Manufacturing</option>
                 <option value="Under Inspection">Under Inspection</option>
                 <option value="Under Packing">Under Packing</option>

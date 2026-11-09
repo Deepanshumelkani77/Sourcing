@@ -11,6 +11,9 @@ const REFRESH_MS = 30000 // silent refresh so status changes appear live
 // Order journey, in sequence. Index is used for progress bars.
 const ORDER_STAGES = [
   { key: 'Order Placed', short: 'Placed', bar: 'bg-slate-400', pill: 'bg-slate-100 text-slate-700', dot: 'bg-slate-400' },
+  { key: 'Under Agreement Signing', short: 'Agreement', bar: 'bg-indigo-500', pill: 'bg-indigo-50 text-indigo-700', dot: 'bg-indigo-500' },
+  { key: 'Under Sample Approval', short: 'Sample', bar: 'bg-cyan-500', pill: 'bg-cyan-50 text-cyan-700', dot: 'bg-cyan-500' },
+  { key: 'Under Production', short: 'Production', bar: 'bg-blue-500', pill: 'bg-blue-50 text-blue-700', dot: 'bg-blue-500' },
   { key: 'Under Manufacturing', short: 'Manufacturing', bar: 'bg-blue-500', pill: 'bg-blue-50 text-blue-700', dot: 'bg-blue-500' },
   { key: 'Under Inspection', short: 'Inspection', bar: 'bg-yellow-400', pill: 'bg-yellow-50 text-yellow-800', dot: 'bg-yellow-400' },
   { key: 'Under Packing', short: 'Packing', bar: 'bg-orange-400', pill: 'bg-orange-50 text-orange-700', dot: 'bg-orange-400' },

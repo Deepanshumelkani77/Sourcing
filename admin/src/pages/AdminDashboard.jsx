@@ -204,7 +204,19 @@ const LOADERS = {
 }
 
 const CONTAINER_TONE = (s) => (s === 'Completed' ? 'green' : s === 'Goods Under Stuffing' ? 'yellow' : 'orange')
-const ORDER_TONE = (s) => (s === 'completed' ? 'green' : s === 'processing' ? 'blue' : 'yellow')
+const ORDER_TONE = (s) => ({
+  Delivered: 'green',
+  'Under Delivery': 'blue',
+  'Transportation to Shipping Port/Airport': 'purple',
+  'Under Packing': 'orange',
+  'Under Inspection': 'yellow',
+  'Under Production': 'blue',
+  'Under Manufacturing': 'blue',
+  'Under Sample Approval': 'purple',
+  'Under Agreement Signing': 'gray',
+  'Order Placed': 'gray',
+  Pending: 'gray'
+}[s] || 'yellow')
 const LEAD_TONE = (s) => ({ New: 'blue', Contacted: 'yellow', Qualified: 'purple', Converted: 'green' }[s] || 'red')
 const PRIORITY_TONE = (p) => (p === 'High' ? 'red' : p === 'Medium' ? 'yellow' : 'gray')
 const ISSUE_TONE = (s) => ({ Pending: 'yellow', 'In Review': 'blue', Resolved: 'green' }[s] || 'gray')
@@ -218,10 +230,13 @@ const VIEWS = [
     rowRoute: (r) => `/containers/${r._id}`,
     empty: 'No containers found',
     filters: [
-      { value: 'all', label: 'All', test: () => true },
-      { value: 'active', label: 'Active', test: (c) => c.currentStatus !== 'Completed' },
-      { value: 'delivered', label: 'Delivered', test: (c) => c.currentStatus === 'Completed' },
-      { value: 'stuffing', label: 'Under Stuffing', test: (c) => c.currentStatus === 'Goods Under Stuffing' }
+      { value: 'all', label: 'Total Containers', test: () => true },
+      { value: 'pol', label: 'Shipment at POL', test: (c) => ['Goods Under Stuffing', 'Container Loaded'].includes(c.currentStatus) },
+      { value: 'transit', label: 'Shipment in-transit', test: (c) => c.currentStatus === 'Under Shipment' },
+      { value: 'pod', label: 'Shipment at POD', test: (c) => c.currentStatus === 'Arrival Port Added' },
+      { value: 'clearance', label: 'Under Custom Clearance', test: (c) => c.currentStatus === 'Custom Clearance' },
+      { value: 'delivery', label: 'Under Delivery', test: (c) => c.currentStatus === 'Under Transportation' },
+      { value: 'delivered', label: 'Delivered', test: (c) => c.currentStatus === 'Completed' }
     ],
     search: (c) => `${c.containerNumber} ${c.destination} ${c.currentStatus}`,
     columns: [
@@ -239,10 +254,12 @@ const VIEWS = [
     rowRoute: (r) => `/orders/${r._id}`,
     empty: 'No orders found',
     filters: [
-      { value: 'all', label: 'All', test: () => true },
-      { value: 'pending', label: 'Pending', test: (o) => o.status === 'pending' },
-      { value: 'processing', label: 'Processing', test: (o) => o.status === 'processing' },
-      { value: 'completed', label: 'Completed', test: (o) => o.status === 'completed' }
+      { value: 'all', label: 'All Orders', test: () => true },
+      { value: 'agreement', label: 'Under Agreement Signing', test: (o) => o.status === 'Under Agreement Signing' },
+      { value: 'sample', label: 'Under Sample Approval', test: (o) => o.status === 'Under Sample Approval' },
+      { value: 'production', label: 'Under Production', test: (o) => o.status === 'Under Production' || o.status === 'Under Manufacturing' },
+      { value: 'inspection', label: 'Under Inspection', test: (o) => o.status === 'Under Inspection' },
+      { value: 'packing', label: 'Under Packing', test: (o) => o.status === 'Under Packing' }
     ],
     search: (o) => `${o._id} ${getCustomerName(o)} ${o.status}`,
     columns: [
@@ -351,6 +368,7 @@ const VIEWS = [
 const VIEW_BY_ID = Object.fromEntries(VIEWS.map((v) => [v.id, v]))
 const STORAGE_KEY = 'adminDashboardViews'
 const FILTERS_KEY = 'adminDashboardFilters'
+const ATTENTION_KEY = 'adminDashboardAttention'
 const PAGE = 10
 
 const readSavedViews = () => {
@@ -371,6 +389,115 @@ const readSavedFilters = () => {
     return { year: '', month: '' }
   }
 }
+
+const readSavedAttention = () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ATTENTION_KEY) || 'null')
+    return saved || ['orders', 'issues', 'reviews', 'leads', 'containers']
+  } catch (e) {
+    return ['orders', 'issues', 'reviews', 'leads', 'containers']
+  }
+}
+
+/* All available attention options for customization */
+const ATTENTION_OPTIONS = [
+  {
+    id: 'orders',
+    label: 'Pending orders',
+    icon: 'orders',
+    filter: 'pending',
+    description: 'Orders that are waiting to be processed',
+    default: true
+  },
+  {
+    id: 'issues',
+    label: 'Complaints waiting',
+    icon: 'issues',
+    filter: 'pending',
+    description: 'Customer complaints that need attention',
+    default: true
+  },
+  {
+    id: 'reviews',
+    label: 'Reviews to approve',
+    icon: 'reviews',
+    filter: 'pending',
+    description: 'Reviews pending approval',
+    default: true
+  },
+  {
+    id: 'leads',
+    label: 'New leads to contact',
+    icon: 'leads',
+    filter: 'new',
+    description: 'New leads that need follow-up',
+    default: true
+  },
+  {
+    id: 'containers',
+    label: 'Containers under stuffing',
+    icon: 'containers',
+    filter: 'stuffing',
+    description: 'Containers currently being stuffed',
+    default: true
+  },
+  {
+    id: 'containers-delayed',
+    label: 'Delayed containers',
+    icon: 'containers',
+    filter: 'delayed',
+    description: 'Containers with delayed ETA',
+    default: false
+  },
+  {
+    id: 'orders-processing',
+    label: 'Orders in processing',
+    icon: 'orders',
+    filter: 'processing',
+    description: 'Orders currently being processed',
+    default: false
+  },
+  {
+    id: 'issues-review',
+    label: 'Issues under review',
+    icon: 'issues',
+    filter: 'in-review',
+    description: 'Complaints being reviewed',
+    default: false
+  },
+  {
+    id: 'leads-contacted',
+    label: 'Contacted leads',
+    icon: 'leads',
+    filter: 'contacted',
+    description: 'Leads that have been contacted',
+    default: false
+  },
+  {
+    id: 'leads-qualified',
+    label: 'Qualified leads',
+    icon: 'leads',
+    filter: 'qualified',
+    description: 'Leads ready for conversion',
+    default: false
+  },
+  {
+    id: 'customers-new',
+    label: 'New customers',
+    icon: 'customers',
+    filter: 'new',
+    description: 'New customer registrations',
+    default: false
+  },
+  {
+    id: 'reviews-rejected',
+    label: 'Rejected reviews',
+    icon: 'reviews',
+    filter: 'rejected',
+    description: 'Reviews that were rejected',
+    default: false
+  }
+]
 
 const initialMap = (value) => Object.fromEntries(VIEWS.map((v) => [v.id, value]))
 
@@ -555,10 +682,13 @@ const AdminDashboard = () => {
   const [filters, setFilters] = useState(() => initialMap('all'))
   const [limits, setLimits] = useState(() => initialMap(PAGE))
   const savedFilters = readSavedFilters()
+  const savedAttention = readSavedAttention()
   const [yearFilter, setYearFilter] = useState(savedFilters.year)
   const [monthFilter, setMonthFilter] = useState(savedFilters.month)
   const [search, setSearch] = useState('')
   const [lastUpdated, setLastUpdated] = useState(null)
+  const [activeAttention, setActiveAttention] = useState(savedAttention)
+  const [showAttentionModal, setShowAttentionModal] = useState(false)
 
   const yearRef = useRef(yearFilter)
   const monthRef = useRef(monthFilter)
@@ -621,6 +751,14 @@ const AdminDashboard = () => {
     }
   }, [yearFilter, monthFilter])
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(ATTENTION_KEY, JSON.stringify(activeAttention))
+    } catch (e) {
+      /* ignore */
+    }
+  }, [activeAttention])
+
   const toggleView = (id) =>
     setSelectedViews((prev) => {
       if (prev.includes(id)) return prev.length === 1 ? prev : prev.filter((x) => x !== id)
@@ -628,8 +766,24 @@ const AdminDashboard = () => {
     })
 
   const jumpTo = (id, filterValue) => {
-    const view = VIEWS.find((v) => v.id === id)
-    if (!view) return
+    // Map attention IDs to actual page routes
+    const routeMap = {
+      'orders': '/orders',
+      'orders-processing': '/orders',
+      'issues': '/issues',
+      'issues-review': '/issues',
+      'reviews': '/reviews',
+      'reviews-rejected': '/reviews',
+      'leads': '/crm/leads',
+      'leads-contacted': '/crm/leads',
+      'leads-qualified': '/crm/leads',
+      'containers': '/containers',
+      'containers-delayed': '/containers',
+      'customers-new': '/customers'
+    }
+
+    const route = routeMap[id]
+    if (!route) return
 
     // Build query parameters for the page
     const params = new URLSearchParams()
@@ -638,7 +792,7 @@ const AdminDashboard = () => {
     if (monthFilter) params.append('month', monthFilter)
 
     const queryString = params.toString()
-    const url = queryString ? `${view.route}?${queryString}` : view.route
+    const url = queryString ? `${route}?${queryString}` : route
 
     navigate(url)
   }
@@ -670,6 +824,40 @@ const AdminDashboard = () => {
     const funnel = ['New', 'Contacted', 'Qualified', 'Converted'].map((s) => [s, leads.filter((l) => l.status === s).length])
     const converted = funnel[3][1]
 
+    // Calculate counts for all attention options
+    const attentionCounts = {
+      'orders': pendingOrders,
+      'issues': data.issues.filter((i) => i.status === 'Pending').length,
+      'reviews': pendingReviews,
+      'leads': newLeads,
+      'containers': stuffing,
+      'containers-delayed': containers.filter((c) => c.eta && new Date(c.eta) < new Date() && c.currentStatus !== 'Completed').length,
+      'orders-processing': orders.filter((o) => o.status === 'processing').length,
+      'issues-review': data.issues.filter((i) => i.status === 'In Review').length,
+      'leads-contacted': leads.filter((l) => l.status === 'Contacted').length,
+      'leads-qualified': leads.filter((l) => l.status === 'Qualified').length,
+      'customers-new': newCustomers,
+      'reviews-rejected': reviews.filter((r) => r.status === 'rejected').length
+    }
+
+    // Build attention list from active options
+    const attention = activeAttention
+      .map((id) => {
+        const option = ATTENTION_OPTIONS.find((opt) => opt.id === id)
+        if (!option) return null
+        // Map attention option ID to the actual page ID for navigation
+        const pageId = option.id.split('-')[0] // Get base ID (e.g., 'orders' from 'orders-processing')
+        return {
+          id: option.id,
+          pageId: pageId,
+          filter: option.filter,
+          label: option.label,
+          count: attentionCounts[option.id] || 0,
+          icon: option.icon
+        }
+      })
+      .filter(Boolean)
+
     return {
       kpi: {
         containers: { value: containers.length, sub: `${containers.filter((c) => c.currentStatus !== 'Completed').length} active` },
@@ -679,18 +867,12 @@ const AdminDashboard = () => {
         issues: { value: issues.length, sub: `${openIssues} open` },
         reviews: { value: reviews.length, sub: `${pendingReviews} to approve` }
       },
-      attention: [
-        { id: 'orders', filter: 'pending', label: 'Pending orders', count: pendingOrders, icon: 'orders' },
-        { id: 'issues', filter: 'pending', label: 'Complaints waiting', count: data.issues.filter((i) => i.status === 'Pending').length, icon: 'issues' },
-        { id: 'reviews', filter: 'pending', label: 'Reviews to approve', count: pendingReviews, icon: 'reviews' },
-        { id: 'leads', filter: 'new', label: 'New leads to contact', count: newLeads, icon: 'leads' },
-        { id: 'containers', filter: 'stuffing', label: 'Containers under stuffing', count: stuffing, icon: 'containers' }
-      ],
+      attention,
       containerStatus,
       funnel,
       conversion: leads.length ? Math.round((converted / leads.length) * 100) : 0
     }
-  }, [data])
+  }, [data, activeAttention])
 
   const anyLoading = Object.values(loadingMap).some(Boolean)
   const firstLoadOf = (id) => loadingMap[id] && data[id].length === 0
@@ -760,19 +942,27 @@ const AdminDashboard = () => {
 
       {/* ===================== Insights ===================== */}
       <div className="grid gap-6 lg:grid-cols-3">
-        <Panel icon="bell" title="Needs attention" subtitle="Click an item to view details">
+        <Panel icon="bell" title="Needs attention" subtitle={`Click an item to view details · ${activeAttention.length} items showing`}>
+          <div className="mb-4">
+            <button
+              onClick={() => setShowAttentionModal(true)}
+              className="text-xs font-semibold text-[#F41703] hover:text-[#d10f02]"
+            >
+              Manage options
+            </button>
+          </div>
           <ul className="space-y-2">
             {stats.attention.map((a) => (
               <li key={a.label}>
                 <button
-                  onClick={() => jumpTo(a.id, a.filter)}
+                  onClick={() => jumpTo(a.pageId, a.filter)}
                   className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-gray-50 ${ring}`}
                 >
                   <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${a.count > 0 ? 'bg-[#F41703]/10 text-[#F41703]' : 'bg-green-50 text-green-600'}`}>
                     {a.count > 0 ? ICONS[a.icon]('h-5 w-5') : ICONS.check('h-4 w-4')}
                   </span>
                   <span className="flex-1 text-sm font-medium text-gray-700">{a.label}</span>
-                  {loadingMap[a.id] && data[a.id].length === 0 ? (
+                  {loadingMap[a.pageId] && data[a.pageId].length === 0 ? (
                     <span className="h-5 w-8 animate-pulse rounded bg-gray-200" />
                   ) : (
                     <span className={`min-w-[2rem] rounded-full px-2.5 py-0.5 text-center text-sm font-bold ${a.count > 0 ? 'bg-[#F41703] text-white' : 'bg-green-100 text-green-700'}`}>{a.count}</span>
@@ -780,6 +970,11 @@ const AdminDashboard = () => {
                 </button>
               </li>
             ))}
+            {stats.attention.length === 0 && (
+              <li className="px-3 py-4 text-center text-sm text-gray-500">
+                No attention items enabled. Click "Manage options" to add items.
+              </li>
+            )}
           </ul>
         </Panel>
 
@@ -907,6 +1102,89 @@ const AdminDashboard = () => {
           />
         ))}
       </div>
+
+      {/* Attention Options Modal */}
+      {showAttentionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Manage Attention Options</h3>
+                <p className="text-sm text-gray-500">Select which items to show in the Needs attention section</p>
+              </div>
+              <button
+                onClick={() => setShowAttentionModal(false)}
+                className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="max-h-[60vh] overflow-y-auto p-6">
+              <div className="grid gap-3 sm:grid-cols-2">
+                {ATTENTION_OPTIONS.map((option) => (
+                  <button
+                    key={option.id}
+                    onClick={() => {
+                      setActiveAttention((prev) =>
+                        prev.includes(option.id)
+                          ? prev.length === 1
+                            ? prev
+                            : prev.filter((id) => id !== option.id)
+                          : [...prev, option.id]
+                      )
+                    }}
+                    className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-all ${
+                      activeAttention.includes(option.id)
+                        ? 'border-[#F41703] bg-[#F41703]/5'
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="mt-0.5">
+                      <div className={`h-5 w-5 rounded border-2 flex items-center justify-center ${
+                        activeAttention.includes(option.id)
+                          ? 'border-[#F41703] bg-[#F41703]'
+                          : 'border-gray-300'
+                      }`}>
+                        {activeAttention.includes(option.id) && (
+                          <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">{ICONS[option.icon]('h-4 w-4')}</span>
+                        <span className="font-semibold text-gray-900">{option.label}</span>
+                      </div>
+                      <p className="mt-1 text-xs text-gray-500">{option.description}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center justify-between border-t border-gray-200 px-6 py-4">
+              <p className="text-sm text-gray-500">{activeAttention.length} of {ATTENTION_OPTIONS.length} options selected</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActiveAttention(ATTENTION_OPTIONS.filter((o) => o.default).map((o) => o.id))}
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  Reset to defaults
+                </button>
+                <button
+                  onClick={() => setShowAttentionModal(false)}
+                  className="rounded-lg bg-[#F41703] px-4 py-2 text-sm font-semibold text-white hover:bg-[#d10f02]"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
