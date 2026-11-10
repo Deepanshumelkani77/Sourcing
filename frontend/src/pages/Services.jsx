@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthProvider'
 import { AppContext } from '../context/AppContext'
 import { useTranslation } from 'react-i18next'
 import { getAllServices } from '../services/serviceApi'
+import { getMe } from '../services/authApi'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://sourcing-x379.onrender.com'
 
@@ -476,7 +477,7 @@ const RequestModal = ({ selectedIds, user, loading, submitted, error, onRemove, 
 /* Page                                                               */
 /* ------------------------------------------------------------------ */
 const Services = () => {
-  const { user } = useAuth()
+  const { user, setUser } = useAuth()
   const { openSignup } = React.useContext(AppContext)
   const { t } = useTranslation()
   const { i18n } = useTranslation()
@@ -491,6 +492,7 @@ const Services = () => {
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [approvalNotice, setApprovalNotice] = useState(null) // 'pending' | 'rejected' | null
 
   // Fetch services from API
   useEffect(() => {
@@ -534,12 +536,29 @@ const Services = () => {
 
   const phaseCount = (phase) => phase.services.filter((s) => selectedServices.includes(s.id)).length
 
-  const openRequest = () => {
+  const openRequest = async () => {
     if (!user) {
       openSignup()
-    } else {
+      return
+    }
+
+    // Refresh the profile so a recent admin approval is picked up immediately
+    let approvalStatus = user.approvalStatus || 'approved'
+    try {
+      const me = await getMe()
+      if (me.success && me.user) {
+        setUser(me.user)
+        approvalStatus = me.user.approvalStatus || 'approved'
+      }
+    } catch (error) {
+      console.error('Error checking account status:', error)
+    }
+
+    if (approvalStatus === 'approved') {
       setSubmitError('')
       setShowRequest(true)
+    } else {
+      setApprovalNotice(approvalStatus)
     }
   }
 
@@ -558,9 +577,14 @@ const Services = () => {
     setLoading(true)
     setSubmitError('')
     try {
+      const token = localStorage.getItem('auth_token')
       const response = await fetch(`${API_URL}/api/sourcing-requests`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        credentials: 'include',
         body: JSON.stringify({
           ...formData,
           selectedServices,
@@ -886,6 +910,41 @@ const Services = () => {
           }}
           t={t}
         />
+      )}
+
+      {/* Approval notice modal */}
+      {approvalNotice && (
+        <div className="svc-fade fixed inset-0 z-50 flex items-center justify-center bg-gray-950/60 p-4 backdrop-blur-sm">
+          <div className="svc-pop w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl">
+            <div className={`mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full ${
+              approvalNotice === 'rejected' ? 'bg-red-100' : 'bg-amber-100'
+            }`}>
+              {approvalNotice === 'rejected' ? (
+                <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="h-8 w-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">
+              {approvalNotice === 'rejected' ? 'Account Not Approved' : 'Account Under Review'}
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              {approvalNotice === 'rejected'
+                ? 'Your account has been rejected. Please contact our support team if you believe this is a mistake.'
+                : 'Your account is pending admin approval. You will be able to submit sourcing requests and quotation requests once your account is approved.'}
+            </p>
+            <button
+              onClick={() => setApprovalNotice(null)}
+              className={`mt-6 w-full rounded-xl px-6 py-3 font-bold text-white shadow-lg transition-all ${brandGrad} ${ring}`}
+            >
+              Got it
+            </button>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -156,6 +156,24 @@ const protect = async (req, res, next) => {
   }
 };
 
+// Requires an authenticated customer whose account is approved.
+// Users created before approval tracking have no approvalStatus and are treated as approved.
+const requireApproved = (req, res, next) => {
+  const status = req.user?.approvalStatus || "approved";
+
+  if (status !== "approved") {
+    return res.status(403).json({
+      success: false,
+      message:
+        status === "rejected"
+          ? "Your account has been rejected. Please contact support for assistance."
+          : "Your account is pending admin approval. You will be able to submit requests once approved.",
+    });
+  }
+
+  next();
+};
+
 const authorize = (...roles) => {
   return (req, res, next) => {
     // Check both user.role and admin.role for flexibility
@@ -176,4 +194,4 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, protectUser, protectAdmin, authorize };
+module.exports = { protect, protectUser, protectAdmin, requireApproved, authorize };

@@ -205,6 +205,7 @@ const signup = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        approvalStatus: user.approvalStatus || 'approved',
       },
     });
   } catch (error) {
@@ -268,6 +269,7 @@ const login = async (req, res) => {
         email: user.email,
         phone: user.phone,
         emailVerified: user.emailVerified,
+        approvalStatus: user.approvalStatus || 'approved',
         role: "customer",
       },
     });
@@ -325,6 +327,7 @@ const getMe = async (req, res) => {
         email: user.email,
         phone: user.phone,
         emailVerified: user.emailVerified,
+        approvalStatus: user.approvalStatus || 'approved',
         role: "customer",
       },
     });

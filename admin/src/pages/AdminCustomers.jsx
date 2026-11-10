@@ -7,6 +7,8 @@ const AdminCustomers = () => {
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [approvalFilter, setApprovalFilter] = useState('')
+  const [actionLoading, setActionLoading] = useState(null)
   const [showEditModal, setShowEditModal] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState(null)
   const [editForm, setEditForm] = useState({
@@ -41,6 +43,32 @@ const AdminCustomers = () => {
       setLoading(false)
     }
   }
+
+  const getApprovalStatus = (customer) => customer.approvalStatus || 'approved'
+
+  const handleApproval = async (customer, status) => {
+    const label = status === 'approved' ? 'approve' : status === 'rejected' ? 'reject' : 'mark as pending'
+    if (!window.confirm(`Are you sure you want to ${label} ${customer.firstName} ${customer.lastName}?`)) return
+
+    try {
+      setActionLoading(customer._id)
+      const result = await updateUser(customer._id, { approvalStatus: status })
+      if (result.success) {
+        fetchCustomers()
+      } else {
+        alert(result.message || 'Failed to update approval status')
+      }
+    } catch (error) {
+      console.error('Error updating approval status:', error)
+      alert('Failed to update approval status')
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const filteredCustomers = customers.filter((c) =>
+    !approvalFilter || getApprovalStatus(c) === approvalFilter
+  )
 
   const handleDeleteCustomer = async (customerId) => {
     if (!window.confirm('Are you sure you want to delete this customer?')) return
@@ -104,15 +132,29 @@ const AdminCustomers = () => {
         </div>
       </div>
 
-      {/* Search */}
+      {/* Search & Filters */}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
-        <input
-          type="text"
-          placeholder="Search customers..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-        />
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Search customers..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+            />
+          </div>
+          <select
+            value={approvalFilter}
+            onChange={(e) => setApprovalFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+          >
+            <option value="">All Statuses</option>
+            <option value="pending">Pending Approval</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
       </div>
 
       {/* Customers Table */}
@@ -129,6 +171,7 @@ const AdminCustomers = () => {
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Verified</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Approval</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Orders</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Total Spent</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Joined</th>
@@ -136,7 +179,7 @@ const AdminCustomers = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {customers.map((customer) => (
+                {filteredCustomers.map((customer) => (
                   <tr key={customer._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -164,11 +207,47 @@ const AdminCustomers = () => {
                         </span>
                       )}
                     </td>
+                    <td className="px-6 py-4">
+                      {(() => {
+                        const status = getApprovalStatus(customer)
+                        return status === 'approved' ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                            Approved
+                          </span>
+                        ) : status === 'rejected' ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                            Rejected
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                            Pending
+                          </span>
+                        )
+                      })()}
+                    </td>
                     <td className="px-6 py-4 text-sm text-gray-600">{customer.totalOrders || 0}</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-800">${(customer.totalSpent || 0).toLocaleString()}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{formatDate(customer.createdAt)}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
+                        {getApprovalStatus(customer) !== 'approved' && (
+                          <button
+                            onClick={() => handleApproval(customer, 'approved')}
+                            disabled={actionLoading === customer._id}
+                            className="text-green-600 hover:text-green-800 text-sm font-medium disabled:opacity-50"
+                          >
+                            Approve
+                          </button>
+                        )}
+                        {getApprovalStatus(customer) !== 'rejected' && (
+                          <button
+                            onClick={() => handleApproval(customer, 'rejected')}
+                            disabled={actionLoading === customer._id}
+                            className="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50"
+                          >
+                            Reject
+                          </button>
+                        )}
                         <button
                           onClick={() => handleEditCustomer(customer)}
                           className="text-blue-600 hover:text-blue-800 text-sm font-medium"

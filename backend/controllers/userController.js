@@ -112,7 +112,7 @@ const deleteUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, emailVerified } = req.body;
+    const { firstName, lastName, email, emailVerified, approvalStatus } = req.body;
 
     const user = await User.findById(id);
 
@@ -123,11 +123,22 @@ const updateUser = async (req, res) => {
       });
     }
 
+    if (approvalStatus !== undefined && !['pending', 'approved', 'rejected'].includes(approvalStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid approval status'
+      });
+    }
+
     // Update fields
     if (firstName !== undefined) user.firstName = firstName;
     if (lastName !== undefined) user.lastName = lastName;
     if (email !== undefined) user.email = email;
     if (emailVerified !== undefined) user.emailVerified = emailVerified;
+    if (approvalStatus !== undefined) {
+      user.approvalStatus = approvalStatus;
+      user.approvedAt = approvalStatus === 'approved' ? new Date() : null;
+    }
 
     await user.save();
 

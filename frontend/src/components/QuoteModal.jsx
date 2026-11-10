@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useId, useLayoutEffect, useMemo, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useId, useLayoutEffect, useMemo, useRef, useCallback, useContext } from 'react'
 import { useAuth } from '../context/AuthProvider'
+import { AppContext } from '../context/AppContext'
 import { submitQuotation } from '../services/quotationApi'
+import { getMe } from '../services/authApi'
 
 /* ------------------------------------------------------------------ */
 /* Country data: [iso, name, dial code without "+"]                    */
@@ -346,7 +348,9 @@ const CountryCodeSelect = ({ value, onChange }) => {
 }
 
 const QuoteModal = ({ isOpen, onClose, product }) => {
-  const { user } = useAuth()
+  const { user, setUser } = useAuth()
+  const { openSignup } = useContext(AppContext)
+  const [approvalStatus, setApprovalStatus] = useState(null) // null = checking/unknown
   const [countryIso, setCountryIso] = useState('in')
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
@@ -370,6 +374,34 @@ const QuoteModal = ({ isOpen, onClose, product }) => {
       return () => {
         document.head.removeChild(link)
       }
+    }
+  }, [isOpen])
+
+  // Refresh account status each time the modal opens so recent approvals apply immediately
+  useEffect(() => {
+    if (!isOpen) return
+    if (!user) {
+      setApprovalStatus('guest')
+      return
+    }
+
+    let cancelled = false
+    setApprovalStatus(null)
+    getMe()
+      .then((me) => {
+        if (cancelled) return
+        if (me.success && me.user) {
+          setUser?.(me.user)
+          setApprovalStatus(me.user.approvalStatus || 'approved')
+        } else {
+          setApprovalStatus(user.approvalStatus || 'approved')
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setApprovalStatus(user.approvalStatus || 'approved')
+      })
+    return () => {
+      cancelled = true
     }
   }, [isOpen])
 
@@ -451,6 +483,49 @@ const QuoteModal = ({ isOpen, onClose, product }) => {
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Quote Request Submitted!</h3>
               <p className="text-gray-600">We'll get back to you soon with the quotation.</p>
+            </div>
+          ) : approvalStatus === 'pending' || approvalStatus === 'rejected' ? (
+            <div className="text-center py-8">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+                approvalStatus === 'rejected' ? 'bg-red-100' : 'bg-amber-100'
+              }`}>
+                {approvalStatus === 'rejected' ? (
+                  <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                )}
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                {approvalStatus === 'rejected' ? 'Account Not Approved' : 'Account Under Review'}
+              </h3>
+              <p className="text-gray-600">
+                {approvalStatus === 'rejected'
+                  ? 'Your account has been rejected. Please contact our support team if you believe this is a mistake.'
+                  : 'Your account is pending admin approval. You will be able to request quotations once your account is approved.'}
+              </p>
+            </div>
+          ) : approvalStatus === 'guest' ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Sign in required</h3>
+              <p className="text-gray-600 mb-6">Please sign in or create an account to request a quotation.</p>
+              <button
+                onClick={() => {
+                  onClose()
+                  openSignup()
+                }}
+                className="w-full bg-gradient-to-r from-[#F41703] to-[#F97316] text-white py-4 px-6 rounded-xl font-semibold hover:from-[#d10f02] hover:to-[#ea580c] transition-all duration-300 shadow-lg"
+              >
+                Sign In / Sign Up
+              </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-3">

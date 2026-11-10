@@ -29,13 +29,8 @@ export const AuthProvider = ({
 
 
   const loadUser = async () => {
-    // Only check auth if there's a token in localStorage
-    const token = localStorage.getItem('auth_token')
-    if (!token) {
-      setLoading(false)
-      return
-    }
-
+    // The backend sets an httpOnly auth cookie on login, so always verify
+    // the session - guests simply get a 401 and stay logged out.
     try {
       const result = await getMe()
       if (result.success) {

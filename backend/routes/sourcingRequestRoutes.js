@@ -9,10 +9,10 @@ const {
   getSourcingRequestStats,
 } = require("../controllers/sourcingRequestController");
 
-const { protect, authorize } = require("../middleware/authMiddleware");
+const { protect, authorize, protectUser, requireApproved } = require("../middleware/authMiddleware");
 
-// Public route
-router.post("/", createSourcingRequest);
+// Requires an approved customer account
+router.post("/", protectUser, requireApproved, createSourcingRequest);
 
 // Admin routes
 router.get("/", protect, authorize("admin"), getSourcingRequests);

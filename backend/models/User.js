@@ -47,6 +47,17 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
+    approvalStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+
+    approvedAt: {
+      type: Date,
+      default: null,
+    },
+
     googleId: {
       type: String,
       default: null,

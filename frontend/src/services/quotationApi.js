@@ -3,10 +3,12 @@ const API_URL = import.meta.env.VITE_API_URL;
 // Submit quotation request
 export const submitQuotation = async (quotationData) => {
   try {
+    const token = localStorage.getItem('auth_token');
     const response = await fetch(`${API_URL}/api/quotations/submit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       credentials: 'include',
       body: JSON.stringify(quotationData),
