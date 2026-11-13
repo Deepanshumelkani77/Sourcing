@@ -245,6 +245,17 @@ exports.updateDealStage = async (req, res) => {
           $inc: { totalRevenue: deal.dealValue, totalOrders: 1 },
           lastOrderDate: new Date(),
         });
+        if (deal.leadId) {
+          await Lead.findByIdAndUpdate(deal.leadId, {
+            conversionStatus: "Converted to Customer",
+            conversionDate: new Date(),
+            convertedBy: req.user._id,
+            dealId: deal._id,
+            customerId: deal.customerId,
+            revenueBooked: deal.dealValue || 0,
+            leadStage: "Converted",
+          });
+        }
       } else if (deal.leadId) {
         // If no customer but has lead, create customer from lead
         const lead = await Lead.findById(deal.leadId);
@@ -269,16 +280,29 @@ exports.updateDealStage = async (req, res) => {
           // Update deal with customer ID
           deal.customerId = customer._id;
 
-          // Update lead
+          // Update lead conversion fields
           lead.customerId = customer._id;
+          lead.conversionStatus = "Converted to Customer";
+          lead.conversionDate = new Date();
+          lead.convertedBy = req.user._id;
+          lead.dealId = deal._id;
+          lead.revenueBooked = deal.dealValue || 0;
+          lead.leadStage = "Converted";
+          if (deal.lostReason) lead.wonLostReason = deal.lostReason;
           await lead.save();
         }
       }
     }
 
-    // If lost, save reason
+    // If lost, save reason on deal and linked lead
     if (stage === "Lost") {
       deal.lostReason = req.body.lostReason || "";
+      if (deal.leadId) {
+        await Lead.findByIdAndUpdate(deal.leadId, {
+          wonLostReason: deal.lostReason,
+          status: "Lost",
+        });
+      }
     }
 
     await deal.save();

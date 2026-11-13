@@ -239,7 +239,7 @@ const AdminCustomers = () => {
                             Approve
                           </button>
                         )}
-                        {getApprovalStatus(customer) !== 'rejected' && (
+                        {getApprovalStatus(customer) === 'pending' && (
                           <button
                             onClick={() => handleApproval(customer, 'rejected')}
                             disabled={actionLoading === customer._id}
