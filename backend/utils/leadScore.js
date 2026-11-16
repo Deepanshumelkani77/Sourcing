@@ -60,6 +60,7 @@ const calculateLeadScore = (lead) => {
   /* ---- Negative deductions ---- */
   if (lead.qualificationStatus === "Disqualified") negative += 30;
   else if (lead.qualificationStatus === "Not Qualified") negative += 15;
+  else if (lead.qualificationStatus === "On Hold") negative += 10;
   if (["Lost", "Junk", "Duplicate"].includes(lead.status)) negative += 40;
   if (!has(lead.phone) && !has(lead.mobileNumber)) negative += 10;
   if (!has(lead.email) && !has(lead.alternateEmail)) negative += 5;

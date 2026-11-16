@@ -31,9 +31,10 @@ const leadSchema = new mongoose.Schema(
     /* ---------------- Communication preferences & consent ---------------- */
     preferredContactMethod: {
       type: String,
-      enum: ["", "Call", "WhatsApp", "Email", "Meeting"],
+      enum: ["", "Call", "WhatsApp", "Email", "Online Meeting", "Physical Meeting", "Other"],
       default: "",
     },
+    preferredContactOther: { type: String, trim: true, default: "" },
     preferredLanguage: {
       type: String,
       enum: ["", "English", "Hindi", "Other"],
@@ -51,9 +52,10 @@ const leadSchema = new mongoose.Schema(
     jobTitle: { type: String, trim: true, default: "" },
     department: {
       type: String,
-      enum: ["", "Purchase", "Projects", "Operations", "Finance", "Marketing"],
+      enum: ["", "Purchase", "Projects", "Operations", "Finance", "Marketing", "Other"],
       default: "",
     },
+    departmentOther: { type: String, trim: true, default: "" },
     industry: {
       type: String,
       enum: [
@@ -71,6 +73,7 @@ const leadSchema = new mongoose.Schema(
       ],
       default: "",
     },
+    industryOther: { type: String, trim: true, default: "" },
     companyType: {
       type: String,
       enum: [
@@ -85,6 +88,7 @@ const leadSchema = new mongoose.Schema(
       ],
       default: "",
     },
+    companyTypeOther: { type: String, trim: true, default: "" },
     companySize: {
       type: String,
       enum: ["", "1-10", "11-50", "51-200", "200+"],
@@ -92,22 +96,43 @@ const leadSchema = new mongoose.Schema(
     },
     annualRevenue: {
       type: String,
-      enum: ["", "Below ₹1 Crore", "₹1-10 Crore", "₹10-50 Crore", "₹50 Crore+"],
+      enum: ["", "Below ₹1 Crore", "₹1-10 Crore", "₹10-50 Crore", "₹50 Crore+", "Other"],
       default: "",
     },
+    annualRevenueOther: { type: String, trim: true, default: "" },
     address: { type: String, trim: true, default: "" },
     city: { type: String, trim: true, default: "" },
     state: { type: String, trim: true, default: "" },
     country: { type: String, trim: true, default: "India" },
     pincode: { type: String, trim: true, default: "" },
+    locationLat: { type: Number, default: null },
+    locationLng: { type: Number, default: null },
+    deliverySameAddress: { type: Boolean, default: false },
+    deliveryDifferentAddress: { type: Boolean, default: false },
+    deliveryAddress: { type: String, trim: true, default: "" },
+    deliveryPincode: { type: String, trim: true, default: "" },
+    deliveryCity: { type: String, trim: true, default: "" },
+    deliveryState: { type: String, trim: true, default: "" },
+    deliveryCountry: { type: String, trim: true, default: "" },
 
     /* ---------------- Requirement ---------------- */
     productInterest: { type: String, trim: true, default: "" },
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", default: null },
     productRequirement: { type: String, required: true, trim: true },
     productCategory: { type: String, trim: true, default: "" },
     productSpecifications: { type: String, trim: true, default: "" },
     servicesInterested: [{ type: String, trim: true }],
     quantity: { type: String, trim: true, default: "" },
+    loadType: {
+      type: String,
+      enum: ["", "FCL – Full Container Load", "LCL – Less than Container Load"],
+      default: "",
+    },
+    containerType: {
+      type: String,
+      enum: ["", "Full Container", "40 HC", "20 GP", "40 GP"],
+      default: "",
+    },
     quantityUnit: {
       type: String,
       enum: ["", "Pieces", "Boxes", "Sets", "Kg", "Tons", "Sq. Ft.", "Sq. Mtr.", "20ft Container", "40ft Container"],
@@ -120,6 +145,7 @@ const leadSchema = new mongoose.Schema(
       default: "",
     },
     requiredDeliveryDate: { type: Date },
+    tentativeOrderDate: { type: Date },
     destinationCountry: { type: String, trim: true, default: "" },
     siteLocation: { type: String, trim: true, default: "" },
     shippingTerms: {
@@ -128,7 +154,9 @@ const leadSchema = new mongoose.Schema(
       default: "",
     },
     projectName: { type: String, trim: true, default: "" },
+    purpose: { type: String, trim: true, default: "" },
     documentsRequired: { type: String, trim: true, default: "" },
+    documentsRequiredOther: { type: String, trim: true, default: "" },
     samplesRequired: { type: String, enum: YES_NO, default: "" },
     siteVisitRequired: { type: String, enum: YES_NO, default: "" },
     requirementDetails: { type: String, trim: true, default: "" },
@@ -136,9 +164,10 @@ const leadSchema = new mongoose.Schema(
     /* ---------------- Qualification ---------------- */
     qualificationStatus: {
       type: String,
-      enum: ["Not Qualified", "Pending", "Qualified", "Disqualified"],
+      enum: ["Not Qualified", "On Hold", "Pending", "Qualified", "Disqualified"],
       default: "Pending",
     },
+    onHoldUntil: { type: Date },
     qualificationFramework: {
       type: String,
       enum: ["", "BANT", "CHAMP", "MEDDIC", "Custom"],
@@ -177,6 +206,21 @@ const leadSchema = new mongoose.Schema(
       default: "",
     },
     numberOfDecisionMakers: { type: Number, default: null },
+    decisionMakers: {
+      type: [
+        {
+          name: { type: String, trim: true, default: "" },
+          designation: { type: String, trim: true, default: "" },
+          contact: { type: String, trim: true, default: "" },
+          role: {
+            type: String,
+            enum: ["", "Decision Maker", "Influencer", "End User", "Procurement", "Finance"],
+            default: "",
+          },
+        },
+      ],
+      default: [],
+    },
 
     expectedOrderValue: { type: Number, default: 0, min: 0 },
     expectedOrderCurrency: {
@@ -298,6 +342,7 @@ const leadSchema = new mongoose.Schema(
     /* ---------------- Source & ownership ---------------- */
     source: { type: String, trim: true, default: "Website" },
     subSource: { type: String, trim: true, default: "" },
+    sourceOther: { type: String, trim: true, default: "" },
     dataSource: {
       type: String,
       enum: ["", "Website", "Manual Entry", "Import", "API", "WhatsApp", "Advertisement"],
@@ -308,6 +353,12 @@ const leadSchema = new mongoose.Schema(
       enum: ["", "Reception", "Salesperson", "Website", "Chatbot"],
       default: "",
     },
+    assignedMember: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", default: null },
+    leadTransfer: { type: Boolean, default: false },
+    transferFrom: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", default: null },
+    transferTo: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", default: null },
+    transferDate: { type: Date },
+    transferReason: { type: String, trim: true, default: "" },
     assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
     assignedTeam: {
       type: String,

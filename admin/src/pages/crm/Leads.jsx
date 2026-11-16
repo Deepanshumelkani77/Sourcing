@@ -1,6 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../../config/axios'
+import 'leaflet/dist/leaflet.css'
+import L from 'leaflet'
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet'
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow
+})
 
 /* ================================================================== */
 /* Option lists                                                       */
@@ -16,18 +28,18 @@ const RATINGS = ['Hot', 'Warm', 'Cold']
 const PRIORITIES = ['P1 - Hot', 'P2 - Warm', 'P3 - Cold', 'P4 - Nurture', 'Low', 'Medium', 'High', 'Urgent']
 const NEXT_ACTIONS = ['Call', 'Send Quotation', 'Share Catalogue', 'Schedule Visit', 'Negotiate']
 const CONTACT_METHODS = ['Call', 'WhatsApp', 'Email', 'Meeting', 'Site Visit']
-const PREFERRED_METHODS = ['Call', 'WhatsApp', 'Email', 'Meeting']
+const PREFERRED_METHODS = ['Call', 'WhatsApp', 'Email', 'Online Meeting', 'Physical Meeting', 'Other']
 const ACTIVITY_TYPES = ['Call Log', 'WhatsApp Log', 'Email Log', 'Meeting Log', 'Site-Visit Log', 'Quotation Log', 'Document', 'Activity Outcome', 'Note']
 const QUICK_LOG = [['Call Log', 'Call'], ['WhatsApp Log', 'WhatsApp'], ['Email Log', 'Email'], ['Meeting Log', 'Meeting'], ['Note', 'Note']]
 
 const YES_NO = ['Yes', 'No']
 const SALUTATIONS = ['Mr.', 'Ms.', 'Mrs.', 'Dr.', 'Prof.']
 const LANGUAGES = ['English', 'Hindi', 'Other']
-const DEPARTMENTS = ['Purchase', 'Projects', 'Operations', 'Finance', 'Marketing']
+const DEPARTMENTS = ['Purchase', 'Projects', 'Operations', 'Finance', 'Marketing', 'Other']
 const INDUSTRIES = ['Manufacturing', 'Construction', 'Real Estate', 'Hospitality', 'Retail', 'Export / Import', 'Automotive', 'Electronics', 'Textile', 'Other']
 const COMPANY_TYPES = ['Proprietorship', 'Pvt. Ltd.', 'LLP', 'Partnership', 'Individual', 'Government', 'Other']
 const COMPANY_SIZES = ['1-10', '11-50', '51-200', '200+']
-const REVENUES = ['Below ₹1 Crore', '₹1-10 Crore', '₹10-50 Crore', '₹50 Crore+']
+const REVENUES = ['Below ₹1 Crore', '₹1-10 Crore', '₹10-50 Crore', '₹50 Crore+', 'Other']
 const DATA_SOURCES = ['Website', 'Manual Entry', 'Import', 'API', 'WhatsApp', 'Advertisement']
 const CAPTURED_BY = ['Reception', 'Salesperson', 'Website', 'Chatbot']
 const UNITS = ['Pieces', 'Boxes', 'Sets', 'Kg', 'Tons', 'Sq. Ft.', 'Sq. Mtr.', '20ft Container', '40ft Container']
@@ -37,7 +49,7 @@ const SHIPPING_TERMS = ['EXW', 'FOB', 'CIF', 'DDP', 'Not decided']
 const PAYMENT_TERMS = ['Advance', 'Partial Advance', 'Credit', 'COD', 'Bank Transfer', 'LC']
 const CREDIT = ['None', 'Short Credit', 'Long Credit', 'To Be Discussed']
 const PROBABILITIES = [10, 25, 50, 75, 90].map((n) => ({ value: n, label: `${n}%` }))
-const QUALIFICATION_STATUSES = ['Not Qualified', 'Pending', 'Qualified', 'Disqualified']
+const QUALIFICATION_STATUSES = ['On Hold', 'Pending', 'Qualified', 'Disqualified']
 const FRAMEWORKS = ['BANT', 'CHAMP', 'MEDDIC', 'Custom']
 const FIT = ['High', 'Medium', 'Low', 'Not Applicable']
 const BUDGET_AVAILABLE = ['Confirmed', 'Likely', 'Not Available', 'Unknown']
@@ -53,6 +65,11 @@ const CONVERSION_STATUSES = ['Not Converted', 'Converted to Opportunity', 'Conve
 const TEAMS = ['Sales', 'Export', 'Retail', 'Projects', 'Customer Support']
 const FOLLOWUP_SEQUENCE = ['First Call', 'Second Call', 'Reminder', 'Final Follow-Up']
 const COMM_STATUS = ['Not Contacted', 'Contacted', 'Awaiting Reply', 'Engaged', 'Stopped Responding']
+const LOAD_TYPE_FCL = 'FCL – Full Container Load'
+const LOAD_TYPE_LCL = 'LCL – Less than Container Load'
+const LOAD_TYPES = [LOAD_TYPE_FCL, LOAD_TYPE_LCL]
+const CONTAINER_TYPES = ['Full Container', '40 HC', '20 GP', '40 GP']
+const DOCUMENT_OPTIONS = ['Quotation', 'Catalogue', 'Technical Specifications', 'Product Photos', 'Test / Inspection Report', 'Certifications', 'Commercial Invoice', 'Packing Details', 'Other']
 const SERVICES = [
   'Supplier Identification', 'Supplier Evaluation & Verification', 'Sample Inspection', 'Buyer Sample Approval', 'Order Placement', 'Contract & Documentation',
   'Production Monitoring', 'Quality Inspection', 'Quantity Verification', 'Dispatch Coordination', 'Local Transportation', 'Receiving & Delivery'
@@ -160,7 +177,7 @@ const TABS = [
           F('mobileNumber', 'Mobile number', 'tel', { req: true, quick: true, placeholder: '+91 98XXXXXXXX' }),
           F('alternatePhone', 'Alternate phone', 'tel'),
           F('whatsapp', 'WhatsApp number', 'tel', { help: 'sameAsMobile' }),
-          F('email', 'Email', 'email', { quick: true, placeholder: 'name@company.com' }),
+          F('email', 'Email', 'email', { req: true, quick: true, placeholder: 'name@company.com' }),
           F('alternateEmail', 'Alternate email', 'email')
         ]
       },
@@ -168,7 +185,7 @@ const TABS = [
         title: 'Communication & consent',
         fields: [
           F('preferredContactMethod', 'Preferred contact method', 'select', { options: PREFERRED_METHODS, req: true, quick: true }),
-          F('companyName', 'Company / organisation', 'text', { quick: true }),
+          F('preferredContactOther', 'Please specify', 'text', { showIf: (f) => f.preferredContactMethod === 'Other', placeholder: 'e.g. SMS, Telegram...' }),
           F('preferredLanguage', 'Preferred language', 'select', { options: LANGUAGES }),
           F('bestTimeToContact', 'Best time to contact', 'text', { placeholder: 'e.g. 11 AM - 1 PM' }),
           F('marketingConsent', 'Marketing consent', 'select', { options: YES_NO, req: true, quick: true }),
@@ -186,23 +203,41 @@ const TABS = [
       {
         title: 'Company',
         fields: [
-          F('website', 'Website / domain', 'text', { placeholder: 'https://example.com' }),
-          F('jobTitle', 'Job title / designation', 'text'),
-          F('department', 'Department', 'select', { options: DEPARTMENTS }),
-          F('industry', 'Industry / business category', 'select', { options: INDUSTRIES }),
+          F('companyName', 'Company / organisation', 'text', { quick: true }),
           F('companyType', 'Company type', 'select', { options: COMPANY_TYPES }),
+          F('companyTypeOther', 'Please specify', 'text', { showIf: (f) => f.companyType === 'Other', placeholder: 'Specify company type...' }),
           F('companySize', 'Company size (employees)', 'select', { options: COMPANY_SIZES }),
-          F('annualRevenue', 'Annual revenue / turnover', 'select', { options: REVENUES })
+          F('industry', 'Industry / business category', 'select', { options: INDUSTRIES }),
+          F('industryOther', 'Please specify', 'text', { showIf: (f) => f.industry === 'Other', placeholder: 'Specify industry...' }),
+          F('department', 'Department', 'select', { options: DEPARTMENTS }),
+          F('departmentOther', 'Please specify', 'text', { showIf: (f) => f.department === 'Other', placeholder: 'Specify department...' }),
+          F('jobTitle', 'Job title / designation', 'text'),
+          F('website', 'Website / domain', 'text', { placeholder: 'https://example.com' }),
+          F('annualRevenue', 'Annual revenue / turnover', 'select', { options: REVENUES }),
+          F('annualRevenueOther', 'Please specify', 'text', { showIf: (f) => f.annualRevenue === 'Other', placeholder: 'Specify revenue range...' })
         ]
       },
       {
         title: 'Location',
         fields: [
-          F('address', 'Address', 'area', { span: true }),
+          F('pincode', 'PIN / ZIP code', 'text'),
           F('city', 'City', 'text', { req: true, quick: true }),
           F('state', 'State / province', 'text', { req: true, quick: true }),
           F('country', 'Country', 'text', { req: true, quick: true }),
-          F('pincode', 'PIN / ZIP code', 'text')
+          F('mapLocation', 'Pin location on map', 'mapPicker'),
+          F('address', 'Address', 'area', { rows: 1 }),
+          F('deliverySameAddress', 'Same delivery address', 'check'),
+          F('deliveryDifferentAddress', 'Different delivery address', 'check')
+        ]
+      },
+      {
+        title: 'Delivery address',
+        fields: [
+          F('deliveryPincode', 'Delivery PIN / ZIP code', 'text', { showIf: (f) => f.deliveryDifferentAddress }),
+          F('deliveryCity', 'Delivery city', 'text', { showIf: (f) => f.deliveryDifferentAddress }),
+          F('deliveryState', 'Delivery state / province', 'text', { showIf: (f) => f.deliveryDifferentAddress }),
+          F('deliveryCountry', 'Delivery country', 'text', { showIf: (f) => f.deliveryDifferentAddress }),
+          F('deliveryAddress', 'Delivery address', 'area', { span: true, showIf: (f) => f.deliveryDifferentAddress })
         ]
       }
     ]
@@ -214,33 +249,28 @@ const TABS = [
       {
         title: 'What the customer needs',
         fields: [
-          F('productInterest', 'Product / service interest', 'text', { req: true, quick: true }),
+          F('productInterest', 'Product / service interest', 'catalogPicker', { req: true, quick: true }),
           F('productRequirement', 'Requirement details', 'text', { req: true, quick: true, span: 2, placeholder: 'What exactly does the customer want to buy or source?' }),
           F('productCategory', 'Product category', 'text'),
-          F('productSpecifications', 'Product specifications', 'area', { span: true }),
-          F('servicesInterested', 'Sourcing services needed', 'multi', { options: SERVICES, span: true })
+          F('servicesInterested', 'Sourcing services needed', 'multiSelect', { span: true })
         ]
       },
       {
         title: 'Quantity and budget',
         fields: [
-          F('quantity', 'Quantity / volume', 'text'),
-          F('quantityUnit', 'Unit', 'select', { options: UNITS }),
+          F('loadType', 'Quantity', 'select', { options: LOAD_TYPES }),
+          F('containerType', 'Container type', 'select', { options: CONTAINER_TYPES, showIf: (f) => f.loadType === LOAD_TYPE_FCL }),
+          F('quantity', 'How many pieces', 'number', { showIf: (f) => f.loadType === LOAD_TYPE_LCL, placeholder: 'e.g. 500' }),
           F('targetPrice', 'Target price / budget', 'text'),
           F('budgetRange', 'Budget range', 'select', { options: BUDGET_RANGES }),
-          F('requiredDeliveryDate', 'Required delivery date', 'date')
-        ]
-      },
-      {
-        title: 'Delivery and shipping',
-        fields: [
-          F('destinationCountry', 'Destination country', 'text'),
-          F('siteLocation', 'Delivery / site location', 'text'),
-          F('shippingTerms', 'Shipping terms', 'select', { options: SHIPPING_TERMS }),
-          F('projectName', 'Project name', 'text'),
-          F('documentsRequired', 'Documents required', 'text', { span: true, placeholder: 'e.g. Quotation, Catalogue, Technical specs' }),
+          F('tentativeOrderDate', 'Tentative order placed date', 'date'),
+          F('urgencyLevel', 'Urgency level', 'select', { options: URGENCY }),
+          F('requiredDeliveryDate', 'Tentative required delivery date', 'date'),
+          F('purpose', 'Purpose', 'text'),
+          F('documentsRequired', 'Documents required', 'select', { options: DOCUMENT_OPTIONS }),
+          F('documentsRequiredOther', 'Please specify', 'text', { showIf: (f) => f.documentsRequired === 'Other', placeholder: 'Specify document...' }),
           F('samplesRequired', 'Samples required', 'select', { options: YES_NO }),
-          F('siteVisitRequired', 'Factory / site visit required', 'select', { options: YES_NO })
+          F('siteVisitRequired', 'Overseas Factory / site visit', 'select', { options: YES_NO })
         ]
       }
     ]
@@ -253,31 +283,23 @@ const TABS = [
         title: 'Qualification checklist',
         fields: [
           F('qualificationStatus', 'Qualification status', 'select', { options: QUALIFICATION_STATUSES }),
-          F('qualificationFramework', 'Framework', 'select', { options: FRAMEWORKS }),
+          F('onHoldUntil', 'On hold until', 'date', { showIf: (f) => f.qualificationStatus === 'On Hold' }),
           F('requirementIdentified', 'Requirement identified', 'select', { options: ['Yes', 'No', 'Partially'], req: whenQualified }),
-          F('productFit', 'Product / service fit', 'select', { options: FIT, req: whenQualified }),
           F('budgetAvailable', 'Budget available', 'select', { options: BUDGET_AVAILABLE, req: whenQualified }),
           F('purchaseAuthority', 'Purchase authority', 'select', { options: AUTHORITY, req: whenQualified }),
           F('decisionMakerConfirmed', 'Decision-maker confirmed', 'select', { options: YES_NO, req: whenQualified }),
-          F('purchaseTimeline', 'Purchase timeline', 'select', { options: TIMELINES, req: whenQualified }),
-          F('urgencyLevel', 'Urgency level', 'select', { options: URGENCY, req: whenQualified })
+          F('numberOfDecisionMakers', 'Number of decision-makers', 'number', { showIf: (f) => f.decisionMakerConfirmed === 'Yes' })
         ]
       },
       {
         title: 'Decision maker',
         fields: [
-          F('decisionMakerName', 'Decision-maker name', 'text'),
-          F('decisionMakerDesignation', 'Designation', 'text'),
-          F('decisionMakerContact', 'Contact', 'text'),
-          F('decisionRole', 'Decision role', 'select', { options: DECISION_ROLES }),
-          F('numberOfDecisionMakers', 'Number of decision-makers', 'number')
+          F('decisionMakers', 'Decision-maker details', 'dmList', { options: DECISION_ROLES, span: true, showIf: (f) => f.decisionMakerConfirmed === 'Yes' && Number(f.numberOfDecisionMakers) > 0 })
         ]
       },
       {
         title: 'Commercials',
         fields: [
-          F('expectedOrderValue', 'Expected order value', 'number', { req: whenQualified }),
-          F('expectedOrderCurrency', 'Currency', 'select', { options: CURRENCIES }),
           F('expectedClosingDate', 'Expected closing date', 'date', { req: whenQualified }),
           F('probabilityOfClosure', 'Probability of closure', 'select', { options: PROBABILITIES }),
           F('paymentTerms', 'Payment terms required', 'select', { options: PAYMENT_TERMS }),
@@ -290,8 +312,8 @@ const TABS = [
           F('painPoint', 'Pain point / business challenge', 'area', { span: true }),
           F('currentSupplier', 'Current solution / supplier', 'text'),
           F('supplierSatisfaction', 'Supplier satisfaction', 'select', { options: SATISFACTION }),
-          F('competitorQuoted', 'Competitor quoted', 'text'),
-          F('competitorPrice', 'Competitor price', 'text')
+          F('competitorQuoted', 'Competitor quoted', 'select', { options: YES_NO }),
+          F('competitorPrice', 'Competitor price', 'text', { showIf: (f) => f.competitorQuoted === 'Yes' })
         ]
       },
       {
@@ -308,39 +330,27 @@ const TABS = [
     label: 'Follow-Up & Ownership',
     sections: [
       {
-        title: 'Pipeline',
+        title: 'Follow-up',
         fields: [
-          F('status', 'Lead status', 'select', { options: STATUSES }),
           F('leadStage', 'Lead stage', 'select', { options: STAGES, req: afterContact }),
-          F('leadRating', 'Lead rating', 'select', { options: RATINGS, req: afterContact }),
-          F('priority', 'Lead priority', 'select', { options: PRIORITIES })
-        ]
-      },
-      {
-        title: 'Ownership',
-        fields: [
+          F('priority', 'Lead priority', 'select', { options: PRIORITIES }),
+          F('assignedTo', 'Lead owner', 'employee', { help: 'Leave empty to assign later' }),
+          F('assignedRegion', 'Assigned region / branch', 'text'),
           F('assignedTeam', 'Assigned team', 'select', { options: TEAMS }),
-          F('assignedRegion', 'Assigned region / branch', 'text')
-        ]
-      },
-      {
-        title: 'Next step',
-        fields: [
-          F('nextAction', 'Next action', 'select', { options: NEXT_ACTIONS, req: afterContact }),
-          F('nextActionOwner', 'Next action owner', 'employee', { req: afterContact }),
-          F('followUpDate', 'Next follow-up date', 'date', { req: afterContact }),
+          F('assignedMember', 'Assigned member', 'employee'),
+          F('leadTransfer', 'Lead transfer', 'check', { editOnly: true }),
+          F('transferFrom', 'Transfer from', 'employee', { editOnly: true, showIf: (f) => f.leadTransfer }),
+          F('transferTo', 'Transfer to', 'employee', { editOnly: true, showIf: (f) => f.leadTransfer }),
+          F('transferDate', 'Transfer date', 'date', { editOnly: true, showIf: (f) => f.leadTransfer }),
+          F('transferReason', 'Reason', 'text', { editOnly: true, showIf: (f) => f.leadTransfer }),
+          F('nextAction', 'Next action', 'select', { options: NEXT_ACTIONS, req: afterContact, editOnly: true }),
+          F('nextActionOwner', 'Next action owner', 'employee', { req: afterContact, editOnly: true }),
+          F('followUpDate', 'Next follow-up date', 'date', { req: afterContact, editOnly: true }),
           F('followUpSequence', 'Follow-up sequence', 'select', { options: FOLLOWUP_SEQUENCE }),
-          F('nextReviewDate', 'Next review date', 'date')
-        ]
-      },
-      {
-        title: 'Contact history',
-        fields: [
+          F('nextReviewDate', 'Next review date', 'date', { editOnly: true }),
           F('firstResponseDate', 'First response date', 'date'),
           F('firstResponseMode', 'First response mode', 'select', { options: CONTACT_METHODS }),
-          F('lastContactDate', 'Last contact date', 'date'),
-          F('lastContactMethod', 'Last contact method', 'select', { options: CONTACT_METHODS }),
-          F('numberOfFollowUps', 'Number of follow-ups', 'number'),
+          F('numberOfFollowUps', 'Number of follow-ups', 'number', { editOnly: true }),
           F('communicationStatus', 'Communication status', 'select', { options: COMM_STATUS })
         ]
       }
@@ -354,9 +364,8 @@ const TABS = [
         title: 'Lead source',
         fields: [
           F('source', 'Lead source', 'select', { options: LEAD_SOURCES, req: true, quick: true }),
-          F('assignedTo', 'Lead owner', 'employee', { quick: true, help: 'Leave empty to assign later' }),
+          F('sourceOther', 'Please specify', 'text', { showIf: (f) => f.source === 'Other', placeholder: 'Specify lead source...' }),
           F('leadCapturedBy', 'Lead captured by', 'select', { options: CAPTURED_BY, req: true, quick: true }),
-          F('subSource', 'Sub source', 'text'),
           F('dataSource', 'Data source system', 'select', { options: DATA_SOURCES }),
           F('referralName', 'Referral name', 'text', { showIf: (f) => f.source === 'Referral' }),
           F('referralContact', 'Referral contact', 'text', { showIf: (f) => f.source === 'Referral' })
@@ -395,12 +404,12 @@ const TABS = [
 const ALL_FIELDS = TABS.flatMap((t) => t.sections.flatMap((s) => s.fields.map((f) => ({ ...f, tab: t.id, section: s }))))
 const NUMBER_ZERO = ['expectedOrderValue', 'numberOfFollowUps', 'dealValue', 'revenueBooked'] // existing behaviour: empty becomes 0
 const NUMBER_NULL = ['numberOfDecisionMakers', 'probabilityOfClosure']
-const DATE_FIELDS = ['followUpDate', 'requiredDeliveryDate', 'expectedClosingDate', 'lastContactDate', 'firstResponseDate', 'consentDate', 'nextReviewDate', 'actualClosingDate']
+const DATE_FIELDS = ['followUpDate', 'requiredDeliveryDate', 'tentativeOrderDate', 'expectedClosingDate', 'lastContactDate', 'firstResponseDate', 'consentDate', 'nextReviewDate', 'actualClosingDate', 'onHoldUntil', 'transferDate']
 
 const emptyForm = () => {
   const base = {}
   ALL_FIELDS.forEach((f) => {
-    base[f.name] = f.type === 'multi' ? [] : f.type === 'check' ? false : ''
+    base[f.name] = f.type === 'multi' || f.type === 'multiSelect' ? [] : f.type === 'dmList' ? [] : f.type === 'check' ? false : ''
   })
   return {
     ...base,
@@ -415,7 +424,10 @@ const emptyForm = () => {
     qualificationStatus: 'Pending',
     priority: 'Medium',
     expectedOrderCurrency: 'INR',
-    conversionStatus: 'Not Converted'
+    conversionStatus: 'Not Converted',
+    productId: '',
+    locationLat: '',
+    locationLng: ''
   }
 }
 
@@ -427,6 +439,9 @@ const formFromLead = (lead) => {
   })
   out.assignedTo = lead.assignedTo?._id || lead.assignedTo || ''
   out.nextActionOwner = lead.nextActionOwner?._id || lead.nextActionOwner || ''
+  out.assignedMember = lead.assignedMember?._id || lead.assignedMember || ''
+  out.transferFrom = lead.transferFrom?._id || lead.transferFrom || ''
+  out.transferTo = lead.transferTo?._id || lead.transferTo || ''
   DATE_FIELDS.forEach((k) => {
     out[k] = toDateInput(lead[k])
   })
@@ -443,17 +458,22 @@ const formFromLead = (lead) => {
   if (!Array.isArray(out.servicesInterested)) out.servicesInterested = []
   out.doNotCall = !!lead.doNotCall
   out.doNotWhatsApp = !!lead.doNotWhatsApp
+  // legacy single decision-maker fields → first entry of the list
+  if (!out.decisionMakers?.length && (lead.decisionMakerName || lead.decisionMakerDesignation || lead.decisionMakerContact || lead.decisionRole)) {
+    out.decisionMakers = [{ name: lead.decisionMakerName || '', designation: lead.decisionMakerDesignation || '', contact: lead.decisionMakerContact || '', role: lead.decisionRole || '' }]
+    if (!out.numberOfDecisionMakers) out.numberOfDecisionMakers = 1
+  }
   return out
 }
 
 const isRequired = (f, form) => (typeof f.req === 'function' ? f.req(form) : !!f.req)
-const isVisible = (f, form) => !f.showIf || f.showIf(form)
+const isVisible = (f, form, editing) => (!f.showIf || f.showIf(form)) && (!f.editOnly || editing)
 const isEmpty = (v) => v === '' || v === null || v === undefined || (Array.isArray(v) && v.length === 0)
 
 const validate = (form, mode, editing) => {
   const errors = {}
   ALL_FIELDS.forEach((f) => {
-    if (!isVisible(f, form)) return
+    if (!isVisible(f, form, editing)) return
     if (f.section.show && !f.section.show(form, editing)) return
     if (mode === 'quick' && !f.quick) return
     if (isRequired(f, form) && isEmpty(form[f.name])) errors[f.name] = 'Required'
@@ -473,7 +493,7 @@ const buildPayload = (form) => {
   const p = { ...form }
   p.customerName = [form.firstName, form.lastName].filter(Boolean).join(' ').trim() || form.customerName
   p.phone = form.phone || form.mobileNumber // keeps the existing required phone field filled
-  ;['assignedTo', 'nextActionOwner'].forEach((k) => {
+  ;['assignedTo', 'nextActionOwner', 'assignedMember', 'transferFrom', 'transferTo'].forEach((k) => {
     if (!p[k]) p[k] = null
   })
   NUMBER_ZERO.forEach((k) => {
@@ -485,6 +505,26 @@ const buildPayload = (form) => {
   DATE_FIELDS.forEach((k) => {
     p[k] = p[k] || null
   })
+  ;['locationLat', 'locationLng', 'productId'].forEach((k) => {
+    if (p[k] === '') p[k] = null
+  })
+  if (Array.isArray(p.decisionMakers)) {
+    const n = Math.max(parseInt(p.numberOfDecisionMakers) || 0, 0)
+    p.decisionMakers = p.decisionMakers.slice(0, n).map((d) => ({
+      name: d.name || '',
+      designation: d.designation || '',
+      contact: d.contact || '',
+      role: d.role || ''
+    }))
+  }
+  // Same delivery address → copy the main address fields
+  if (p.deliverySameAddress && !p.deliveryDifferentAddress) {
+    p.deliveryAddress = p.address || ''
+    p.deliveryPincode = p.pincode || ''
+    p.deliveryCity = p.city || ''
+    p.deliveryState = p.state || ''
+    p.deliveryCountry = p.country || ''
+  }
   return p
 }
 
@@ -622,12 +662,291 @@ const ConfirmDialog = ({ dialog, onCancel }) =>
   )
 
 /* ------------------------------------------------------------------ */
+/* Cascading product picker (main category → sub category → product)  */
+/* ------------------------------------------------------------------ */
+const buildProductTree = (products) => {
+  const tree = {}
+  ;(products || []).forEach((p) => {
+    const main = p.mainCategory || 'Uncategorised'
+    const cat = p.category || 'General'
+    const sub = p.subCategory || 'General'
+    if (!tree[main]) tree[main] = {}
+    if (!tree[main][cat]) tree[main][cat] = {}
+    if (!tree[main][cat][sub]) tree[main][cat][sub] = []
+    tree[main][cat][sub].push({ id: p._id, name: p.productName })
+  })
+  return tree
+}
+
+const CatalogPicker = ({ f, form, update, products }) => {
+  const tree = useMemo(() => buildProductTree(products), [products])
+  const [main, setMain] = useState('')
+  const [cat, setCat] = useState('')
+  const [sub, setSub] = useState('')
+
+  // Reflect saved values back into the dropdowns (edit mode)
+  useEffect(() => {
+    if (!products.length) return
+    const interest = (form.productInterest || '').toLowerCase()
+    for (const m of Object.keys(tree)) {
+      for (const c of Object.keys(tree[m])) {
+        for (const s of Object.keys(tree[m][c])) {
+          const hit = tree[m][c][s].some((p) => p.id === form.productId) ||
+            (interest && (s.toLowerCase() === interest || `${c} / ${s}`.toLowerCase() === interest))
+          if (hit) { setMain(m); setCat(c); setSub(s); return }
+        }
+      }
+    }
+    if (!form.productId && form.productInterest) setSub('__custom')
+  }, [form.productId, form.productInterest, products]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const mains = Object.keys(tree).sort()
+  const cats = main ? Object.keys(tree[main] || {}).sort() : []
+  const subs = cat ? Object.keys((tree[main] || {})[cat] || {}).sort() : []
+  const showCustom = sub === '__custom' || sub === '__other' || (!form.productId && !!form.productInterest && sub !== '')
+
+  const selCls = 'w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-xs text-gray-900 outline-none focus:border-[#F41703] focus:ring-1 focus:ring-[#F41703]/30'
+
+  return (
+    <div>
+      <label className="mb-0.5 block text-[11px] font-bold uppercase tracking-wide text-gray-500">
+        {f.label} <span className="text-[#F41703]">*</span>
+      </label>
+      <div className="grid grid-cols-3 gap-2">
+        <select value={main} onChange={(e) => { setMain(e.target.value); setCat(''); setSub(''); update('productId', '') }} className={selCls}>
+          <option value="">Main category</option>
+          {mains.map((m) => <option key={m} value={m}>{m}</option>)}
+        </select>
+        <select value={cat} disabled={!main} onChange={(e) => { setCat(e.target.value); setSub(''); update('productId', '') }} className={`${selCls} disabled:bg-gray-50 disabled:text-gray-400`}>
+          <option value="">Category</option>
+          {cats.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+        <select value={sub} disabled={!cat} onChange={(e) => {
+          const s = e.target.value
+          setSub(s)
+          if (s === '__other') { update('productId', ''); update('productInterest', ''); return }
+          update('productId', '')
+          update('productInterest', s)
+          update('productCategory', `${cat} / ${s}`)
+        }} className={`${selCls} disabled:bg-gray-50 disabled:text-gray-400`}>
+          <option value="">Sub category</option>
+          {subs.map((s) => <option key={s} value={s}>{s}</option>)}
+          <option value="__other">Other / not listed</option>
+        </select>
+      </div>
+      {showCustom && (
+        <input
+          type="text"
+          value={form.productInterest}
+          placeholder="Type product / service name..."
+          onChange={(e) => { update('productInterest', e.target.value); update('productId', '') }}
+          className="mt-2 w-full rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-[13px] text-gray-900 outline-none focus:border-[#F41703] focus:ring-1 focus:ring-[#F41703]/30"
+        />
+      )}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* Map location picker (OpenStreetMap / Leaflet — click to pin)        */
+/* ------------------------------------------------------------------ */
+const MapClickHandler = ({ onPick }) => {
+  useMapEvents({ click: (e) => onPick([e.latlng.lat, e.latlng.lng]) })
+  return null
+}
+
+const MapFlyTo = ({ point }) => {
+  const map = useMap()
+  useEffect(() => {
+    if (point) map.flyTo(point, 15, { duration: 0.8 })
+  }, [point]) // eslint-disable-line react-hooks/exhaustive-deps
+  return null
+}
+
+const LocationPicker = ({ initial, onConfirm, onClose }) => {
+  const [point, setPoint] = useState(initial || null)
+  const [locating, setLocating] = useState(false)
+
+  const confirm = async () => {
+    if (!point) return
+    setLocating(true)
+    try {
+      const [lat, lng] = point
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&addressdetails=1`)
+      const j = await res.json()
+      const a = j.address || {}
+      onConfirm({
+        lat, lng,
+        address: j.display_name || '',
+        city: a.city || a.town || a.village || a.county || '',
+        state: a.state || a.state_district || '',
+        country: a.country || '',
+        pincode: a.postcode || ''
+      })
+    } catch {
+      onConfirm({ lat: point[0], lng: point[1] })
+    } finally {
+      setLocating(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm">
+      <div className="flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-3">
+          <div>
+            <h3 className="text-base font-bold text-gray-900">Pin the address on map</h3>
+            <p className="text-xs text-gray-500">Click anywhere on the map to drop a pin, then confirm.</p>
+          </div>
+          <button onClick={onClose} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">✕</button>
+        </div>
+        <div className="flex-1">
+          <MapContainer center={point || [26.9, 78.9]} zoom={point ? 15 : 5} style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <MapClickHandler onPick={setPoint} />
+            <MapFlyTo point={point} />
+            {point && <Marker position={point} />}
+          </MapContainer>
+        </div>
+        <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-5 py-3">
+          <p className="text-xs text-gray-500">
+            {point ? `Pinned: ${point[0].toFixed(5)}, ${point[1].toFixed(5)}` : 'No pin dropped yet'}
+          </p>
+          <div className="flex gap-3">
+            <button onClick={onClose} className="rounded-lg border border-gray-300 px-4 py-1.5 text-xs font-semibold text-gray-700 hover:bg-white">Cancel</button>
+            <button onClick={confirm} disabled={!point || locating} className="rounded-lg bg-[#F41703] px-5 py-1.5 text-xs font-bold text-white hover:bg-[#d31402] disabled:opacity-50">
+              {locating ? 'Fetching address...' : 'Use this location'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* Dropdown multi-select (grouped options, checkbox list)             */
+/* ------------------------------------------------------------------ */
+const MultiSelect = ({ groups, value = [], onChange, placeholder = 'Select...' }) => {
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef(null)
+
+  useEffect(() => {
+    const onDoc = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', onDoc)
+    return () => document.removeEventListener('mousedown', onDoc)
+  }, [])
+
+  const normalized = (groups || []).map((g) =>
+    typeof g === 'string' ? { name: '', items: [g] } : { name: g.name || '', items: g.items || g.services?.map((s) => s.title) || [] }
+  )
+  const allItems = normalized.flatMap((g) => g.items)
+  const toggle = (item) => onChange(value.includes(item) ? value.filter((v) => v !== item) : [...value, item])
+
+  return (
+    <div ref={wrapRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-left text-[13px] text-gray-900 outline-none transition focus:border-[#F41703] focus:ring-1 focus:ring-[#F41703]/30"
+      >
+        <span className={value.length ? 'text-gray-900' : 'text-gray-400'}>
+          {value.length ? `${value.length} service${value.length > 1 ? 's' : ''} selected` : placeholder}
+        </span>
+        <Icon name="chevron" className={`h-4 w-4 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {value.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {value.map((v) => (
+            <span key={v} className="inline-flex items-center gap-1 rounded-full bg-[#F41703]/10 px-2 py-0.5 text-[11px] font-semibold text-[#F41703]">
+              {v}
+              <button type="button" onClick={() => toggle(v)} className="hover:text-red-700">✕</button>
+            </span>
+          ))}
+        </div>
+      )}
+      {open && (
+        <div className="absolute left-0 right-0 z-30 mt-1 max-h-60 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-xl">
+          {normalized.map((g, gi) => (
+            <div key={gi}>
+              {g.name && <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-wider text-gray-400">{g.name}</p>}
+              {g.items.map((item) => {
+                const on = value.includes(item)
+                return (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => toggle(item)}
+                    className={`flex w-full items-center gap-2.5 px-3 py-1.5 text-left text-xs font-medium transition-colors ${on ? 'bg-[#F41703]/5 text-[#F41703]' : 'text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    <span className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border ${on ? 'border-[#F41703] bg-[#F41703] text-white' : 'border-gray-300 bg-white'}`}>
+                      {on && <Icon name="check" className="h-3 w-3" sw={3} />}
+                    </span>
+                    {item}
+                  </button>
+                )
+              })}
+            </div>
+          ))}
+          {!allItems.length && <p className="px-3 py-3 text-xs text-gray-400">No services found</p>}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* Repeating decision-maker entries driven by the count field         */
+/* ------------------------------------------------------------------ */
+const inputCls = 'w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-xs text-gray-900 outline-none focus:border-[#F41703] focus:ring-1 focus:ring-[#F41703]/30'
+
+const DecisionMakerList = ({ form, update, roleOptions }) => {
+  const count = Math.min(Math.max(parseInt(form.numberOfDecisionMakers) || 0, 0), 10)
+  const list = Array.isArray(form.decisionMakers) ? form.decisionMakers : []
+  const setAt = (i, key, val) => {
+    const next = Array.from({ length: count }, (_, j) => ({ ...(list[j] || {}) }))
+    next[i] = { ...next[i], [key]: val }
+    update('decisionMakers', next)
+  }
+
+  if (!count) {
+    return <p className="col-span-full text-[11px] font-medium text-gray-400">Enter the number of decision-makers above to add their details.</p>
+  }
+
+  return (
+    <div className="col-span-full grid gap-2">
+      {Array.from({ length: count }, (_, i) => {
+        const d = list[i] || {}
+        return (
+          <div key={i} className="rounded-lg border border-gray-200 bg-gray-50/70 p-2.5">
+            <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-gray-400">Decision-maker {i + 1}</p>
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+              <input value={d.name || ''} placeholder="Name" onChange={(e) => setAt(i, 'name', e.target.value)} className={inputCls} />
+              <input value={d.designation || ''} placeholder="Designation" onChange={(e) => setAt(i, 'designation', e.target.value)} className={inputCls} />
+              <input value={d.contact || ''} placeholder="Contact" onChange={(e) => setAt(i, 'contact', e.target.value)} className={inputCls} />
+              <select value={d.role || ''} onChange={(e) => setAt(i, 'role', e.target.value)} className={inputCls}>
+                <option value="">Decision role</option>
+                {(roleOptions || []).map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
 /* One form field, drawn from the definition above                     */
 /* ------------------------------------------------------------------ */
-const FieldView = ({ f, form, update, error, employees }) => {
+const FieldView = ({ f, form, update, error, employees, catalog, onMapPick }) => {
   const required = isRequired(f, form)
   const id = `f-${f.name}`
   const value = form[f.name]
+  const sameAsMobile = f.help === 'sameAsMobile' && !!form.mobileNumber && String(form.whatsapp || '') === String(form.mobileNumber)
   const base = `w-full rounded-md border bg-white px-2.5 py-1.5 text-[13px] text-gray-900 outline-none transition focus:ring-2 ${
     error ? 'border-red-400 focus:ring-red-200' : 'border-gray-300 focus:border-[#F41703] focus:ring-[#F41703]/15'
   }`
@@ -635,10 +954,37 @@ const FieldView = ({ f, form, update, error, employees }) => {
 
   if (f.type === 'check') {
     return (
-      <label className={`flex cursor-pointer items-center gap-2 self-end rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-xs font-medium text-gray-700 ${wrap}`}>
+      <label className={`flex cursor-pointer items-center gap-2 self-center rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-xs font-medium text-gray-700 ${wrap}`}>
         <input id={id} type="checkbox" checked={!!value} onChange={(e) => update(f.name, e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-[#F41703] focus:ring-[#F41703]" />
         {f.label}
       </label>
+    )
+  }
+
+  if (f.type === 'catalogPicker') {
+    return <CatalogPicker f={f} form={form} update={update} products={catalog?.products || []} />
+  }
+
+  if (f.type === 'dmList') {
+    return <DecisionMakerList form={form} update={update} roleOptions={f.options} />
+  }
+
+  if (f.type === 'mapPicker') {
+    return (
+      <div className={wrap}>
+        <label className="mb-0.5 block text-[11px] font-bold uppercase tracking-wide text-gray-500">{f.label}</label>
+        <button
+          type="button"
+          onClick={onMapPick}
+          className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-gray-300 bg-gray-50 px-3 py-2.5 text-xs font-semibold text-gray-600 transition-colors hover:border-[#F41703] hover:bg-[#F41703]/5 hover:text-[#F41703]"
+        >
+          <Icon name="pin" className="h-4 w-4" />
+          {form.locationLat ? 'Update pinned location' : 'Pick address on map'}
+        </button>
+        {form.locationLat && (
+          <p className="mt-1 text-[11px] font-medium text-green-600">Location pinned: {Number(form.locationLat).toFixed(4)}, {Number(form.locationLng).toFixed(4)}</p>
+        )}
+      </div>
     )
   }
 
@@ -661,6 +1007,8 @@ const FieldView = ({ f, form, update, error, employees }) => {
     )
   } else if (f.type === 'area') {
     control = <textarea id={id} rows={f.rows || 2} value={value ?? ''} placeholder={f.placeholder} onChange={(e) => update(f.name, e.target.value)} className={`${base} resize-none`} />
+  } else if (f.type === 'multiSelect') {
+    control = <MultiSelect groups={f.options} value={value || []} onChange={(v) => update(f.name, v)} placeholder={f.placeholder || 'Select...'} />
   } else if (f.type === 'multi') {
     control = (
       <div id={id} className="flex flex-wrap gap-2">
@@ -681,7 +1029,7 @@ const FieldView = ({ f, form, update, error, employees }) => {
       </div>
     )
   } else {
-    control = <input id={id} type={f.type === 'tel' ? 'tel' : f.type} value={value ?? ''} placeholder={f.placeholder} onChange={(e) => update(f.name, e.target.value)} className={base} />
+    control = <input id={id} type={f.type === 'tel' ? 'tel' : f.type} value={value ?? ''} placeholder={f.placeholder} disabled={sameAsMobile} onChange={(e) => update(f.name, e.target.value)} className={`${base} ${sameAsMobile ? 'cursor-not-allowed bg-gray-50 text-gray-400' : ''}`} />
   }
 
   return (
@@ -690,13 +1038,19 @@ const FieldView = ({ f, form, update, error, employees }) => {
         <span>
           {f.label} {required && <span className="text-[#F41703]">*</span>}
         </span>
-        {f.help === 'sameAsMobile' && form.mobileNumber && (
-          <button type="button" onClick={() => update('whatsapp', form.mobileNumber)} className="text-[10px] font-bold normal-case tracking-normal text-[#F41703] hover:underline">
-            Same as mobile
-          </button>
-        )}
       </label>
       {control}
+      {f.help === 'sameAsMobile' && form.mobileNumber && (
+        <label className="mt-1 flex cursor-pointer items-center gap-1.5 text-[11px] font-medium text-gray-500">
+          <input
+            type="checkbox"
+            checked={sameAsMobile}
+            onChange={(e) => update('whatsapp', e.target.checked ? form.mobileNumber : '')}
+            className="h-3.5 w-3.5 rounded border-gray-300 text-[#F41703] focus:ring-[#F41703]"
+          />
+          Same as mobile number
+        </label>
+      )}
       {error && <p className="mt-0.5 text-[11px] font-medium text-red-600">{error}</p>}
       {!error && f.help && f.help !== 'sameAsMobile' && <p className="mt-0.5 text-[11px] leading-snug text-gray-400">{f.help}</p>}
     </div>
@@ -715,8 +1069,44 @@ const LeadForm = ({ lead, employees, leads, onClose, onSaved, onOpenLead, notify
   const [saving, setSaving] = useState(false)
   const [dupPrompt, setDupPrompt] = useState(false)
   const [askDiscard, setAskDiscard] = useState(false)
+  const [catalog, setCatalog] = useState({ products: [], serviceGroups: [] })
+  const [showMap, setShowMap] = useState(false)
+  const [mapPoint, setMapPoint] = useState(null)
   const initial = useRef(JSON.stringify(form))
   const bodyRef = useRef(null)
+
+  // Load product & service catalog for pickers
+  useEffect(() => {
+    api.get('/api/products').then((r) => {
+      setCatalog((c) => ({ ...c, products: r.data.products || [] }))
+    }).catch(() => {})
+    api.get('/api/services').then((r) => {
+      const groups = (r.data.phases || [])
+        .map((p) => ({ name: p.name || `Phase ${p.number || ''}`.trim(), items: (p.services || []).map((s) => s.title).filter(Boolean) }))
+        .filter((g) => g.items.length)
+      setCatalog((c) => ({ ...c, serviceGroups: groups.length ? groups : [{ name: '', items: SERVICES }] }))
+    }).catch(() => {})
+  }, [])
+
+  const updateMany = (obj) => setForm((prev) => ({ ...prev, ...obj }))
+
+  const openMapPicker = () => {
+    setMapPoint(form.locationLat ? [Number(form.locationLat), Number(form.locationLng)] : null)
+    setShowMap(true)
+  }
+
+  const handleMapConfirm = (loc) => {
+    updateMany({
+      locationLat: loc.lat,
+      locationLng: loc.lng,
+      address: loc.address || form.address,
+      city: loc.city || form.city,
+      state: loc.state || form.state,
+      country: loc.country || form.country,
+      pincode: loc.pincode || form.pincode
+    })
+    setShowMap(false)
+  }
 
   const dirty = JSON.stringify(form) !== initial.current
   const duplicates = useMemo(() => findDuplicates(form, leads, lead?._id), [form.mobileNumber, form.alternatePhone, form.email, leads, lead]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -726,6 +1116,12 @@ const LeadForm = ({ lead, employees, leads, onClose, onSaved, onOpenLead, notify
     setForm((prev) => {
       const next = { ...prev, [name]: value }
       if (name === 'marketingConsent') next.consentDate = value === 'Yes' ? prev.consentDate || todayStr() : ''
+      if (name === 'deliverySameAddress' && value) next.deliveryDifferentAddress = false
+      if (name === 'deliveryDifferentAddress' && value) next.deliverySameAddress = false
+      if (name === 'loadType') {
+        if (value === LOAD_TYPE_FCL) next.quantity = ''
+        if (value === LOAD_TYPE_LCL) next.containerType = ''
+      }
       if (name === 'disqualificationReason' && value) {
         next.qualificationStatus = 'Disqualified'
         next.leadStage = 'Disqualified'
@@ -786,13 +1182,19 @@ const LeadForm = ({ lead, employees, leads, onClose, onSaved, onOpenLead, notify
   const renderSections = (sections) =>
     sections.map((s) => {
       if (s.show && !s.show(form, editing)) return null
-      const fields = s.fields.filter((f) => isVisible(f, form) && (mode === 'full' || f.quick))
+      const fields = s.fields
+        .filter((f) => isVisible(f, form, editing) && (mode === 'full' || f.quick))
+        .map((f) => {
+          if (f.name === 'servicesInterested' && catalog.serviceGroups.length) return { ...f, options: catalog.serviceGroups }
+          if (f.name === 'followUpSequence') return { ...f, options: editing ? FOLLOWUP_SEQUENCE : ['First Call'] }
+          return f
+        })
       if (!fields.length) return null
       return (
         <section key={s.title} className="mb-4 last:mb-0">
           <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 md:grid-cols-3 xl:grid-cols-4">
             {fields.map((f) => (
-              <FieldView key={f.name} f={f} form={form} update={update} error={errors[f.name]} employees={employees} />
+              <FieldView key={f.name} f={f} form={form} update={update} error={errors[f.name]} employees={employees} catalog={catalog} onMapPick={openMapPicker} />
             ))}
           </div>
         </section>
@@ -945,6 +1347,11 @@ const LeadForm = ({ lead, employees, leads, onClose, onSaved, onOpenLead, notify
               </div>
             </div>
           </div>
+        )}
+
+        {/* Map location picker */}
+        {showMap && (
+          <LocationPicker initial={mapPoint} onConfirm={handleMapConfirm} onClose={() => setShowMap(false)} />
         )}
       </div>
     </div>
@@ -1225,7 +1632,7 @@ const LeadDrawer = ({ lead, onClose, onEdit, onDelete, onDeal, onChanged, notify
                     ['WhatsApp', lead.whatsapp],
                     ['Email', link(`mailto:${lead.email}`, lead.email)],
                     ['Alternate email', lead.alternateEmail],
-                    ['Preferred contact', lead.preferredContactMethod],
+                    ['Preferred contact', lead.preferredContactMethod === 'Other' && lead.preferredContactOther ? `Other (${lead.preferredContactOther})` : lead.preferredContactMethod],
                     ['Language', lead.preferredLanguage],
                     ['Best time to contact', lead.bestTimeToContact],
                     ['Marketing consent', lead.marketingConsent ? `${lead.marketingConsent}${lead.consentDate ? ` (${fmtDate(lead.consentDate)})` : ''}` : '']
