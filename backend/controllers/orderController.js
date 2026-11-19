@@ -58,8 +58,14 @@ const createOrder = async (req, res) => {
       totalQuantity,
       totalAmount,
       status: 'Pending',
-      shipperInfo: shipperInfo || {
+      shipperInfo: shipperInfo ? {
+        ...shipperInfo,
+        name: [shipperInfo.firstName, shipperInfo.middleName, shipperInfo.lastName].filter(Boolean).join(' ').trim() || shipperInfo.name || ''
+      } : {
         name: '',
+        firstName: '',
+        middleName: '',
+        lastName: '',
         address: '',
         subDistrict: '',
         district: '',

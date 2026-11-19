@@ -38,7 +38,9 @@ const AdminOrders = () => {
     userId: '',
     items: [{ productId: '', quantity: 1, price: 0, productName: '' }],
     shipperInfo: {
-      name: '',
+      firstName: '',
+      middleName: '',
+      lastName: '',
       address: '',
       subDistrict: '',
       district: '',
@@ -198,7 +200,9 @@ const AdminOrders = () => {
           userId: '',
           items: [{ productId: '', quantity: 1, price: 0, productName: '' }],
           shipperInfo: {
-            name: '',
+            firstName: '',
+            middleName: '',
+            lastName: '',
             address: '',
             subDistrict: '',
             district: '',
@@ -544,20 +548,48 @@ const AdminOrders = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Corresponding Buyer</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
                     <input
                       type="text"
-                      value={newOrder.shipperInfo.name}
+                      value={newOrder.shipperInfo.firstName}
                       onChange={(e) => setNewOrder({
                         ...newOrder,
-                        shipperInfo: { ...newOrder.shipperInfo, name: e.target.value }
+                        shipperInfo: { ...newOrder.shipperInfo, firstName: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter company name (Chinese)"
+                      placeholder="Enter first name (Chinese)"
                     />
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Middle Name</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.middleName}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, middleName: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Enter middle name (Chinese)"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                    <input
+                      type="text"
+                      value={newOrder.shipperInfo.lastName}
+                      onChange={(e) => setNewOrder({
+                        ...newOrder,
+                        shipperInfo: { ...newOrder.shipperInfo, lastName: e.target.value }
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                      placeholder="Enter last name (Chinese)"
+                    />
+                  </div>
+
+                  <div className="md:col-span-3">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
                     <input
                       type="text"

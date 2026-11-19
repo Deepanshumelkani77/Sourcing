@@ -75,6 +75,21 @@ const orderSchema = new mongoose.Schema(
         trim: true,
         default: ''
       },
+      firstName: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      middleName: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      lastName: {
+        type: String,
+        trim: true,
+        default: ''
+      },
       address: {
         type: String,
         trim: true,
