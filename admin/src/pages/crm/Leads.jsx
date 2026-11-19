@@ -284,6 +284,7 @@ const TABS = [
         fields: [
           F('qualificationStatus', 'Qualification status', 'select', { options: QUALIFICATION_STATUSES }),
           F('onHoldUntil', 'On hold until', 'date', { showIf: (f) => f.qualificationStatus === 'On Hold' }),
+          F('priority', 'Lead priority', 'select', { options: PRIORITIES }),
           F('requirementIdentified', 'Requirement identified', 'select', { options: ['Yes', 'No', 'Partially'], req: whenQualified }),
           F('budgetAvailable', 'Budget available', 'select', { options: BUDGET_AVAILABLE, req: whenQualified }),
           F('purchaseAuthority', 'Purchase authority', 'select', { options: AUTHORITY, req: whenQualified }),
@@ -333,7 +334,6 @@ const TABS = [
         title: 'Follow-up',
         fields: [
           F('leadStage', 'Lead stage', 'select', { options: STAGES, req: afterContact }),
-          F('priority', 'Lead priority', 'select', { options: PRIORITIES }),
           F('assignedTo', 'Lead owner', 'employee', { help: 'Leave empty to assign later' }),
           F('assignedRegion', 'Assigned region / branch', 'text'),
           F('assignedTeam', 'Assigned team', 'select', { options: TEAMS }),
