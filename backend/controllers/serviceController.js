@@ -89,7 +89,12 @@ const getServiceById = async (req, res) => {
 // Create new service
 const createService = async (req, res) => {
   try {
-    const serviceData = req.body;
+    const { serviceNumber, ...serviceData } = req.body;
+
+    // Auto-assign the next service number within the phase (01, 02, 03, ...)
+    const siblings = await Service.find({ phaseId: serviceData.phaseId }).select('serviceNumber').lean();
+    const maxNumber = siblings.reduce((max, s) => Math.max(max, parseInt(s.serviceNumber, 10) || 0), 0);
+    serviceData.serviceNumber = String(maxNumber + 1).padStart(2, '0');
 
     const service = await Service.create(serviceData);
 

@@ -29,7 +29,7 @@ const followUpSchema = new mongoose.Schema(
     },
     outcome: {
       type: String,
-      enum: ["Interested", "Not Interested", "Follow-up Later", "Quote Sent", "Deal Closed", "No Response"],
+      enum: ["Interested", "Not Interested", "Follow-up Later", "Quote Sent", "No Response"],
     },
     notes: {
       type: String,

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getIssues, updateIssueStatus } from '../services/issueApi'
 
 const ISSUE_TYPES = {
@@ -112,8 +113,31 @@ const AdminIssues = () => {
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-2xl font-bold text-gray-900">Customer Issues</h1>
-          <p className="text-sm text-gray-500 mt-1">View and manage reported order issues</p>
+          <h1 className="text-2xl font-bold text-gray-900">Customer Complaints</h1>
+          <p className="text-sm text-gray-500 mt-1">View and manage reported order complaints</p>
+        </div>
+      </div>
+
+      {/* CRM Sub-navigation */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center gap-2">
+            <Link to="/crm" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+              Dashboard
+            </Link>
+            <Link to="/crm/leads" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+              Leads
+            </Link>
+            <Link to="/crm/customers" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+              Customers
+            </Link>
+            <Link to="/crm/followups" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+              Follow-ups
+            </Link>
+            <Link to="/crm/complaints" className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+              Complaints
+            </Link>
+          </div>
         </div>
       </div>
 

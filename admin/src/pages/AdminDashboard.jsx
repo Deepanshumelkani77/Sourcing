@@ -1074,7 +1074,6 @@ const AdminDashboard = () => {
             )
           })}
         </div>
-        <p className="mt-3 text-xs text-gray-500">Click a card to show or hide its table. Your choice is remembered.</p>
       </div>
 
       {/* ===================== Search + tables ===================== */}

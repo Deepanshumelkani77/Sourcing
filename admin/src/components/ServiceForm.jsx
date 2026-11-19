@@ -7,7 +7,6 @@ const ServiceForm = ({ service, onSubmit, onCancel }) => {
     phaseName: '',
     phaseTagline: '',
     serviceId: '',
-    serviceNumber: '',
     serviceTitle: '',
     serviceDescription: '',
     serviceDetails: '',
@@ -36,7 +35,6 @@ const ServiceForm = ({ service, onSubmit, onCancel }) => {
         phaseName: service.phaseName || '',
         phaseTagline: service.phaseTagline || '',
         serviceId: service.serviceId || '',
-        serviceNumber: service.serviceNumber || '',
         serviceTitle: service.title || service.serviceTitle || '',
         serviceDescription: service.description || service.serviceDescription || '',
         serviceDetails: service.details || service.serviceDetails || '',
@@ -205,18 +203,6 @@ const ServiceForm = ({ service, onSubmit, onCancel }) => {
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
               placeholder="e.g., supplier-identification"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Service Number</label>
-            <input
-              type="text"
-              name="serviceNumber"
-              value={formData.serviceNumber}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-              placeholder="e.g., 01, 02, 03"
             />
           </div>
           <div className="md:col-span-2">

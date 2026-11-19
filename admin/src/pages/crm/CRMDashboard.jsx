@@ -67,11 +67,8 @@ const CRMDashboard = () => {
           <Link to="/crm/followups" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
             Follow-ups
           </Link>
-          <Link to="/crm/deals" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-            Deals
-          </Link>
-          <Link to="/crm/quotations" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-            Quotations
+          <Link to="/crm/complaints" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            Complaints
           </Link>
         </div>
       </div>
@@ -93,16 +90,6 @@ const CRMDashboard = () => {
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-green-500"></div>
             <span className="text-sm font-medium text-gray-700">Qualified</span>
-          </div>
-          <div className="text-gray-400">→</div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-yellow-600"></div>
-            <span className="text-sm font-medium text-gray-700">Deal</span>
-          </div>
-          <div className="text-gray-400">→</div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-            <span className="text-sm font-medium text-gray-700">Quotation</span>
           </div>
           <div className="text-gray-400">→</div>
           <div className="flex items-center gap-2">
@@ -137,15 +124,15 @@ const CRMDashboard = () => {
           color="text-green-600"
         />
         <StatCard
-          title="Active Deals"
-          value={stats?.deals?.active || 0}
-          subtitle={`${stats?.deals?.won || 0} won`}
+          title="Total Customers"
+          value={stats?.customers?.total || 0}
+          subtitle={`${stats?.customers?.active || 0} active`}
           color="text-purple-600"
         />
         <StatCard
-          title="Total Revenue"
-          value={`$${(stats?.revenue?.total || 0).toLocaleString()}`}
-          subtitle={`$${(stats?.revenue?.thisMonth || 0).toLocaleString()} this month`}
+          title="Follow-ups Today"
+          value={stats?.followUps?.today || 0}
+          subtitle={`${stats?.followUps?.overdue || 0} overdue`}
           color="text-orange-600"
         />
       </div>
@@ -183,35 +170,29 @@ const CRMDashboard = () => {
           </div>
         </div>
 
-        {/* Deal Pipeline */}
+        {/* Lead Sources */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Deal Pipeline</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Lead Sources</h3>
           <div className="space-y-3">
-            {['Qualified', 'Sourcing/Proposal', 'Negotiation', 'Won', 'Lost'].map((stage) => {
-              const stageData = stats?.deals?.distribution?.find(d => d._id === stage) || { count: 0, value: 0 }
-              const percentage = stats?.deals?.total > 0 ? ((stageData.count / stats.deals.total) * 100).toFixed(1) : 0
-              const colors = {
-                'Qualified': 'bg-blue-500',
-                'Sourcing/Proposal': 'bg-yellow-500',
-                'Negotiation': 'bg-orange-500',
-                'Won': 'bg-green-500',
-                'Lost': 'bg-red-500'
-              }
-              return (
-                <div key={stage}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="font-medium text-gray-700">{stage}</span>
-                    <span className="text-gray-600">{stageData.count} deals (${(stageData.value || 0).toLocaleString()})</span>
+            {(stats?.sources || []).length > 0 ? (
+              stats.sources.slice(0, 5).map((s) => {
+                const total = stats.leads?.total || 1
+                const percentage = ((s.count / total) * 100).toFixed(1)
+                return (
+                  <div key={s._id || 'unknown'}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="font-medium text-gray-700">{s._id || 'Unknown'}</span>
+                      <span className="text-gray-600">{s.count} ({percentage}%)</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-indigo-500 h-2 rounded-full transition-all" style={{ width: `${percentage}%` }}></div>
+                    </div>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className={`${colors[stage]} h-2 rounded-full transition-all`}
-                      style={{ width: `${percentage}%` }}
-                    ></div>
-                  </div>
-                </div>
-              )
-            })}
+                )
+              })
+            ) : (
+              <p className="text-gray-500 text-center py-4">No source data yet</p>
+            )}
           </div>
         </div>
       </div>
@@ -219,14 +200,14 @@ const CRMDashboard = () => {
       {/* Quick Actions */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link to="/crm/leads" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
             <span className="text-2xl">➕</span>
             <span className="font-medium">Add New Lead</span>
           </Link>
-          <Link to="/crm/quotations" className="flex items-center gap-3 px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
-            <span className="text-2xl">📄</span>
-            <span className="font-medium">Create Quotation</span>
+          <Link to="/crm/customers" className="flex items-center gap-3 px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
+            <span className="text-2xl">�</span>
+            <span className="font-medium">View Customers</span>
           </Link>
           <Link to="/crm/followups" className="flex items-center gap-3 px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors">
             <span className="text-2xl">📅</span>

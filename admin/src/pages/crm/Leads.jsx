@@ -390,8 +390,6 @@ const TABS = [
         show: (f, editing) => editing || ['Won', 'Lost'].includes(f.status),
         fields: [
           F('conversionStatus', 'Conversion status', 'select', { options: CONVERSION_STATUSES }),
-          F('dealValue', 'Deal value', 'number'),
-          F('revenueBooked', 'Revenue booked', 'number'),
           F('actualClosingDate', 'Actual closing date', 'date'),
           F('wonLostReason', 'Won / lost reason', 'select', { options: WON_LOST_REASONS, req: (f) => ['Won', 'Lost'].includes(f.status) }),
           F('lostCompetitor', 'Lost to competitor', 'text', { showIf: (f) => f.status === 'Lost' })
@@ -402,7 +400,7 @@ const TABS = [
 ]
 
 const ALL_FIELDS = TABS.flatMap((t) => t.sections.flatMap((s) => s.fields.map((f) => ({ ...f, tab: t.id, section: s }))))
-const NUMBER_ZERO = ['expectedOrderValue', 'numberOfFollowUps', 'dealValue', 'revenueBooked'] // existing behaviour: empty becomes 0
+const NUMBER_ZERO = ['expectedOrderValue', 'numberOfFollowUps'] // existing behaviour: empty becomes 0
 const NUMBER_NULL = ['numberOfDecisionMakers', 'probabilityOfClosure']
 const DATE_FIELDS = ['followUpDate', 'requiredDeliveryDate', 'tentativeOrderDate', 'expectedClosingDate', 'lastContactDate', 'firstResponseDate', 'consentDate', 'nextReviewDate', 'actualClosingDate', 'onHoldUntil', 'transferDate']
 
@@ -445,7 +443,7 @@ const formFromLead = (lead) => {
   DATE_FIELDS.forEach((k) => {
     out[k] = toDateInput(lead[k])
   })
-  ;['expectedOrderValue', 'numberOfFollowUps', 'dealValue', 'revenueBooked'].forEach((k) => {
+  ;['expectedOrderValue', 'numberOfFollowUps'].forEach((k) => {
     out[k] = lead[k] ?? ''
   })
   // older leads only have a full name and a phone: split them so the new required fields are filled
@@ -1383,7 +1381,7 @@ const Card = ({ title, children, className = '' }) => (
   </section>
 )
 
-const LeadDrawer = ({ lead, onClose, onEdit, onDelete, onDeal, onChanged, notify }) => {
+const LeadDrawer = ({ lead, onClose, onEdit, onDelete, onChanged, notify }) => {
   const [tab, setTab] = useState('overview')
   const [activities, setActivities] = useState([])
   const [loadingActs, setLoadingActs] = useState(true)
@@ -1451,7 +1449,7 @@ const LeadDrawer = ({ lead, onClose, onEdit, onDelete, onDeal, onChanged, notify
     setQualifying(true)
     try {
       await api.put(`/api/crm/leads/${lead._id}`, { status: 'Qualified', qualificationStatus: 'Qualified', leadStage: 'Qualified' })
-      notify('success', 'Lead marked as Qualified. You can now create a deal.')
+      notify('success', 'Lead marked as Qualified.')
       onChanged()
     } catch (err) {
       notify('error', `Could not update the lead: ${err.response?.data?.message || err.message}`)
@@ -1533,11 +1531,6 @@ const LeadDrawer = ({ lead, onClose, onEdit, onDelete, onDeal, onChanged, notify
             <button onClick={() => onEdit(lead)} className={`${actionBtn} bg-gray-100 text-gray-700 hover:bg-gray-200 ${ring}`}>
               <Icon name="pencil" /> Edit
             </button>
-            {lead.status === 'Qualified' && (
-              <button onClick={() => onDeal(lead)} className={`${actionBtn} text-white ${brandGrad} shadow-md shadow-[#F41703]/25 ${ring}`}>
-                <Icon name="briefcase" /> Create deal
-              </button>
-            )}
           </div>
           {(lead.doNotCall || lead.doNotWhatsApp) && (
             <p className="mt-3 text-xs font-semibold text-red-600">
@@ -1784,9 +1777,7 @@ const LeadDrawer = ({ lead, onClose, onEdit, onDelete, onDeal, onChanged, notify
                     ['Urgency', lead.urgencyLevel],
                     ['Product fit', lead.productFit],
                     ['Payment terms', lead.paymentTerms],
-                    ['Credit requirement', lead.creditRequirement],
-                    ['Deal value', fmtMoney(lead.dealValue, lead.expectedOrderCurrency) === '—' ? '' : fmtMoney(lead.dealValue, lead.expectedOrderCurrency)],
-                    ['Revenue booked', fmtMoney(lead.revenueBooked, lead.expectedOrderCurrency) === '—' ? '' : fmtMoney(lead.revenueBooked, lead.expectedOrderCurrency)]
+                    ['Credit requirement', lead.creditRequirement]
                   ]}
                   hideEmpty
                 />
@@ -2029,7 +2020,6 @@ const Leads = () => {
     setFormState(null)
     await fetchLeads()
     notify('success', editing ? 'Lead updated.' : 'Lead created.')
-    if (becameQualified) navigate(`/crm/deals?leadId=${leadId}`)
   }
 
   const askDelete = (lead) =>
@@ -2078,8 +2068,7 @@ const Leads = () => {
           ['/crm/leads', 'Leads'],
           ['/crm/customers', 'Customers'],
           ['/crm/followups', 'Follow-ups'],
-          ['/crm/deals', 'Deals'],
-          ['/crm/quotations', 'Quotations']
+          ['/crm/complaints', 'Complaints']
         ].map(([to, label]) => (
           <Link
             key={to}
@@ -2295,11 +2284,6 @@ const Leads = () => {
                         </td>
                         <td className="whitespace-nowrap px-4 py-3" onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center gap-1">
-                            {lead.status === 'Qualified' && (
-                              <button onClick={() => navigate(`/crm/deals?leadId=${lead._id}`)} title="Create deal" aria-label="Create deal" className={`rounded-lg p-2 text-green-600 hover:bg-green-50 ${ring}`}>
-                                <Icon name="briefcase" />
-                              </button>
-                            )}
                             <button onClick={() => setViewId(lead._id)} title="View" aria-label="View lead" className={`rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 ${ring}`}>
                               <Icon name="eye" />
                             </button>
@@ -2400,7 +2384,6 @@ const Leads = () => {
           onClose={() => setViewId(null)}
           onEdit={(l) => setFormState({ lead: l })}
           onDelete={askDelete}
-          onDeal={(l) => navigate(`/crm/deals?leadId=${l._id}`)}
           onChanged={fetchLeads}
         />
       )}

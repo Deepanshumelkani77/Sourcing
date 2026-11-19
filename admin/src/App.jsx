@@ -20,8 +20,7 @@ import CRMDashboard from './pages/crm/CRMDashboard'
 import CRMLeads from './pages/crm/Leads'
 import CRMCustomers from './pages/crm/Customers'
 import CRMFollowUps from './pages/crm/FollowUps'
-import CRMDeals from './pages/crm/Deals'
-import CRMQuotations from './pages/crm/Quotations'
+
 import SourcingRequests from './pages/SourcingRequests'
 import Employees from './pages/Employees'
 
@@ -60,7 +59,6 @@ const App = () => {
                 <Route path="/containers" element={<AdminContainers />} />
                 <Route path="/orders" element={<AdminOrders />} />
                 <Route path="/customers" element={<AdminCustomers />} />
-                <Route path="/issues" element={<AdminIssues />} />
                 <Route path="/jobs" element={<AdminJobs />} />
                 <Route path="/tracking" element={<AdminTracking />} />
                 <Route path="/contact-submissions" element={<AdminContactSubmissions />} />
@@ -72,8 +70,7 @@ const App = () => {
                 <Route path="/crm/leads" element={<CRMLeads />} />
                 <Route path="/crm/customers" element={<CRMCustomers />} />
                 <Route path="/crm/followups" element={<CRMFollowUps />} />
-                <Route path="/crm/deals" element={<CRMDeals />} />
-                <Route path="/crm/quotations" element={<CRMQuotations />} />
+                <Route path="/crm/complaints" element={<AdminIssues />} />
                 <Route path="/sourcing-requests" element={<SourcingRequests />} />
                 <Route path="/employees" element={<Employees />} />
               </Routes>
