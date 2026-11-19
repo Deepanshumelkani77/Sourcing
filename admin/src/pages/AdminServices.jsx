@@ -35,6 +35,7 @@ const AdminServices = () => {
               allServices.push({
                 ...service,
                 _id: service._id || service.id,
+                serviceId: service.serviceId || service.id,
                 phaseId: phase.id,
                 phaseName: phase.name,
                 phaseNumber: phase.number,

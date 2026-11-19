@@ -45,6 +45,9 @@ const getAllServices = async (req, res) => {
         details: localizedData.serviceDetails,
         included: localizedData.included,
         deliverable: localizedData.deliverable,
+        order: service.order,
+        status: service.status,
+        createdAt: service.createdAt,
         phaseId: localizedData.phaseId,
         phaseName: localizedData.phaseName,
         phaseNumber: localizedData.phaseNumber
