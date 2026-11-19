@@ -37,7 +37,8 @@ const AdminServices = () => {
                 _id: service._id || service.id,
                 phaseId: phase.id,
                 phaseName: phase.name,
-                phaseNumber: phase.number
+                phaseNumber: phase.number,
+                phaseTagline: phase.tagline
               })
             })
           })

@@ -33,7 +33,7 @@ const ServiceForm = ({ service, onSubmit, onCancel }) => {
         phaseId: service.phaseId || '',
         phaseNumber: service.phaseNumber || '',
         phaseName: service.phaseName || '',
-        phaseTagline: service.phaseTagline || '',
+        phaseTagline: service.phaseTagline || service.tagline || '',
         serviceId: service.serviceId || '',
         serviceTitle: service.title || service.serviceTitle || '',
         serviceDescription: service.description || service.serviceDescription || '',
