@@ -164,7 +164,7 @@ const leadSchema = new mongoose.Schema(
     /* ---------------- Qualification ---------------- */
     qualificationStatus: {
       type: String,
-      enum: ["Not Qualified", "On Hold", "Pending", "Qualified", "Disqualified"],
+      enum: ["Not Qualified", "On Hold", "Pending", "Contacted", "Qualified", "Won", "Lost", "Disqualified"],
       default: "Pending",
     },
     onHoldUntil: { type: Date },

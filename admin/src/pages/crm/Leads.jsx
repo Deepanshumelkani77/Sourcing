@@ -49,7 +49,7 @@ const SHIPPING_TERMS = ['EXW', 'FOB', 'CIF', 'DDP', 'Not decided']
 const PAYMENT_TERMS = ['Advance', 'Partial Advance', 'Credit', 'COD', 'Bank Transfer', 'LC']
 const CREDIT = ['None', 'Short Credit', 'Long Credit', 'To Be Discussed']
 const PROBABILITIES = [10, 25, 50, 75, 90].map((n) => ({ value: n, label: `${n}%` }))
-const QUALIFICATION_STATUSES = ['On Hold', 'Pending', 'Qualified', 'Disqualified']
+const QUALIFICATION_STATUSES = ['Pending', 'On Hold', 'Contacted', 'Qualified', 'Won', 'Lost']
 const FRAMEWORKS = ['BANT', 'CHAMP', 'MEDDIC', 'Custom']
 const FIT = ['High', 'Medium', 'Low', 'Not Applicable']
 const BUDGET_AVAILABLE = ['Confirmed', 'Likely', 'Not Available', 'Unknown']
@@ -1127,6 +1127,8 @@ const LeadForm = ({ lead, employees, leads, onClose, onSaved, onOpenLead, notify
       if (name === 'qualificationStatus' && value !== 'Disqualified') next.disqualificationReason = ''
       if (name === 'status' && value === 'Won' && prev.conversionStatus === 'Not Converted') next.conversionStatus = 'Converted to Customer'
       if (name === 'status' && value === 'Lost') next.conversionStatus = 'Lost'
+      if (name === 'qualificationStatus' && value === 'Won' && prev.conversionStatus === 'Not Converted') next.conversionStatus = 'Converted to Customer'
+      if (name === 'qualificationStatus' && value === 'Lost') next.conversionStatus = 'Lost'
       return next
     })
     setErrors((e) => (e[name] ? { ...e, [name]: undefined } : e))
@@ -1727,7 +1729,7 @@ const LeadDrawer = ({ lead, onClose, onEdit, onDelete, onChanged, notify }) => {
             <>
               <Card title="Qualification checklist">
                 <div className="mb-4 flex flex-wrap items-center gap-3">
-                  <Pill cls={lead.qualificationStatus === 'Qualified' ? TONE.green : lead.qualificationStatus === 'Disqualified' ? TONE.red : TONE.gray}>{lead.qualificationStatus || 'Pending'}</Pill>
+                  <Pill cls={['Qualified', 'Won'].includes(lead.qualificationStatus) ? TONE.green : ['Lost', 'Disqualified'].includes(lead.qualificationStatus) ? TONE.red : lead.qualificationStatus === 'Contacted' ? TONE.blue : TONE.gray}>{lead.qualificationStatus || 'Pending'}</Pill>
                   {lead.qualificationFramework && <span className="text-xs font-semibold text-gray-500">Framework: {lead.qualificationFramework}</span>}
                 </div>
                 <ul className="grid grid-cols-2 gap-3">
