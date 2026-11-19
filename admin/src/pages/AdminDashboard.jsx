@@ -884,24 +884,24 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-8">
       {/* ===================== Header ===================== */}
-      <div className="grid gap-5 md:grid-cols-[1fr_auto_1fr] md:items-center">
-        <div className="md:justify-self-start">
+      <div className="flex flex-nowrap items-center justify-between gap-4 overflow-x-auto pb-1">
+        <div className="shrink-0">
           <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">Dashboard</h1>
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-3 text-sm font-medium text-gray-500 md:justify-self-center">
-          <span>{today}</span>
+        <div className="flex shrink-0 items-center justify-center gap-3 text-sm font-medium text-gray-500">
+          <span className="whitespace-nowrap">{today}</span>
           {lastUpdated && (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500 ring-1 ring-inset ring-gray-200">
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500 ring-1 ring-inset ring-gray-200">
               <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
               Last updated {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 md:justify-self-end">
+        <div className="flex shrink-0 flex-nowrap items-center gap-2">
           <label className="flex items-center gap-2 text-sm font-medium text-gray-600">
             <span className="hidden sm:inline">Filter by</span>
             <select
