@@ -808,8 +808,8 @@ const Services = () => {
                     </span>
                     <div>
                       <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{phase.name}</p>
-                      <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{t(`services.phases.${phase.id}.name`)}</h2>
-                      <p className="mt-0.5 text-gray-500">{t(`services.phases.${phase.id}.tagline`)}</p>
+                      <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{t(`services.phases.${phase.id}.name`, { defaultValue: phase.name })}</h2>
+                      <p className="mt-0.5 text-gray-500">{t(`services.phases.${phase.id}.tagline`, { defaultValue: phase.tagline })}</p>
                     </div>
                   </div>
                   <button

@@ -88,21 +88,26 @@ const AdminServices = () => {
   const handleFormSubmit = async (serviceData) => {
     try {
       if (editingService) {
-        const result = await updateService(editingService._id, serviceData)
+        const result = await updateService(editingService._id || editingService.id, serviceData)
         if (result.success) {
           await fetchServices()
           setShowModal(false)
           setEditingService(null)
+        } else {
+          alert(result.message || 'Failed to update service')
         }
       } else {
         const result = await createService(serviceData)
         if (result.success) {
           await fetchServices()
           setShowModal(false)
+        } else {
+          alert(result.message || 'Failed to create service')
         }
       }
     } catch (error) {
       console.error('Error saving service:', error)
+      alert(error.message || 'Failed to save service')
     }
   }
 
