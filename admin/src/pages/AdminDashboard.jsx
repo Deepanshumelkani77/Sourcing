@@ -886,7 +886,15 @@ const AdminDashboard = () => {
       {/* ===================== Header ===================== */}
       <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-500">{today}</p>
+          <div className="flex items-center gap-3 text-sm font-medium text-gray-500">
+            <span>{today}</span>
+            {lastUpdated && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500 ring-1 ring-inset ring-gray-200">
+                <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                Last updated {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+          </div>
           <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-gray-900">Dashboard</h1>
           <p className="mt-1 text-sm text-gray-500">Here's what's happening across IndoChinaBridge.</p>
         </div>
@@ -936,7 +944,6 @@ const AdminDashboard = () => {
           </button>
         </div>
       </div>
-      {lastUpdated && <p className="-mt-5 text-xs text-gray-400">Last updated {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>}
 
       
 
