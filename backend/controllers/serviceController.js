@@ -1,4 +1,17 @@
+const mongoose = require('mongoose');
 const Service = require('../models/Service');
+
+// Resolve a service by Mongo _id or by its serviceId slug
+const resolveService = async (id) => {
+  let service = null;
+  if (mongoose.isValidObjectId(id)) {
+    service = await Service.findById(id);
+  }
+  if (!service) {
+    service = await Service.findOne({ serviceId: id });
+  }
+  return service;
+};
 
 // Get all services grouped by phase
 const getAllServices = async (req, res) => {
@@ -24,6 +37,7 @@ const getAllServices = async (req, res) => {
       }
       
       groupedServices[localizedData.phaseId].services.push({
+        _id: service._id,
         id: localizedData.serviceId,
         number: localizedData.serviceNumber,
         title: localizedData.serviceTitle,
@@ -61,7 +75,7 @@ const getAllServices = async (req, res) => {
 const getServiceById = async (req, res) => {
   try {
     const language = req.query.language || 'en';
-    const service = await Service.findById(req.params.id);
+    const service = await resolveService(req.params.id);
 
     if (!service) {
       return res.status(404).json({
@@ -116,11 +130,7 @@ const createService = async (req, res) => {
 // Update service
 const updateService = async (req, res) => {
   try {
-    const service = await Service.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const service = await resolveService(req.params.id);
 
     if (!service) {
       return res.status(404).json({
@@ -128,6 +138,9 @@ const updateService = async (req, res) => {
         message: 'Service not found'
       });
     }
+
+    Object.assign(service, req.body);
+    await service.save();
 
     res.json({
       success: true,
@@ -147,7 +160,7 @@ const updateService = async (req, res) => {
 // Delete service
 const deleteService = async (req, res) => {
   try {
-    const service = await Service.findByIdAndDelete(req.params.id);
+    const service = await resolveService(req.params.id);
 
     if (!service) {
       return res.status(404).json({
@@ -155,6 +168,8 @@ const deleteService = async (req, res) => {
         message: 'Service not found'
       });
     }
+
+    await service.deleteOne();
 
     res.json({
       success: true,
@@ -182,11 +197,7 @@ const updateServiceStatus = async (req, res) => {
       });
     }
 
-    const service = await Service.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    );
+    const service = await resolveService(req.params.id);
 
     if (!service) {
       return res.status(404).json({
@@ -194,6 +205,9 @@ const updateServiceStatus = async (req, res) => {
         message: 'Service not found'
       });
     }
+
+    service.status = status;
+    await service.save();
 
     res.json({
       success: true,
