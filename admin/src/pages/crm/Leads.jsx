@@ -333,7 +333,6 @@ const TABS = [
       {
         title: 'Follow-up',
         fields: [
-          F('leadStage', 'Lead stage', 'select', { options: STAGES, req: afterContact }),
           F('assignedTo', 'Lead owner', 'employee', { help: 'Leave empty to assign later' }),
           F('assignedRegion', 'Assigned region / branch', 'text'),
           F('assignedTeam', 'Assigned team', 'select', { options: TEAMS }),
