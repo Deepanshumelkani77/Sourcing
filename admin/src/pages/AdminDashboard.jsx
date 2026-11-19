@@ -323,8 +323,8 @@ const VIEWS = [
   {
     id: 'issues',
     label: 'Customer Complaints',
-    route: '/issues',
-    rowRoute: (r) => `/issues/${r._id}`,
+    route: '/crm/complaints',
+    rowRoute: () => '/crm/complaints',
     empty: 'No complaints found',
     filters: [
       { value: 'all', label: 'All', test: () => true },
@@ -345,8 +345,8 @@ const VIEWS = [
   {
     id: 'reviews',
     label: 'Reviews',
-    route: '/reviews',
-    rowRoute: (r) => `/reviews/${r._id}`,
+    route: '/crm/reviews',
+    rowRoute: () => '/crm/reviews',
     empty: 'No reviews found',
     filters: [
       { value: 'all', label: 'All', test: () => true },
@@ -770,10 +770,10 @@ const AdminDashboard = () => {
     const routeMap = {
       'orders': '/orders',
       'orders-processing': '/orders',
-      'issues': '/issues',
-      'issues-review': '/issues',
-      'reviews': '/reviews',
-      'reviews-rejected': '/reviews',
+      'issues': '/crm/complaints',
+      'issues-review': '/crm/complaints',
+      'reviews': '/crm/reviews',
+      'reviews-rejected': '/crm/reviews',
       'leads': '/crm/leads',
       'leads-contacted': '/crm/leads',
       'leads-qualified': '/crm/leads',

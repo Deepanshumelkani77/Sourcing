@@ -2068,7 +2068,8 @@ const Leads = () => {
           ['/crm/leads', 'Leads'],
           ['/crm/customers', 'Customers'],
           ['/crm/followups', 'Follow-ups'],
-          ['/crm/complaints', 'Complaints']
+          ['/crm/complaints', 'Complaints'],
+          ['/crm/reviews', 'Reviews']
         ].map(([to, label]) => (
           <Link
             key={to}

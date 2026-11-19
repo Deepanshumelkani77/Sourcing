@@ -63,7 +63,6 @@ const App = () => {
                 <Route path="/tracking" element={<AdminTracking />} />
                 <Route path="/contact-submissions" element={<AdminContactSubmissions />} />
                 <Route path="/quotations" element={<AdminQuotations />} />
-                <Route path="/reviews" element={<AdminReviews />} />
                 <Route path="/blogs" element={<AdminBlogs />} />
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />
@@ -71,6 +70,7 @@ const App = () => {
                 <Route path="/crm/customers" element={<CRMCustomers />} />
                 <Route path="/crm/followups" element={<CRMFollowUps />} />
                 <Route path="/crm/complaints" element={<AdminIssues />} />
+                <Route path="/crm/reviews" element={<AdminReviews />} />
                 <Route path="/sourcing-requests" element={<SourcingRequests />} />
                 <Route path="/employees" element={<Employees />} />
               </Routes>
