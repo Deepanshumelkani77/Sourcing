@@ -13,6 +13,7 @@ import AdminIssues from './pages/AdminIssues'
 import AdminJobs from './pages/AdminJobs'
 import AdminContactSubmissions from './pages/AdminContactSubmissions'
 import AdminQuotations from './pages/AdminQuotations'
+import AdminAgreements from './pages/AdminAgreements'
 import AdminReviews from './pages/AdminReviews'
 import AdminBlogs from './pages/AdminBlogs'
 import Login from './pages/Login'
@@ -63,6 +64,7 @@ const App = () => {
                 <Route path="/tracking" element={<AdminTracking />} />
                 <Route path="/contact-submissions" element={<AdminContactSubmissions />} />
                 <Route path="/quotations" element={<AdminQuotations />} />
+                <Route path="/agreements" element={<AdminAgreements />} />
                 <Route path="/blogs" element={<AdminBlogs />} />
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />

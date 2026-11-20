@@ -130,7 +130,45 @@ const sendPasswordResetEmail = async (email, resetUrl) => {
   return result;
 };
 
+const sendAgreementEmail = async (email, { agreementNumber, customerName, totalAmount, currency, agreementDate }) => {
+  const amount = `${currency || 'USD'} ${Number(totalAmount || 0).toLocaleString()}`;
+  const date = agreementDate ? new Date(agreementDate).toLocaleDateString() : 'N/A';
+
+  const result = await resend.emails.send({
+    from: process.env.EMAIL_FROM,
+    to: [email],
+    subject: `Sourcing Agreement ${agreementNumber} — IndoChinaBridge`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,sans-serif;">
+          <div style="max-width:600px;margin:40px auto;background:#ffffff;border-radius:12px;padding:35px;">
+            <h2 style="margin:0 0 10px;color:#222;">Sourcing Agreement Ready</h2>
+            <p style="color:#666;font-size:15px;">Dear ${customerName || 'Customer'},</p>
+            <p style="color:#666;font-size:15px;">
+              Your sourcing agreement <strong>${agreementNumber}</strong> dated <strong>${date}</strong>
+              for <strong>${amount}</strong> has been prepared by IndoChinaBridge.
+            </p>
+            <p style="color:#666;font-size:15px;">
+              Our team will share the agreement document for your review and signature shortly.
+              If you have any questions, please reply to this email or contact your account manager.
+            </p>
+            <p style="color:#666;font-size:15px;">Thank you,<br/>IndoChinaBridge Team</p>
+          </div>
+        </body>
+      </html>
+    `
+  });
+
+  if (result.error) {
+    throw new Error(result.error.message);
+  }
+
+  return result;
+};
+
 module.exports = {
   sendSignupOTPEmail,
   sendPasswordResetEmail,
+  sendAgreementEmail,
 };

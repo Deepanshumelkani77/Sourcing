@@ -23,6 +23,7 @@ const employeeRoutes = require("./routes/employeeRoutes");
 const serviceRoutes = require("./routes/serviceRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const blogRoutes = require("./routes/blogRoutes");
+const agreementRoutes = require("./routes/agreementRoutes");
 const passport = require("./config/passport");
 const { googleCallback, facebookCallback } = require("./controllers/userAuthController");
 
@@ -196,6 +197,11 @@ app.use(
 app.use(
   "/api/blogs",
   blogRoutes
+);
+
+app.use(
+  "/api/agreements",
+  agreementRoutes
 );
 
 app.use(
