@@ -42,9 +42,7 @@ const AdminOrders = () => {
       middleName: '',
       lastName: '',
       address: '',
-      subDistrict: '',
       district: '',
-      province: '',
       country: '',
       pinCode: '',
       contactPerson: '',
@@ -204,9 +202,7 @@ const AdminOrders = () => {
             middleName: '',
             lastName: '',
             address: '',
-            subDistrict: '',
             district: '',
-            province: '',
             country: '',
             pinCode: '',
             contactPerson: '',
@@ -604,20 +600,6 @@ const AdminOrders = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Sub District</label>
-                    <input
-                      type="text"
-                      value={newOrder.shipperInfo.subDistrict}
-                      onChange={(e) => setNewOrder({
-                        ...newOrder,
-                        shipperInfo: { ...newOrder.shipperInfo, subDistrict: e.target.value }
-                      })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter sub district"
-                    />
-                  </div>
-
-                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
                     <input
                       type="text"
@@ -628,20 +610,6 @@ const AdminOrders = () => {
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
                       placeholder="Enter district"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Province</label>
-                    <input
-                      type="text"
-                      value={newOrder.shipperInfo.province}
-                      onChange={(e) => setNewOrder({
-                        ...newOrder,
-                        shipperInfo: { ...newOrder.shipperInfo, province: e.target.value }
-                      })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter province"
                     />
                   </div>
 
