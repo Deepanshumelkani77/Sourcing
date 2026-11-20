@@ -110,6 +110,16 @@ const orderSchema = new mongoose.Schema(
         trim: true,
         default: ''
       },
+      city: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      state: {
+        type: String,
+        trim: true,
+        default: ''
+      },
       country: {
         type: String,
         trim: true,
