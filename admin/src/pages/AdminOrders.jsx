@@ -106,6 +106,28 @@ const AdminOrders = () => {
     }
   }
 
+  const handlePinCodeLookup = async (pinCode) => {
+    if (!/^\d{6}$/.test(pinCode)) return
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pinCode}`)
+      const data = await res.json()
+      const office = data?.[0]?.PostOffice?.[0]
+      if (office) {
+        setNewOrder(prev => ({
+          ...prev,
+          shipperInfo: {
+            ...prev.shipperInfo,
+            city: office.District || prev.shipperInfo.city,
+            state: office.State || prev.shipperInfo.state,
+            country: office.Country || prev.shipperInfo.country
+          }
+        }))
+      }
+    } catch (err) {
+      console.error('Pincode lookup failed:', err)
+    }
+  }
+
   const handleProductSelect = (product, index) => {
     const items = [...newOrder.items]
     items[index].productId = product._id
@@ -600,8 +622,10 @@ const AdminOrders = () => {
                         ...newOrder,
                         shipperInfo: { ...newOrder.shipperInfo, pinCode: e.target.value }
                       })}
+                      onBlur={(e) => handlePinCodeLookup(e.target.value)}
+                      maxLength={6}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter PIN code"
+                      placeholder="Enter 6-digit PIN code"
                     />
                   </div>
 
