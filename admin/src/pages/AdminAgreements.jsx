@@ -135,7 +135,8 @@ const AdminAgreements = () => {
   const fetchCustomers = async () => {
     try {
       const response = await api.get('/api/crm/customers')
-      if (response.data.success) setCustomers(response.data.customers)
+      const list = response.data.data || response.data.customers || []
+      setCustomers(list)
     } catch (error) {
       console.error('Error fetching customers:', error)
     }
