@@ -56,6 +56,7 @@ const AdminOrders = () => {
     notes: ''
   })
   const [newStatus, setNewStatus] = useState('')
+  const [pincodes, setPincodes] = useState([])
 
   useEffect(() => {
     fetchStageCounts()
@@ -69,6 +70,7 @@ const AdminOrders = () => {
     if (showCreateModal) {
       fetchUsers()
       fetchProducts()
+      fetchPincodes()
     }
   }, [showCreateModal])
 
@@ -103,6 +105,17 @@ const AdminOrders = () => {
       console.error('Error fetching products:', error)
     } finally {
       setLoadingProducts(false)
+    }
+  }
+
+  const fetchPincodes = async () => {
+    if (pincodes.length) return
+    try {
+      const res = await fetch('https://cdn.jsdelivr.net/gh/iaseth/pincodes-india@master/pincodes.json')
+      const data = await res.json()
+      setPincodes(data.pincodes || [])
+    } catch (error) {
+      console.error('Error fetching pincodes:', error)
     }
   }
 
@@ -618,15 +631,25 @@ const AdminOrders = () => {
                     <input
                       type="text"
                       value={newOrder.shipperInfo.pinCode}
-                      onChange={(e) => setNewOrder({
-                        ...newOrder,
-                        shipperInfo: { ...newOrder.shipperInfo, pinCode: e.target.value }
-                      })}
-                      onBlur={(e) => handlePinCodeLookup(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value
+                        setNewOrder({
+                          ...newOrder,
+                          shipperInfo: { ...newOrder.shipperInfo, pinCode: value }
+                        })
+                        if (/^\d{6}$/.test(value)) handlePinCodeLookup(value)
+                      }}
                       maxLength={6}
+                      list="buyer-pincodes"
+                      autoComplete="off"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
                       placeholder="Enter 6-digit PIN code"
                     />
+                    <datalist id="buyer-pincodes">
+                      {pincodes.map((pin) => (
+                        <option key={pin} value={pin} />
+                      ))}
+                    </datalist>
                   </div>
 
                   <div>
