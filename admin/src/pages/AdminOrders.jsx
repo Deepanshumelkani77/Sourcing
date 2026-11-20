@@ -57,6 +57,7 @@ const AdminOrders = () => {
   })
   const [newStatus, setNewStatus] = useState('')
   const [pincodes, setPincodes] = useState([])
+  const [showPinDropdown, setShowPinDropdown] = useState(false)
 
   useEffect(() => {
     fetchStageCounts()
@@ -139,6 +140,15 @@ const AdminOrders = () => {
     } catch (err) {
       console.error('Pincode lookup failed:', err)
     }
+  }
+
+  const handlePinSelect = (pinCode) => {
+    setNewOrder({
+      ...newOrder,
+      shipperInfo: { ...newOrder.shipperInfo, pinCode }
+    })
+    setShowPinDropdown(false)
+    handlePinCodeLookup(pinCode)
   }
 
   const handleProductSelect = (product, index) => {
@@ -628,28 +638,50 @@ const AdminOrders = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">PIN Code</label>
-                    <input
-                      type="text"
-                      value={newOrder.shipperInfo.pinCode}
-                      onChange={(e) => {
-                        const value = e.target.value
-                        setNewOrder({
-                          ...newOrder,
-                          shipperInfo: { ...newOrder.shipperInfo, pinCode: value }
-                        })
-                        if (/^\d{6}$/.test(value)) handlePinCodeLookup(value)
-                      }}
-                      maxLength={6}
-                      list="buyer-pincodes"
-                      autoComplete="off"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter 6-digit PIN code"
-                    />
-                    <datalist id="buyer-pincodes">
-                      {pincodes.map((pin) => (
-                        <option key={pin} value={pin} />
-                      ))}
-                    </datalist>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={newOrder.shipperInfo.pinCode}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 6)
+                          setNewOrder({
+                            ...newOrder,
+                            shipperInfo: { ...newOrder.shipperInfo, pinCode: value }
+                          })
+                          setShowPinDropdown(true)
+                          if (/^\d{6}$/.test(value)) handlePinCodeLookup(value)
+                        }}
+                        onFocus={() => {
+                          fetchPincodes()
+                          setShowPinDropdown(true)
+                        }}
+                        onBlur={() => setTimeout(() => setShowPinDropdown(false), 150)}
+                        maxLength={6}
+                        autoComplete="off"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                        placeholder="Search PIN code"
+                      />
+                      {showPinDropdown && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                          {(() => {
+                            const query = newOrder.shipperInfo.pinCode
+                            const matches = pincodes.filter((pin) => pin.includes(query)).slice(0, 50)
+                            if (matches.length === 0) {
+                              return <div className="p-3 text-sm text-gray-500">{pincodes.length ? 'No PIN codes found' : 'Loading PIN codes...'}</div>
+                            }
+                            return matches.map((pin) => (
+                              <div
+                                key={pin}
+                                onMouseDown={() => handlePinSelect(pin)}
+                                className={`px-4 py-2.5 cursor-pointer text-sm border-b border-gray-100 last:border-0 hover:bg-gray-50 ${pin === newOrder.shipperInfo.pinCode ? 'bg-orange-50 font-medium' : ''}`}
+                              >
+                                {pin}
+                              </div>
+                            ))
+                          })()}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div>
