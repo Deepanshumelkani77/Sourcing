@@ -51,7 +51,8 @@ const AdminOrders = () => {
     },
     shippingAddress: '',
     billingAddress: '',
-    sameAsBuyerAddress: false,
+    shippingSameAsBuyer: false,
+    billingSameAsBuyer: false,
     notes: ''
   })
   const [newStatus, setNewStatus] = useState('')
@@ -213,7 +214,8 @@ const AdminOrders = () => {
           },
           shippingAddress: '',
           billingAddress: '',
-          sameAsBuyerAddress: false,
+          shippingSameAsBuyer: false,
+          billingSameAsBuyer: false,
           notes: ''
         })
         fetchOrders()
@@ -681,7 +683,8 @@ const AdminOrders = () => {
                       onChange={(e) => setNewOrder({
                         ...newOrder,
                         shipperInfo: { ...newOrder.shipperInfo, address: e.target.value },
-                        ...(newOrder.sameAsBuyerAddress ? { shippingAddress: e.target.value, billingAddress: e.target.value } : {})
+                        ...(newOrder.shippingSameAsBuyer ? { shippingAddress: e.target.value } : {}),
+                        ...(newOrder.billingSameAsBuyer ? { billingAddress: e.target.value } : {})
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
                       placeholder="Enter full address"
@@ -691,31 +694,31 @@ const AdminOrders = () => {
               </div>
 
               <div>
-                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
-                  <input
-                    type="checkbox"
-                    checked={newOrder.sameAsBuyerAddress}
-                    onChange={(e) => {
-                      const checked = e.target.checked
-                      setNewOrder({
-                        ...newOrder,
-                        sameAsBuyerAddress: checked,
-                        ...(checked ? { shippingAddress: newOrder.shipperInfo.address, billingAddress: newOrder.shipperInfo.address } : {})
-                      })
-                    }}
-                    className="w-4 h-4 text-[#F41703] border-gray-300 rounded focus:ring-[#F41703]"
-                  />
-                  Shipping &amp; billing address same as buyer address
-                </label>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Shipping Address</label>
                 <textarea
                   value={newOrder.shippingAddress}
                   onChange={(e) => setNewOrder({ ...newOrder, shippingAddress: e.target.value })}
-                  disabled={newOrder.sameAsBuyerAddress}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none ${newOrder.sameAsBuyerAddress ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                  disabled={newOrder.shippingSameAsBuyer}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none ${newOrder.shippingSameAsBuyer ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
                   placeholder="Enter shipping address"
                   rows={2}
                 />
+                <label className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                  <input
+                    type="checkbox"
+                    checked={newOrder.shippingSameAsBuyer}
+                    onChange={(e) => {
+                      const checked = e.target.checked
+                      setNewOrder({
+                        ...newOrder,
+                        shippingSameAsBuyer: checked,
+                        ...(checked ? { shippingAddress: newOrder.shipperInfo.address } : {})
+                      })
+                    }}
+                    className="w-4 h-4 text-[#F41703] border-gray-300 rounded focus:ring-[#F41703]"
+                  />
+                  Same as buyer address
+                </label>
               </div>
 
               <div>
@@ -723,11 +726,27 @@ const AdminOrders = () => {
                 <textarea
                   value={newOrder.billingAddress}
                   onChange={(e) => setNewOrder({ ...newOrder, billingAddress: e.target.value })}
-                  disabled={newOrder.sameAsBuyerAddress}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none ${newOrder.sameAsBuyerAddress ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                  disabled={newOrder.billingSameAsBuyer}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none ${newOrder.billingSameAsBuyer ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
                   placeholder="Enter billing address"
                   rows={2}
                 />
+                <label className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                  <input
+                    type="checkbox"
+                    checked={newOrder.billingSameAsBuyer}
+                    onChange={(e) => {
+                      const checked = e.target.checked
+                      setNewOrder({
+                        ...newOrder,
+                        billingSameAsBuyer: checked,
+                        ...(checked ? { billingAddress: newOrder.shipperInfo.address } : {})
+                      })
+                    }}
+                    className="w-4 h-4 text-[#F41703] border-gray-300 rounded focus:ring-[#F41703]"
+                  />
+                  Same as buyer address
+                </label>
               </div>
 
               <div>
