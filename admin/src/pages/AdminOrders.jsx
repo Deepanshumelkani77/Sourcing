@@ -51,6 +51,7 @@ const AdminOrders = () => {
     },
     shippingAddress: '',
     billingAddress: '',
+    billingSameAsShipping: false,
     notes: ''
   })
   const [newStatus, setNewStatus] = useState('')
@@ -212,6 +213,7 @@ const AdminOrders = () => {
           },
           shippingAddress: '',
           billingAddress: '',
+          billingSameAsShipping: false,
           notes: ''
         })
         fetchOrders()
@@ -691,11 +693,31 @@ const AdminOrders = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Shipping Address</label>
                 <textarea
                   value={newOrder.shippingAddress}
-                  onChange={(e) => setNewOrder({ ...newOrder, shippingAddress: e.target.value })}
+                  onChange={(e) => setNewOrder({
+                    ...newOrder,
+                    shippingAddress: e.target.value,
+                    ...(newOrder.billingSameAsShipping ? { billingAddress: e.target.value } : {})
+                  })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
                   placeholder="Enter shipping address"
                   rows={2}
                 />
+                <label className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                  <input
+                    type="checkbox"
+                    checked={newOrder.billingSameAsShipping}
+                    onChange={(e) => {
+                      const checked = e.target.checked
+                      setNewOrder({
+                        ...newOrder,
+                        billingSameAsShipping: checked,
+                        billingAddress: checked ? newOrder.shippingAddress : newOrder.billingAddress
+                      })
+                    }}
+                    className="w-4 h-4 text-[#F41703] border-gray-300 rounded focus:ring-[#F41703]"
+                  />
+                  Billing address same as shipping address
+                </label>
               </div>
 
               <div>
@@ -703,7 +725,8 @@ const AdminOrders = () => {
                 <textarea
                   value={newOrder.billingAddress}
                   onChange={(e) => setNewOrder({ ...newOrder, billingAddress: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
+                  disabled={newOrder.billingSameAsShipping}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none ${newOrder.billingSameAsShipping ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
                   placeholder="Enter billing address"
                   rows={2}
                 />
