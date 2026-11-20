@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthProvider'
 import { getAllOrders, createOrder, updateOrderStatus, deleteOrder } from '../services/orderApi'
 import { getAllUsers } from '../services/userApi'
 import { getAllProducts } from '../services/productApi'
+import { uploadDocument } from '../services/uploadApi'
 
 const STAGES = [
   { id: 'all', label: 'All Orders', statuses: null },
@@ -58,6 +59,8 @@ const AdminOrders = () => {
   const [newStatus, setNewStatus] = useState('')
   const [pincodes, setPincodes] = useState([])
   const [showPinDropdown, setShowPinDropdown] = useState(false)
+  const [registrationDocs, setRegistrationDocs] = useState([])
+  const [uploadingDocs, setUploadingDocs] = useState(false)
 
   useEffect(() => {
     fetchStageCounts()
@@ -239,9 +242,29 @@ const AdminOrders = () => {
     }
 
     try {
-      const result = await createOrder(newOrder)
+      let uploadedDocs = []
+      if (registrationDocs.length > 0) {
+        setUploadingDocs(true)
+        for (const file of registrationDocs) {
+          const result = await uploadDocument(file)
+          if (!result.success || !result.documentUrl) {
+            setUploadingDocs(false)
+            alert(`Failed to upload ${file.name}. Please try again.`)
+            return
+          }
+          uploadedDocs.push({
+            name: file.name,
+            url: result.documentUrl,
+            publicId: result.publicId
+          })
+        }
+        setUploadingDocs(false)
+      }
+
+      const result = await createOrder({ ...newOrder, registrationDocuments: uploadedDocs })
       if (result.success) {
         setShowCreateModal(false)
+        setRegistrationDocs([])
         setNewOrder({
           userId: '',
           items: [{ productId: '', quantity: 1, price: 0, productName: '' }],
@@ -559,7 +582,7 @@ const AdminOrders = () => {
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-800">Create New Order</h2>
                 <button
-                  onClick={() => setShowCreateModal(false)}
+                  onClick={() => { setShowCreateModal(false); setRegistrationDocs([]) }}
                   className="text-gray-400 hover:text-gray-600"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -772,6 +795,61 @@ const AdminOrders = () => {
                 </div>
               </div>
 
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">Registration Documents</h3>
+                <p className="text-xs text-gray-500 mb-3">Upload business registration documents (PDF or image, max 10MB each)</p>
+                <label className="inline-flex items-center gap-2 px-4 py-2 border border-dashed border-gray-300 rounded-lg text-sm text-gray-600 hover:border-[#F41703] hover:text-[#F41703] cursor-pointer transition">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add Document
+                  <input
+                    type="file"
+                    accept=".pdf,image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || [])
+                      const valid = files.filter((f) => {
+                        const okType = f.type === 'application/pdf' || f.type.startsWith('image/')
+                        const okSize = f.size <= 10 * 1024 * 1024
+                        if (!okType || !okSize) {
+                          alert(`${f.name}: only PDF/image files up to 10MB are allowed`)
+                          return false
+                        }
+                        return true
+                      })
+                      setRegistrationDocs((prev) => [...prev, ...valid])
+                      e.target.value = ''
+                    }}
+                  />
+                </label>
+                {registrationDocs.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {registrationDocs.map((file, index) => (
+                      <div key={`${file.name}-${index}`} className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span className="text-sm text-gray-700 truncate">{file.name}</span>
+                          <span className="text-xs text-gray-400 flex-shrink-0">({(file.size / 1024).toFixed(0)} KB)</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setRegistrationDocs((prev) => prev.filter((_, i) => i !== index))}
+                          className="text-gray-400 hover:text-red-500 flex-shrink-0 ml-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Shipping Address</label>
                 <textarea
@@ -951,16 +1029,17 @@ const AdminOrders = () => {
 
             <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
               <button
-                onClick={() => setShowCreateModal(false)}
+                onClick={() => { setShowCreateModal(false); setRegistrationDocs([]) }}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateOrder}
-                className="px-4 py-2 bg-[#F41703] text-white rounded-lg hover:bg-[#D41503] transition"
+                disabled={uploadingDocs}
+                className="px-4 py-2 bg-[#F41703] text-white rounded-lg hover:bg-[#D41503] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create Order
+                {uploadingDocs ? 'Uploading...' : 'Create Order'}
               </button>
             </div>
           </div>

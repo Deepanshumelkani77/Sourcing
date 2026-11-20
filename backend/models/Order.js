@@ -154,6 +154,24 @@ const orderSchema = new mongoose.Schema(
       trim: true,
       default: ''
     },
+    registrationDocuments: [{
+      name: {
+        type: String,
+        trim: true
+      },
+      url: {
+        type: String,
+        trim: true
+      },
+      publicId: {
+        type: String,
+        trim: true
+      },
+      uploadedAt: {
+        type: Date,
+        default: Date.now
+      }
+    }],
     issueReported: {
       type: Boolean,
       default: false

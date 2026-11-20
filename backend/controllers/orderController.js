@@ -4,7 +4,7 @@ const Product = require('../models/Product');
 // Create order
 const createOrder = async (req, res) => {
   try {
-    const { userId, items, shippingAddress, billingAddress, notes, shipperInfo } = req.body;
+    const { userId, items, shippingAddress, billingAddress, notes, shipperInfo, registrationDocuments } = req.body;
 
     if (!userId || !items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
@@ -76,7 +76,8 @@ const createOrder = async (req, res) => {
       },
       shippingAddress: shippingAddress || '',
       billingAddress: billingAddress || '',
-      notes: notes || ''
+      notes: notes || '',
+      registrationDocuments: Array.isArray(registrationDocuments) ? registrationDocuments : []
     });
 
     return res.status(201).json({
