@@ -557,7 +557,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, firstName: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter first name (Chinese)"
+                      placeholder="Enter first name"
                     />
                   </div>
 
@@ -571,7 +571,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, middleName: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter middle name (Chinese)"
+                      placeholder="Enter middle name"
                     />
                   </div>
 
@@ -585,7 +585,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, lastName: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter last name (Chinese)"
+                      placeholder="Enter last name"
                     />
                   </div>
 
@@ -599,7 +599,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, address: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter full address (Chinese)"
+                      placeholder="Enter full address"
                     />
                   </div>
 
@@ -613,7 +613,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, subDistrict: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter sub district (Chinese)"
+                      placeholder="Enter sub district"
                     />
                   </div>
 
@@ -627,7 +627,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, district: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter district (Chinese)"
+                      placeholder="Enter district"
                     />
                   </div>
 
@@ -641,7 +641,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, province: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter province (Chinese)"
+                      placeholder="Enter province"
                     />
                   </div>
 
@@ -655,7 +655,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, country: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter country (Chinese)"
+                      placeholder="Enter country"
                     />
                   </div>
 
@@ -683,7 +683,7 @@ const AdminOrders = () => {
                         shipperInfo: { ...newOrder.shipperInfo, contactPerson: e.target.value }
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F41703] focus:border-transparent outline-none"
-                      placeholder="Enter contact person name (Chinese)"
+                      placeholder="Enter contact person name"
                     />
                   </div>
 
