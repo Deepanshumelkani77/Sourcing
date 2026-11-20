@@ -545,7 +545,7 @@ const AdminOrders = () => {
 
               {/* Corresponding Buyer */}
               <div className="border-t pt-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Corresponding Buyer</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Buyer Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
