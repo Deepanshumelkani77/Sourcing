@@ -17,6 +17,21 @@ const generateAgreementNumber = async () => {
   return `${prefix}${String(next).padStart(4, '0')}`;
 };
 
+const NUMERIC_FIELDS = ['sourcingServiceCharges', 'advancePayment', 'remainingPayment'];
+
+const sanitizeBody = (body) => {
+  const data = { ...body };
+  // Remove empty strings for ObjectId/Date fields to avoid CastError
+  ['order', 'validUntil', 'agreementDate', 'customer'].forEach((key) => {
+    if (data[key] === '') delete data[key];
+  });
+  NUMERIC_FIELDS.forEach((key) => {
+    if (data[key] === '') data[key] = 0;
+    else if (data[key] !== undefined && data[key] !== null) data[key] = Number(data[key]) || 0;
+  });
+  return data;
+};
+
 const computeTotals = (products = [], sourcingServiceCharges = 0) => {
   const productTotal = products.reduce((sum, p) => sum + ((p.quantity || 0) * (p.unitPrice || 0)), 0);
   return {
@@ -207,14 +222,15 @@ exports.getAgreementById = async (req, res) => {
 // @route   POST /api/agreements
 exports.createAgreement = async (req, res) => {
   try {
-    const customer = await Customer.findById(req.body.customer);
+    const body = sanitizeBody(req.body);
+    const customer = await Customer.findById(body.customer);
     if (!customer) {
       return res.status(404).json({ success: false, message: 'Customer not found' });
     }
 
     let order = null;
-    if (req.body.order) {
-      order = await Order.findById(req.body.order);
+    if (body.order) {
+      order = await Order.findById(body.order);
       if (!order) {
         return res.status(404).json({ success: false, message: 'Order not found' });
       }
@@ -224,7 +240,7 @@ exports.createAgreement = async (req, res) => {
     const agreementNumber = await generateAgreementNumber();
 
     const agreement = await Agreement.create({
-      ...req.body,
+      ...body,
       agreementNumber,
       products,
       totalAmount,
@@ -232,7 +248,7 @@ exports.createAgreement = async (req, res) => {
       customerCompany: req.body.customerCompany || customer.companyName,
       customerAddress: req.body.customerAddress || [customer.address, customer.city, customer.state, customer.country].filter(Boolean).join(', '),
       customerEmail: req.body.customerEmail || customer.email,
-      orderNumber: order ? order.orderNumber : (req.body.orderNumber || ''),
+      orderNumber: order ? order.orderNumber : (body.orderNumber || ''),
       status: 'draft',
       createdBy: req.user?._id || req.user?.id,
       history: [{ status: 'draft', note: 'Agreement created', changedBy: req.user?._id || req.user?.id }]
@@ -257,8 +273,9 @@ exports.updateAgreement = async (req, res) => {
     }
 
     const { products, totalAmount } = computeTotals(req.body.products, req.body.sourcingServiceCharges);
+    const body = sanitizeBody(req.body);
     Object.assign(agreement, {
-      ...req.body,
+      ...body,
       products,
       totalAmount,
       agreementNumber: agreement.agreementNumber // never allow renumbering
