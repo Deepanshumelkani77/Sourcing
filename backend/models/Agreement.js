@@ -113,7 +113,6 @@ const agreementSchema = new mongoose.Schema({
   }]
 }, { timestamps: true });
 
-agreementSchema.index({ agreementNumber: 1 });
 agreementSchema.index({ status: 1 });
 agreementSchema.index({ customer: 1 });
 

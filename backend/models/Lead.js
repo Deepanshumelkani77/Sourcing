@@ -432,7 +432,6 @@ leadSchema.index({ status: 1 });
 leadSchema.index({ priority: 1 });
 leadSchema.index({ source: 1 });
 leadSchema.index({ leadRating: 1 });
-leadSchema.index({ leadNumber: 1 });
 leadSchema.index({ assignedTo: 1 });
 leadSchema.index({ qualificationStatus: 1 });
 
