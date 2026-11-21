@@ -40,6 +40,9 @@ const agreementSchema = new mongoose.Schema({
   customerCompany: { type: String, trim: true, default: '' },
   customerAddress: { type: String, trim: true, default: '' },
   customerEmail: { type: String, trim: true, default: '' },
+  mobileNumber: { type: String, trim: true, default: '' },
+  alternateMobile: { type: String, trim: true, default: '' },
+  whatsappNo: { type: String, trim: true, default: '' },
 
   // Product & Order Details
   products: [{

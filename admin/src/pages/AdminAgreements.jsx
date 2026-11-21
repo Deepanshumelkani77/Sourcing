@@ -56,6 +56,9 @@ const emptyForm = () => ({
   customerCompany: '',
   customerAddress: '',
   customerEmail: '',
+  mobileNumber: '',
+  alternateMobile: '',
+  whatsappNo: '',
   products: [{ ...emptyProduct }],
   currency: 'USD',
   sourcingServiceCharges: 0,
@@ -270,6 +273,9 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
       customerCompany: a.customerCompany || '',
       customerAddress: a.customerAddress || '',
       customerEmail: a.customerEmail || '',
+      mobileNumber: a.mobileNumber || '',
+      alternateMobile: a.alternateMobile || '',
+      whatsappNo: a.whatsappNo || '',
       products: a.products?.length ? a.products.map((p) => ({ ...emptyProduct, ...p })) : [{ ...emptyProduct }],
       currency: a.currency || 'USD',
       sourcingServiceCharges: a.sourcingServiceCharges || 0,
@@ -323,7 +329,9 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
       firstName: customer?.customerName || '',
       customerCompany: customer?.companyName || '',
       customerAddress: [customer?.address, customer?.city, customer?.state, customer?.country].filter(Boolean).join(', '),
-      customerEmail: customer?.email || ''
+      customerEmail: customer?.email || '',
+      mobileNumber: customer?.phone || '',
+      whatsappNo: customer?.whatsapp || ''
     }))
     setErrors((e) => (e.customer ? { ...e, customer: undefined } : e))
   }
@@ -462,11 +470,20 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                     <input type="text" value={form.lastName} onChange={(e) => set('lastName', e.target.value)} className={inp()} placeholder="Last name" />
                   </Field>
                 </div>
+                <Field label="Mobile number">
+                  <input type="tel" value={form.mobileNumber} onChange={(e) => set('mobileNumber', e.target.value)} className={inp()} placeholder="Mobile number" />
+                </Field>
+                <Field label="Alternate mobile number">
+                  <input type="tel" value={form.alternateMobile} onChange={(e) => set('alternateMobile', e.target.value)} className={inp()} placeholder="Alternate mobile" />
+                </Field>
+                <Field label="WhatsApp no">
+                  <input type="tel" value={form.whatsappNo} onChange={(e) => set('whatsappNo', e.target.value)} className={inp()} placeholder="WhatsApp number" />
+                </Field>
+                <Field label="Customer email" error={errors.customerEmail}>
+                  <input type="email" value={form.customerEmail} onChange={(e) => set('customerEmail', e.target.value)} className={inp('customerEmail', errors.customerEmail)} />
+                </Field>
                 <Field label="Customer company name" span>
                   <input type="text" value={form.customerCompany} onChange={(e) => set('customerCompany', e.target.value)} className={inp()} />
-                </Field>
-                <Field label="Customer email" span error={errors.customerEmail}>
-                  <input type="email" value={form.customerEmail} onChange={(e) => set('customerEmail', e.target.value)} className={inp('customerEmail', errors.customerEmail)} />
                 </Field>
                 <Field label="Customer address" span>
                   <input type="text" value={form.customerAddress} onChange={(e) => set('customerAddress', e.target.value)} className={inp()} />
@@ -862,7 +879,7 @@ const AgreementView = ({ agreement: a, onClose, onEdit, onPdf, onSend, onSign, o
         {/* Content */}
         <div className="flex-1 space-y-4 overflow-y-auto p-6">
           <Block title="Parties" icon="users">
-            <KV items={[['Customer', customerOf(a)], ['Company', companyOf(a)], ['Email', a.customerEmail || a.customer?.email], ['Address', a.customerAddress, true]]} />
+            <KV items={[['Customer', customerOf(a)], ['Company', companyOf(a)], ['Email', a.customerEmail || a.customer?.email], ['Mobile', a.mobileNumber], ['Alternate mobile', a.alternateMobile], ['WhatsApp', a.whatsappNo], ['Address', a.customerAddress, true]]} />
           </Block>
 
           <Block title="Products and pricing" icon="box">
