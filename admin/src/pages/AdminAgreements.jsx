@@ -457,10 +457,10 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                 <Field label="Agreement date *" error={errors.agreementDate}>
                   <input type="date" value={form.agreementDate} onChange={(e) => set('agreementDate', e.target.value)} className={inp('agreementDate', errors.agreementDate)} />
                 </Field>
-                <Field label="Valid until" error={errors.validUntil} hint="After this date the offer should no longer be accepted.">
+                <Field label="Valid until" error={errors.validUntil}>
                   <input type="date" value={form.validUntil} onChange={(e) => set('validUntil', e.target.value)} className={inp('validUntil', errors.validUntil)} />
                 </Field>
-                <Field label="Customer *" error={errors.customer} hint="Choosing a customer fills in their company, address and email.">
+                <Field label="Customer *" error={errors.customer}>
                   <select value={form.customer} onChange={(e) => handleCustomerChange(e.target.value)} className={inp('customer', errors.customer)}>
                     <option value="">Select customer...</option>
                     {customers.map((c) => (
