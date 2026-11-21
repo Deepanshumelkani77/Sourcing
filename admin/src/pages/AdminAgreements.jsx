@@ -471,7 +471,7 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                     ))}
                   </select>
                 </Field>
-                <div className="md:col-span-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="md:col-span-4 grid grid-cols-1 gap-4 md:grid-cols-4">
                   <Field label="First name">
                     <input type="text" value={form.firstName} onChange={(e) => set('firstName', e.target.value)} className={inp()} placeholder="First name" />
                   </Field>
@@ -480,6 +480,9 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                   </Field>
                   <Field label="Last name">
                     <input type="text" value={form.lastName} onChange={(e) => set('lastName', e.target.value)} className={inp()} placeholder="Last name" />
+                  </Field>
+                  <Field label="Customer company name">
+                    <input type="text" value={form.customerCompany} onChange={(e) => set('customerCompany', e.target.value)} className={inp()} />
                   </Field>
                 </div>
                 <Field label="Mobile number">
@@ -505,9 +508,6 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                 </Field>
                 <Field label="Country">
                   <input type="text" value={form.country} onChange={(e) => set('country', e.target.value)} className={inp()} placeholder="Country" />
-                </Field>
-                <Field label="Customer company name" span>
-                  <input type="text" value={form.customerCompany} onChange={(e) => set('customerCompany', e.target.value)} className={inp()} />
                 </Field>
                 <Field label="Customer address" span>
                   <input type="text" value={form.customerAddress} onChange={(e) => set('customerAddress', e.target.value)} className={inp()} />
