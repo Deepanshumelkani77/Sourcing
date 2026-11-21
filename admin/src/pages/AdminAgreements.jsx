@@ -221,7 +221,7 @@ const Toasts = ({ items, dismiss }) => (
 
 const ConfirmDialog = ({ dialog, onCancel }) =>
   dialog && (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-sm" onClick={onCancel}>
+    <div className="fixed inset-0 z-[90] flex h-screen items-center justify-center bg-gray-900/50 backdrop-blur-sm" onClick={onCancel}>
       <div role="alertdialog" aria-modal="true" onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
         <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-full ${dialog.danger ? 'bg-red-50 text-red-600' : 'bg-orange-50 text-[#F41703]'}`}>
           <Icon name={dialog.icon || 'alert'} className="h-6 w-6" />
@@ -410,7 +410,7 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
   )
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && requestClose()}>
+    <div className="fixed inset-0 z-50 flex h-screen items-center justify-center bg-gray-900/50 backdrop-blur-sm" onMouseDown={(e) => e.target === e.currentTarget && requestClose()}>
       <div role="dialog" aria-modal="true" aria-label={editing ? 'Edit agreement' : 'Create agreement'} className="relative flex max-h-[94vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-gray-200 px-6 py-4">
@@ -800,7 +800,7 @@ const AgreementView = ({ agreement: a, onClose, onEdit, onPdf, onSend, onSign, o
   const btn = 'inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors'
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="fixed inset-0 z-50 flex h-screen items-center justify-center bg-gray-900/50 backdrop-blur-sm" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div role="dialog" aria-modal="true" aria-label={`Agreement ${a.agreementNumber}`} className="flex max-h-[94vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-gray-50 shadow-2xl">
         {/* Header */}
         <div className="border-b border-gray-200 bg-white px-6 py-5">
@@ -1043,7 +1043,7 @@ const SignDialog = ({ agreement, onClose, onDone, notify }) => {
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-sm" onMouseDown={(e) => e.target === e.currentTarget && !busy && onClose()}>
+    <div className="fixed inset-0 z-[60] flex h-screen items-center justify-center bg-gray-900/50 backdrop-blur-sm" onMouseDown={(e) => e.target === e.currentTarget && !busy && onClose()}>
       <div role="dialog" aria-modal="true" aria-label="Mark agreement as signed" className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
         <div className="flex items-start justify-between gap-4 border-b border-gray-200 px-6 py-5">
           <div className="flex items-center gap-3">
