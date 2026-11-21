@@ -34,6 +34,9 @@ const agreementSchema = new mongoose.Schema({
 
   // Customer snapshot (so agreement stays intact if customer record changes)
   customerName: { type: String, trim: true, default: '' },
+  firstName: { type: String, trim: true, default: '' },
+  middleName: { type: String, trim: true, default: '' },
+  lastName: { type: String, trim: true, default: '' },
   customerCompany: { type: String, trim: true, default: '' },
   customerAddress: { type: String, trim: true, default: '' },
   customerEmail: { type: String, trim: true, default: '' },

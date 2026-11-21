@@ -50,6 +50,9 @@ const emptyForm = () => ({
   agreementDate: new Date().toISOString().split('T')[0],
   validUntil: '',
   customerName: '',
+  firstName: '',
+  middleName: '',
+  lastName: '',
   customerCompany: '',
   customerAddress: '',
   customerEmail: '',
@@ -261,6 +264,9 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
       agreementDate: toDateInput(a.agreementDate),
       validUntil: toDateInput(a.validUntil),
       customerName: a.customerName || '',
+      firstName: a.firstName || '',
+      middleName: a.middleName || '',
+      lastName: a.lastName || '',
       customerCompany: a.customerCompany || '',
       customerAddress: a.customerAddress || '',
       customerEmail: a.customerEmail || '',
@@ -314,6 +320,7 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
       ...f,
       customer: customerId,
       customerName: customer?.customerName || '',
+      firstName: customer?.customerName || '',
       customerCompany: customer?.companyName || '',
       customerAddress: [customer?.address, customer?.city, customer?.state, customer?.country].filter(Boolean).join(', '),
       customerEmail: customer?.email || ''
@@ -430,6 +437,9 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                 <Field label="Agreement date *" error={errors.agreementDate}>
                   <input type="date" value={form.agreementDate} onChange={(e) => set('agreementDate', e.target.value)} className={inp('agreementDate', errors.agreementDate)} />
                 </Field>
+                <Field label="Valid until" error={errors.validUntil} hint="After this date the offer should no longer be accepted.">
+                  <input type="date" value={form.validUntil} onChange={(e) => set('validUntil', e.target.value)} className={inp('validUntil', errors.validUntil)} />
+                </Field>
                 <Field label="Customer *" error={errors.customer} hint="Choosing a customer fills in their company, address and email.">
                   <select value={form.customer} onChange={(e) => handleCustomerChange(e.target.value)} className={inp('customer', errors.customer)}>
                     <option value="">Select customer...</option>
@@ -441,9 +451,17 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                     ))}
                   </select>
                 </Field>
-                <Field label="Valid until" error={errors.validUntil} hint="After this date the offer should no longer be accepted.">
-                  <input type="date" value={form.validUntil} onChange={(e) => set('validUntil', e.target.value)} className={inp('validUntil', errors.validUntil)} />
-                </Field>
+                <div className="md:col-span-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <Field label="First name">
+                    <input type="text" value={form.firstName} onChange={(e) => set('firstName', e.target.value)} className={inp()} placeholder="First name" />
+                  </Field>
+                  <Field label="Middle name">
+                    <input type="text" value={form.middleName} onChange={(e) => set('middleName', e.target.value)} className={inp()} placeholder="Middle name" />
+                  </Field>
+                  <Field label="Last name">
+                    <input type="text" value={form.lastName} onChange={(e) => set('lastName', e.target.value)} className={inp()} placeholder="Last name" />
+                  </Field>
+                </div>
                 <Field label="Customer company name" span>
                   <input type="text" value={form.customerCompany} onChange={(e) => set('customerCompany', e.target.value)} className={inp()} />
                 </Field>

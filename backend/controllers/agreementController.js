@@ -17,6 +17,11 @@ const generateAgreementNumber = async () => {
   return `${prefix}${String(next).padStart(4, '0')}`;
 };
 
+const composeCustomerName = (body) => {
+  const composed = [body.firstName, body.middleName, body.lastName].filter(Boolean).join(' ').trim();
+  return composed || body.customerName || '';
+};
+
 const NUMERIC_FIELDS = ['sourcingServiceCharges', 'advancePayment', 'remainingPayment'];
 
 const sanitizeBody = (body) => {
@@ -244,7 +249,7 @@ exports.createAgreement = async (req, res) => {
       agreementNumber,
       products,
       totalAmount,
-      customerName: req.body.customerName || customer.customerName,
+      customerName: composeCustomerName(body) || customer.customerName,
       customerCompany: req.body.customerCompany || customer.companyName,
       customerAddress: req.body.customerAddress || [customer.address, customer.city, customer.state, customer.country].filter(Boolean).join(', '),
       customerEmail: req.body.customerEmail || customer.email,
@@ -278,6 +283,7 @@ exports.updateAgreement = async (req, res) => {
       ...body,
       products,
       totalAmount,
+      customerName: composeCustomerName(body) || agreement.customerName,
       agreementNumber: agreement.agreementNumber // never allow renumbering
     });
     await agreement.save();
