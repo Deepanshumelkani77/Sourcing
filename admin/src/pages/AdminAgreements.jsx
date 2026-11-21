@@ -411,7 +411,7 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && requestClose()}>
-      <div role="dialog" aria-modal="true" aria-label={editing ? 'Edit agreement' : 'Create agreement'} className="relative flex h-full w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-label={editing ? 'Edit agreement' : 'Create agreement'} className="relative flex max-h-[94vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-gray-200 px-6 py-4">
           <div>
