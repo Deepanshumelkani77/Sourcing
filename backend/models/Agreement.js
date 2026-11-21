@@ -43,6 +43,10 @@ const agreementSchema = new mongoose.Schema({
   mobileNumber: { type: String, trim: true, default: '' },
   alternateMobile: { type: String, trim: true, default: '' },
   whatsappNo: { type: String, trim: true, default: '' },
+  pinCode: { type: String, trim: true, default: '' },
+  city: { type: String, trim: true, default: '' },
+  state: { type: String, trim: true, default: '' },
+  country: { type: String, trim: true, default: '' },
 
   // Product & Order Details
   products: [{

@@ -59,6 +59,10 @@ const emptyForm = () => ({
   mobileNumber: '',
   alternateMobile: '',
   whatsappNo: '',
+  pinCode: '',
+  city: '',
+  state: '',
+  country: '',
   products: [{ ...emptyProduct }],
   currency: 'USD',
   sourcingServiceCharges: 0,
@@ -276,6 +280,10 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
       mobileNumber: a.mobileNumber || '',
       alternateMobile: a.alternateMobile || '',
       whatsappNo: a.whatsappNo || '',
+      pinCode: a.pinCode || '',
+      city: a.city || '',
+      state: a.state || '',
+      country: a.country || '',
       products: a.products?.length ? a.products.map((p) => ({ ...emptyProduct, ...p })) : [{ ...emptyProduct }],
       currency: a.currency || 'USD',
       sourcingServiceCharges: a.sourcingServiceCharges || 0,
@@ -331,7 +339,11 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
       customerAddress: [customer?.address, customer?.city, customer?.state, customer?.country].filter(Boolean).join(', '),
       customerEmail: customer?.email || '',
       mobileNumber: customer?.phone || '',
-      whatsappNo: customer?.whatsapp || ''
+      whatsappNo: customer?.whatsapp || '',
+      pinCode: customer?.pincode || '',
+      city: customer?.city || '',
+      state: customer?.state || '',
+      country: customer?.country || ''
     }))
     setErrors((e) => (e.customer ? { ...e, customer: undefined } : e))
   }
@@ -481,6 +493,18 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                 </Field>
                 <Field label="Customer email" error={errors.customerEmail}>
                   <input type="email" value={form.customerEmail} onChange={(e) => set('customerEmail', e.target.value)} className={inp('customerEmail', errors.customerEmail)} />
+                </Field>
+                <Field label="PIN code">
+                  <input type="text" value={form.pinCode} onChange={(e) => set('pinCode', e.target.value)} className={inp()} placeholder="PIN code" />
+                </Field>
+                <Field label="City">
+                  <input type="text" value={form.city} onChange={(e) => set('city', e.target.value)} className={inp()} placeholder="City" />
+                </Field>
+                <Field label="State">
+                  <input type="text" value={form.state} onChange={(e) => set('state', e.target.value)} className={inp()} placeholder="State" />
+                </Field>
+                <Field label="Country">
+                  <input type="text" value={form.country} onChange={(e) => set('country', e.target.value)} className={inp()} placeholder="Country" />
                 </Field>
                 <Field label="Customer company name" span>
                   <input type="text" value={form.customerCompany} onChange={(e) => set('customerCompany', e.target.value)} className={inp()} />
@@ -879,7 +903,7 @@ const AgreementView = ({ agreement: a, onClose, onEdit, onPdf, onSend, onSign, o
         {/* Content */}
         <div className="flex-1 space-y-4 overflow-y-auto p-6">
           <Block title="Parties" icon="users">
-            <KV items={[['Customer', customerOf(a)], ['Company', companyOf(a)], ['Email', a.customerEmail || a.customer?.email], ['Mobile', a.mobileNumber], ['Alternate mobile', a.alternateMobile], ['WhatsApp', a.whatsappNo], ['Address', a.customerAddress, true]]} />
+            <KV items={[['Customer', customerOf(a)], ['Company', companyOf(a)], ['Email', a.customerEmail || a.customer?.email], ['Mobile', a.mobileNumber], ['Alternate mobile', a.alternateMobile], ['WhatsApp', a.whatsappNo], ['PIN / City / State / Country', [a.pinCode, a.city, a.state, a.country].filter(Boolean).join(', ')], ['Address', a.customerAddress, true]]} />
           </Block>
 
           <Block title="Products and pricing" icon="box">
