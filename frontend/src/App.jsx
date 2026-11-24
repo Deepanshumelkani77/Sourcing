@@ -1,5 +1,18 @@
 import React, { useEffect } from 'react'
 import { useLocation, Outlet } from 'react-router-dom'
+
+const ADMIN_URL = 'https://sourcingadmin.vercel.app'
+
+// Redirects /admin/* on the main site to the separate admin panel app
+const AdminRedirect = () => {
+  const location = useLocation()
+  useEffect(() => {
+    let sub = location.pathname.replace(/^\/admin\/?/, '')
+    if (!sub || sub === 'dashboard') sub = ''
+    window.location.replace(`${ADMIN_URL}/${sub}`)
+  }, [location.pathname])
+  return null
+}
 import Navbar from './components/Navbar'
 import Signup from './components/Signup'
 import Footer from './components/Footer'
@@ -78,6 +91,8 @@ const App = () => {
             <Route path="/data-deletion" element={<DataDeletion />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
           </Route>
+          <Route path="/admin/*" element={<AdminRedirect />} />
+          <Route path="/admin" element={<AdminRedirect />} />
         </Routes>
       </AppContextProvider>
     </AuthProvider>
