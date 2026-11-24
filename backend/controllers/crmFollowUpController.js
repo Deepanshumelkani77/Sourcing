@@ -1,6 +1,6 @@
 const FollowUp = require("../models/FollowUp");
 const Lead = require("../models/Lead");
-const Customer = require("../models/Customer");
+const User = require("../models/User");
 
 // @desc    Create a new follow-up
 // @route   POST /api/crm/followups
@@ -23,7 +23,7 @@ exports.createFollowUp = async (req, res) => {
     }
 
     if (followUp.customerId) {
-      await Customer.findByIdAndUpdate(followUp.customerId, {
+      await User.findByIdAndUpdate(followUp.customerId, {
         lastContactDate: followUp.scheduledDate,
       });
     }

@@ -18,9 +18,9 @@ const userSchema = new mongoose.Schema(
 
     lastName: {
       type: String,
-      required: true,
       trim: true,
       maxlength: 50,
+      default: "",
     },
 
     email: {
@@ -70,8 +70,89 @@ const userSchema = new mongoose.Schema(
 
     authProvider: {
       type: String,
-      enum: ["local", "google", "facebook"],
+      enum: ["local", "google", "facebook", "lead"],
       default: "local",
+    },
+
+    // Customer profile fields (populated from CRM leads / admin)
+    companyName: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    whatsapp: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    alternateMobile: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    address: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    city: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    state: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    country: {
+      type: String,
+      trim: true,
+      default: "India",
+    },
+    pincode: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    gstNumber: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    panNumber: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    source: {
+      type: String,
+      enum: ["Website", "WhatsApp", "Exhibition", "Referral", "Email", "Phone", "Other", "CRM Lead"],
+      default: "Website",
+    },
+    customerStatus: {
+      type: String,
+      enum: ["Active", "Inactive", "Blacklisted"],
+      default: "Active",
+    },
+    notes: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Admin",
+    },
+    leadId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Lead",
+    },
+    lastContactDate: {
+      type: Date,
+    },
+    lastOrderDate: {
+      type: Date,
     },
 
     resetPasswordToken: {

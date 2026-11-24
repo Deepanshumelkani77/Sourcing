@@ -11,7 +11,9 @@ const getAllUsers = async (req, res) => {
       query.$or = [
         { firstName: { $regex: search, $options: 'i' } },
         { lastName: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } }
+        { email: { $regex: search, $options: 'i' } },
+        { companyName: { $regex: search, $options: 'i' } },
+        { phone: { $regex: search, $options: 'i' } }
       ];
     }
 
@@ -112,7 +114,12 @@ const deleteUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, emailVerified, approvalStatus } = req.body;
+    const {
+      firstName, lastName, middleName, email, emailVerified, approvalStatus,
+      companyName, phone, whatsapp, alternateMobile,
+      address, city, state, country, pincode,
+      gstNumber, panNumber, source, customerStatus, notes
+    } = req.body;
 
     const user = await User.findById(id);
 
@@ -133,8 +140,23 @@ const updateUser = async (req, res) => {
     // Update fields
     if (firstName !== undefined) user.firstName = firstName;
     if (lastName !== undefined) user.lastName = lastName;
+    if (middleName !== undefined) user.middleName = middleName;
     if (email !== undefined) user.email = email;
     if (emailVerified !== undefined) user.emailVerified = emailVerified;
+    if (companyName !== undefined) user.companyName = companyName;
+    if (phone !== undefined) user.phone = phone;
+    if (whatsapp !== undefined) user.whatsapp = whatsapp;
+    if (alternateMobile !== undefined) user.alternateMobile = alternateMobile;
+    if (address !== undefined) user.address = address;
+    if (city !== undefined) user.city = city;
+    if (state !== undefined) user.state = state;
+    if (country !== undefined) user.country = country;
+    if (pincode !== undefined) user.pincode = pincode;
+    if (gstNumber !== undefined) user.gstNumber = gstNumber;
+    if (panNumber !== undefined) user.panNumber = panNumber;
+    if (source !== undefined) user.source = source;
+    if (customerStatus !== undefined) user.customerStatus = customerStatus;
+    if (notes !== undefined) user.notes = notes;
     if (approvalStatus !== undefined) {
       user.approvalStatus = approvalStatus;
       user.approvedAt = approvalStatus === 'approved' ? new Date() : null;

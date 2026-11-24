@@ -2,6 +2,18 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import api from '../config/axios'
 import { getAllOrders } from '../services/orderApi'
 import { uploadDocument } from '../services/uploadApi'
+import {
+  getAllAgreements,
+  getAgreementStats,
+  getAgreementById,
+  createAgreement,
+  updateAgreement,
+  updateAgreementStatus,
+  sendAgreement,
+  signAgreement,
+  deleteAgreement,
+  downloadAgreementPdf
+} from '../services/agreementApi'
 
 /* ================================================================== */
 /* Constants                                                          */

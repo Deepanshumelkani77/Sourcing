@@ -19,7 +19,6 @@ import AdminBlogs from './pages/AdminBlogs'
 import Login from './pages/Login'
 import CRMDashboard from './pages/crm/CRMDashboard'
 import CRMLeads from './pages/crm/Leads'
-import CRMCustomers from './pages/crm/Customers'
 import CRMFollowUps from './pages/crm/FollowUps'
 
 import SourcingRequests from './pages/SourcingRequests'
@@ -69,7 +68,6 @@ const App = () => {
                 {/* CRM Routes */}
                 <Route path="/crm" element={<CRMDashboard />} />
                 <Route path="/crm/leads" element={<CRMLeads />} />
-                <Route path="/crm/customers" element={<CRMCustomers />} />
                 <Route path="/crm/followups" element={<CRMFollowUps />} />
                 <Route path="/crm/complaints" element={<AdminIssues />} />
                 <Route path="/crm/reviews" element={<AdminReviews />} />

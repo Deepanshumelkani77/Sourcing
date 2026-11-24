@@ -8,7 +8,7 @@ const followUpSchema = new mongoose.Schema(
     },
     customerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
+      ref: "User",
     },
     type: {
       type: String,

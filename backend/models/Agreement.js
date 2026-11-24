@@ -11,7 +11,7 @@ const agreementSchema = new mongoose.Schema({
   // Basic Information
   customer: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Customer',
+    ref: 'User',
     required: true
   },
   order: {

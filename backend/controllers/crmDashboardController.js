@@ -1,5 +1,5 @@
 const Lead = require("../models/Lead");
-const Customer = require("../models/Customer");
+const User = require("../models/User");
 const FollowUp = require("../models/FollowUp");
 
 // @desc    Get complete CRM dashboard statistics
@@ -23,10 +23,10 @@ exports.getDashboardStats = async (req, res) => {
     });
     const wonLeads = await Lead.countDocuments({ status: "Won" });
 
-    // Customer Statistics
-    const totalCustomers = await Customer.countDocuments();
-    const activeCustomers = await Customer.countDocuments({ status: "Active" });
-    const customersThisMonth = await Customer.countDocuments({
+    // Customer Statistics (customers are User documents)
+    const totalCustomers = await User.countDocuments();
+    const activeCustomers = await User.countDocuments({ customerStatus: "Active" });
+    const customersThisMonth = await User.countDocuments({
       createdAt: { $gte: startOfMonth },
     });
 

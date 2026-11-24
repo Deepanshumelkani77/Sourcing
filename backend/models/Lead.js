@@ -402,7 +402,7 @@ const leadSchema = new mongoose.Schema(
     convertedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
     conversionDate: { type: Date },
     convertedToCustomer: { type: Boolean, default: false },
-    customerId: { type: mongoose.Schema.Types.ObjectId, ref: "Customer" },
+    customerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
     duplicateCheckStatus: { type: String, trim: true, default: "" },
     duplicateOf: { type: mongoose.Schema.Types.ObjectId, ref: "Lead" },

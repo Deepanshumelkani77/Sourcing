@@ -1,6 +1,6 @@
 const Lead = require("../models/Lead");
 const LeadActivity = require("../models/LeadActivity");
-const Customer = require("../models/Customer");
+const { upsertUserFromLead } = require("./crmCustomerController");
 const Admin = require("../models/Admin");
 const { calculateLeadScore } = require("../utils/leadScore");
 
@@ -168,6 +168,23 @@ exports.updateLead = async (req, res) => {
     Object.assign(lead, calculateLeadScore(lead.toObject()));
     lead = await lead.save();
 
+    // Auto-create/update customer user when lead is marked Won
+    const becameWon = lead.qualificationStatus === "Won" || lead.status === "Won";
+    if (becameWon && !lead.convertedToCustomer) {
+      try {
+        const user = await upsertUserFromLead(lead, req.user?._id);
+        lead.convertedToCustomer = true;
+        lead.customerId = user._id;
+        lead.conversionStatus = lead.conversionStatus === "Lost" ? lead.conversionStatus : "Converted to Customer";
+        lead.conversionDate = lead.conversionDate || new Date();
+        lead.convertedBy = req.user?._id;
+        lead.leadStage = "Converted";
+        await lead.save();
+      } catch (convErr) {
+        console.error("Auto-convert lead to customer failed:", convErr);
+      }
+    }
+
     res.status(200).json({
       success: true,
       data: lead,
@@ -222,24 +239,12 @@ exports.convertLeadToCustomer = async (req, res) => {
       });
     }
 
-    // Create customer from lead
-    const customerData = {
-      customerName: lead.customerName,
-      companyName: lead.companyName || lead.customerName,
-      phone: lead.phone,
-      whatsapp: lead.whatsapp || lead.phone,
-      email: lead.email,
-      source: lead.source,
-      assignedTo: lead.assignedTo,
-      leadId: lead._id,
-      createdBy: req.user._id,
-    };
-
-    const customer = await Customer.create(customerData);
+    // Create/update customer user from lead
+    const user = await upsertUserFromLead(lead, req.user._id);
 
     // Update lead - mark as converted
     lead.convertedToCustomer = true;
-    lead.customerId = customer._id;
+    lead.customerId = user._id;
     lead.status = "Qualified";
     lead.conversionStatus = "Converted to Customer";
     lead.conversionDate = new Date();
@@ -250,7 +255,7 @@ exports.convertLeadToCustomer = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: { lead, customer },
+      data: { lead, customer: user },
     });
   } catch (error) {
     res.status(400).json({

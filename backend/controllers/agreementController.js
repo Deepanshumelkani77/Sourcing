@@ -1,5 +1,5 @@
 const Agreement = require('../models/Agreement');
-const Customer = require('../models/Customer');
+const User = require('../models/User');
 const Order = require('../models/Order');
 const PDFDocument = require('pdfkit');
 const { sendAgreementEmail } = require('../services/emailService');
@@ -178,7 +178,7 @@ exports.getAllAgreements = async (req, res) => {
       ];
     }
     const agreements = await Agreement.find(filter)
-      .populate('customer', 'customerName companyName email')
+      .populate('customer', 'firstName middleName lastName companyName email')
       .populate('order', 'orderNumber status')
       .populate('createdBy', 'firstName lastName email')
       .sort({ createdAt: -1 });
@@ -211,7 +211,7 @@ exports.getAgreementStats = async (req, res) => {
 exports.getAgreementById = async (req, res) => {
   try {
     const agreement = await Agreement.findById(req.params.id)
-      .populate('customer', 'customerName companyName email phone address city state country')
+      .populate('customer', 'firstName middleName lastName companyName email phone whatsapp address city state country pincode')
       .populate('order', 'orderNumber status items totalAmount')
       .populate('createdBy', 'firstName lastName email');
     if (!agreement) {
@@ -228,10 +228,11 @@ exports.getAgreementById = async (req, res) => {
 exports.createAgreement = async (req, res) => {
   try {
     const body = sanitizeBody(req.body);
-    const customer = await Customer.findById(body.customer);
+    const customer = await User.findById(body.customer);
     if (!customer) {
       return res.status(404).json({ success: false, message: 'Customer not found' });
     }
+    const customerFullName = [customer.firstName, customer.middleName, customer.lastName].filter(Boolean).join(' ').trim() || customer.email;
 
     let order = null;
     if (body.order) {
@@ -249,7 +250,7 @@ exports.createAgreement = async (req, res) => {
       agreementNumber,
       products,
       totalAmount,
-      customerName: composeCustomerName(body) || customer.customerName,
+      customerName: composeCustomerName(body) || customerFullName,
       customerCompany: req.body.customerCompany || customer.companyName,
       customerAddress: req.body.customerAddress || [customer.address, customer.city, customer.state, customer.country].filter(Boolean).join(', '),
       customerEmail: body.customerEmail || customer.email,
@@ -349,7 +350,7 @@ exports.downloadAgreementPdf = async (req, res) => {
 // @route   POST /api/agreements/:id/send
 exports.sendAgreement = async (req, res) => {
   try {
-    const agreement = await Agreement.findById(req.params.id).populate('customer', 'email customerName');
+    const agreement = await Agreement.findById(req.params.id).populate('customer', 'email firstName lastName');
     if (!agreement) {
       return res.status(404).json({ success: false, message: 'Agreement not found' });
     }
