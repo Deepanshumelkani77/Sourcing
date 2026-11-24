@@ -73,6 +73,7 @@ const App = () => {
                 <Route path="/crm/reviews" element={<AdminReviews />} />
                 <Route path="/sourcing-requests" element={<SourcingRequests />} />
                 <Route path="/employees" element={<Employees />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </ProtectedRoute>
           }
