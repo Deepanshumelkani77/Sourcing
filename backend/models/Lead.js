@@ -414,7 +414,7 @@ const leadSchema = new mongoose.Schema(
   }
 );
 
-leadSchema.pre("save", function (next) {
+leadSchema.pre("save", async function () {
   if (!this.leadNumber) {
     const d = new Date();
     const year = d.getFullYear().toString().slice(-2);
@@ -425,7 +425,6 @@ leadSchema.pre("save", function (next) {
       .padStart(5, "0");
     this.leadNumber = `LD${year}${month}${day}${rand}`;
   }
-  next();
 });
 
 leadSchema.index({ status: 1 });
