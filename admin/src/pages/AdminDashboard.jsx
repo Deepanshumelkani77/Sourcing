@@ -273,7 +273,7 @@ const VIEWS = [
   {
     id: 'customers',
     label: 'Customers',
-    route: '/customers',
+    route: '/crm/customers',
     rowRoute: (r) => `/customers/${r._id}`,
     empty: 'No customers found',
     filters: null,
@@ -779,7 +779,7 @@ const AdminDashboard = () => {
       'leads-qualified': '/crm/leads',
       'containers': '/containers',
       'containers-delayed': '/containers',
-      'customers-new': '/customers'
+      'customers-new': '/crm/customers'
     }
 
     const route = routeMap[id]

@@ -2067,7 +2067,7 @@ const Leads = () => {
         {[
           ['/crm', 'Dashboard'],
           ['/crm/leads', 'Leads'],
-          ['/customers', 'Customers'],
+          ['/crm/customers', 'Customers'],
           ['/crm/followups', 'Follow-ups'],
           ['/crm/complaints', 'Complaints'],
           ['/crm/reviews', 'Reviews']

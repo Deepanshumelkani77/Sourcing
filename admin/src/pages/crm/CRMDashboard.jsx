@@ -61,7 +61,7 @@ const CRMDashboard = () => {
           <Link to="/crm/leads" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
             Leads
           </Link>
-          <Link to="/customers" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+          <Link to="/crm/customers" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
             Customers
           </Link>
           <Link to="/crm/followups" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
@@ -208,7 +208,7 @@ const CRMDashboard = () => {
             <span className="text-2xl">➕</span>
             <span className="font-medium">Add New Lead</span>
           </Link>
-          <Link to="/customers" className="flex items-center gap-3 px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
+          <Link to="/crm/customers" className="flex items-center gap-3 px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
             <span className="text-2xl">�</span>
             <span className="font-medium">View Customers</span>
           </Link>
