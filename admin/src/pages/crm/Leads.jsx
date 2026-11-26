@@ -56,6 +56,7 @@ const BUDGET_AVAILABLE = ['Confirmed', 'Likely', 'Not Available', 'Unknown']
 const AUTHORITY = ['Decision Maker', 'Influencer', 'Recommender', 'End User', 'Unknown']
 const CONTACT_ROLES = ['Owner', 'Decision Maker', 'Manager', 'Supervisor', 'Delivery Coordinator', 'Procurement', 'Finance', 'End User', 'Other']
 const MEETING_MODES = ['In-Person Meeting', 'Phone Call', 'WhatsApp', 'Zoom', 'Google Meet']
+const ONLINE_MEETING_MODES = ['Phone Call', 'WhatsApp', 'Zoom', 'Google Meet']
 const CONSENT_CHANNELS = ['Email', 'SMS', 'WhatsApp', 'Phone Call', 'Postal']
 const DOC_TYPES = ['Registration Certificate', 'GST Certificate', 'PAN Card', 'Trade License', 'IEC Certificate', 'Bank Document', 'Other']
 const DOC_STATUS = ['Pending', 'Verified', 'Rejected']
@@ -191,6 +192,10 @@ const TABS = [
         fields: [
           F('preferredContactMethod', 'Preferred contact method', 'select', { options: PREFERRED_METHODS, req: true, quick: true }),
           F('preferredContactOther', 'Please specify', 'text', { showIf: (f) => f.preferredContactMethod === 'Other', placeholder: 'e.g. SMS, Telegram...' }),
+          F('meetingMode', 'Meeting mode', 'select', { options: ONLINE_MEETING_MODES, showIf: (f) => f.preferredContactMethod === 'Online Meeting' }),
+          F('meetingLinkOrId', 'Meeting ID / link / customer ID', 'text', { showIf: (f) => f.preferredContactMethod === 'Online Meeting' && f.meetingMode }),
+          F('meetingDate', 'Meeting date & time', 'date', { showIf: (f) => ['Online Meeting', 'Physical Meeting'].includes(f.preferredContactMethod) }),
+          F('meetingAddress', 'Physical meeting address', 'area', { rows: 1, span: true, showIf: (f) => f.preferredContactMethod === 'Physical Meeting' }),
           F('preferredLanguage', 'Preferred language', 'select', { options: LANGUAGES }),
           F('bestTimeToContact', 'Best time to contact', 'text', { placeholder: 'e.g. 11 AM - 1 PM' }),
           F('marketingConsent', 'Marketing consent', 'select', { options: YES_NO, req: true, quick: true }),
@@ -207,12 +212,8 @@ const TABS = [
         ]
       },
       {
-        title: 'Meeting & verification',
+        title: 'Verification',
         fields: [
-          F('meetingMode', 'Meeting mode', 'select', { options: MEETING_MODES }),
-          F('meetingLinkOrId', 'Meeting ID / link / customer ID', 'text', { showIf: (f) => f.meetingMode && f.meetingMode !== 'In-Person Meeting' }),
-          F('meetingDate', 'Meeting date & time', 'date'),
-          F('meetingAddress', 'Physical meeting address', 'area', { rows: 1, span: true, showIf: (f) => f.meetingMode === 'In-Person Meeting' }),
           F('phoneVerified', 'Phone verified', 'check'),
           F('emailVerified', 'Email verified', 'check')
         ]
