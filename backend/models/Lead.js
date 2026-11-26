@@ -45,6 +45,32 @@ const leadSchema = new mongoose.Schema(
     consentDate: { type: Date },
     doNotCall: { type: Boolean, default: false },
     doNotWhatsApp: { type: Boolean, default: false },
+    phoneVerified: { type: Boolean, default: false },
+    emailVerified: { type: Boolean, default: false },
+    marketingConsentChannels: [{ type: String, trim: true }],
+
+    /* ---------------- Meeting ---------------- */
+    meetingMode: {
+      type: String,
+      enum: ["", "In-Person Meeting", "Phone Call", "WhatsApp", "Zoom", "Google Meet"],
+      default: "",
+    },
+    meetingLinkOrId: { type: String, trim: true, default: "" },
+    meetingAddress: { type: String, trim: true, default: "" },
+    meetingDate: { type: Date },
+
+    /* ---------------- Additional contacts ---------------- */
+    contacts: {
+      type: [
+        {
+          name: { type: String, trim: true, default: "" },
+          role: { type: String, trim: true, default: "" },
+          phone: { type: String, trim: true, default: "" },
+          email: { type: String, trim: true, lowercase: true, default: "" },
+        },
+      ],
+      default: [],
+    },
 
     /* ---------------- Company & location ---------------- */
     companyName: { type: String, trim: true, default: "" },
@@ -100,6 +126,23 @@ const leadSchema = new mongoose.Schema(
       default: "",
     },
     annualRevenueOther: { type: String, trim: true, default: "" },
+    companyDocuments: {
+      type: [
+        {
+          name: { type: String, trim: true, default: "" },
+          url: { type: String, trim: true, default: "" },
+          publicId: { type: String, trim: true, default: "" },
+          docType: { type: String, trim: true, default: "" },
+          uploadedAt: { type: Date, default: Date.now },
+        },
+      ],
+      default: [],
+    },
+    documentStatus: {
+      type: String,
+      enum: ["", "Pending", "Verified", "Rejected"],
+      default: "",
+    },
     address: { type: String, trim: true, default: "" },
     city: { type: String, trim: true, default: "" },
     state: { type: String, trim: true, default: "" },
@@ -114,6 +157,8 @@ const leadSchema = new mongoose.Schema(
     deliveryCity: { type: String, trim: true, default: "" },
     deliveryState: { type: String, trim: true, default: "" },
     deliveryCountry: { type: String, trim: true, default: "" },
+    deliveryLocationLat: { type: Number, default: null },
+    deliveryLocationLng: { type: Number, default: null },
 
     /* ---------------- Requirement ---------------- */
     productInterest: { type: String, trim: true, default: "" },

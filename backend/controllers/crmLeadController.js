@@ -453,3 +453,49 @@ exports.deleteLeadActivity = async (req, res) => {
     });
   }
 };
+
+// @desc    Bulk create leads (CSV/Excel import)
+// @route   POST /api/crm/leads/bulk
+// @access  Private/Admin
+exports.bulkCreateLeads = async (req, res) => {
+  try {
+    const { leads } = req.body;
+    if (!Array.isArray(leads) || leads.length === 0) {
+      return res.status(400).json({ success: false, message: "No leads provided" });
+    }
+    if (leads.length > 500) {
+      return res.status(400).json({ success: false, message: "Maximum 500 leads per upload" });
+    }
+
+    const results = { created: 0, failed: 0, errors: [] };
+    const createdIds = [];
+
+    for (let i = 0; i < leads.length; i++) {
+      try {
+        const leadData = { ...leads[i], createdBy: req.user._id };
+        if (!leadData.customerName && (leadData.firstName || leadData.lastName)) {
+          leadData.customerName = `${leadData.firstName || ""} ${leadData.lastName || ""}`.trim();
+        }
+        if (!leadData.customerName && leadData.companyName) {
+          leadData.customerName = leadData.companyName;
+        }
+        if (!leadData.phone && leadData.mobileNumber) leadData.phone = leadData.mobileNumber;
+        if (!leadData.productRequirement) leadData.productRequirement = leadData.productInterest || "Bulk upload";
+        Object.assign(leadData, calculateLeadScore(leadData));
+        if (!leadData.source) leadData.source = "Bulk Upload";
+        if (!leadData.dataSource) leadData.dataSource = "Import";
+
+        const lead = await Lead.create(leadData);
+        createdIds.push(lead._id);
+        results.created++;
+      } catch (err) {
+        results.failed++;
+        results.errors.push({ row: i + 1, name: leads[i]?.customerName || leads[i]?.firstName || `Row ${i + 1}`, message: err.message });
+      }
+    }
+
+    res.status(201).json({ success: true, data: results });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};

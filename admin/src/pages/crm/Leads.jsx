@@ -54,6 +54,11 @@ const FRAMEWORKS = ['BANT', 'CHAMP', 'MEDDIC', 'Custom']
 const FIT = ['High', 'Medium', 'Low', 'Not Applicable']
 const BUDGET_AVAILABLE = ['Confirmed', 'Likely', 'Not Available', 'Unknown']
 const AUTHORITY = ['Decision Maker', 'Influencer', 'Recommender', 'End User', 'Unknown']
+const CONTACT_ROLES = ['Owner', 'Decision Maker', 'Manager', 'Supervisor', 'Delivery Coordinator', 'Procurement', 'Finance', 'End User', 'Other']
+const MEETING_MODES = ['In-Person Meeting', 'Phone Call', 'WhatsApp', 'Zoom', 'Google Meet']
+const CONSENT_CHANNELS = ['Email', 'SMS', 'WhatsApp', 'Phone Call', 'Postal']
+const DOC_TYPES = ['Registration Certificate', 'GST Certificate', 'PAN Card', 'Trade License', 'IEC Certificate', 'Bank Document', 'Other']
+const DOC_STATUS = ['Pending', 'Verified', 'Rejected']
 const DECISION_ROLES = ['Decision Maker', 'Influencer', 'End User', 'Procurement', 'Finance']
 const TIMELINES = ['Immediate', 'Within 1 Month', '1–3 Months', '3–6 Months', '6–12 Months', 'Not Decided']
 const NEAR_TIMELINES = ['Immediate', 'Within 1 Month', '1–3 Months']
@@ -189,9 +194,27 @@ const TABS = [
           F('preferredLanguage', 'Preferred language', 'select', { options: LANGUAGES }),
           F('bestTimeToContact', 'Best time to contact', 'text', { placeholder: 'e.g. 11 AM - 1 PM' }),
           F('marketingConsent', 'Marketing consent', 'select', { options: YES_NO, req: true, quick: true }),
+          F('marketingConsentChannels', 'Consent channels', 'multiSelect', { options: CONSENT_CHANNELS, showIf: (f) => f.marketingConsent === 'Yes' }),
           F('consentDate', 'Consent date', 'date', { req: (f) => f.marketingConsent === 'Yes' }),
           F('doNotCall', 'Do not call', 'check'),
           F('doNotWhatsApp', 'Do not WhatsApp', 'check')
+        ]
+      },
+      {
+        title: 'Additional contacts',
+        fields: [
+          F('contacts', 'Other contacts at this company', 'contactList', { span: true })
+        ]
+      },
+      {
+        title: 'Meeting & verification',
+        fields: [
+          F('meetingMode', 'Meeting mode', 'select', { options: MEETING_MODES }),
+          F('meetingLinkOrId', 'Meeting ID / link / customer ID', 'text', { showIf: (f) => f.meetingMode && f.meetingMode !== 'In-Person Meeting' }),
+          F('meetingDate', 'Meeting date & time', 'date'),
+          F('meetingAddress', 'Physical meeting address', 'area', { rows: 1, span: true, showIf: (f) => f.meetingMode === 'In-Person Meeting' }),
+          F('phoneVerified', 'Phone verified', 'check'),
+          F('emailVerified', 'Email verified', 'check')
         ]
       }
     ]
@@ -218,6 +241,13 @@ const TABS = [
         ]
       },
       {
+        title: 'Company documents',
+        fields: [
+          F('companyDocuments', 'Registration & licenses', 'docUpload', { span: true }),
+          F('documentStatus', 'Document verification', 'select', { options: DOC_STATUS })
+        ]
+      },
+      {
         title: 'Location',
         fields: [
           F('pincode', 'PIN / ZIP code', 'text'),
@@ -237,6 +267,7 @@ const TABS = [
           F('deliveryCity', 'Delivery city', 'text', { showIf: (f) => f.deliveryDifferentAddress }),
           F('deliveryState', 'Delivery state / province', 'text', { showIf: (f) => f.deliveryDifferentAddress }),
           F('deliveryCountry', 'Delivery country', 'text', { showIf: (f) => f.deliveryDifferentAddress }),
+          F('deliveryMapLocation', 'Pin delivery location on map', 'mapPickerDelivery', { showIf: (f) => f.deliveryDifferentAddress }),
           F('deliveryAddress', 'Delivery address', 'area', { span: true, showIf: (f) => f.deliveryDifferentAddress })
         ]
       }
@@ -251,7 +282,6 @@ const TABS = [
         fields: [
           F('productInterest', 'Product / service interest', 'catalogPicker', { req: true, quick: true }),
           F('productRequirement', 'Requirement details', 'text', { req: true, quick: true, span: 2, placeholder: 'What exactly does the customer want to buy or source?' }),
-          F('productCategory', 'Product category', 'text'),
           F('servicesInterested', 'Sourcing services needed', 'multiSelect', { span: true })
         ]
       },
@@ -401,12 +431,12 @@ const TABS = [
 const ALL_FIELDS = TABS.flatMap((t) => t.sections.flatMap((s) => s.fields.map((f) => ({ ...f, tab: t.id, section: s }))))
 const NUMBER_ZERO = ['expectedOrderValue', 'numberOfFollowUps'] // existing behaviour: empty becomes 0
 const NUMBER_NULL = ['numberOfDecisionMakers', 'probabilityOfClosure']
-const DATE_FIELDS = ['followUpDate', 'requiredDeliveryDate', 'tentativeOrderDate', 'expectedClosingDate', 'lastContactDate', 'firstResponseDate', 'consentDate', 'nextReviewDate', 'actualClosingDate', 'onHoldUntil', 'transferDate']
+const DATE_FIELDS = ['followUpDate', 'requiredDeliveryDate', 'tentativeOrderDate', 'expectedClosingDate', 'lastContactDate', 'firstResponseDate', 'consentDate', 'nextReviewDate', 'actualClosingDate', 'onHoldUntil', 'transferDate', 'meetingDate']
 
 const emptyForm = () => {
   const base = {}
   ALL_FIELDS.forEach((f) => {
-    base[f.name] = f.type === 'multi' || f.type === 'multiSelect' ? [] : f.type === 'dmList' ? [] : f.type === 'check' ? false : ''
+    base[f.name] = f.type === 'multi' || f.type === 'multiSelect' || f.type === 'contactList' || f.type === 'docUpload' ? [] : f.type === 'dmList' ? [] : f.type === 'check' ? false : ''
   })
   return {
     ...base,
@@ -502,9 +532,10 @@ const buildPayload = (form) => {
   DATE_FIELDS.forEach((k) => {
     p[k] = p[k] || null
   })
-  ;['locationLat', 'locationLng', 'productId'].forEach((k) => {
+  ;['locationLat', 'locationLng', 'deliveryLocationLat', 'deliveryLocationLng', 'productId'].forEach((k) => {
     if (p[k] === '') p[k] = null
   })
+  delete p.deliveryMapLocation
   if (Array.isArray(p.decisionMakers)) {
     const n = Math.max(parseInt(p.numberOfDecisionMakers) || 0, 0)
     p.decisionMakers = p.decisionMakers.slice(0, n).map((d) => ({
@@ -512,6 +543,16 @@ const buildPayload = (form) => {
       designation: d.designation || '',
       contact: d.contact || '',
       role: d.role || ''
+    }))
+  }
+  if (Array.isArray(p.contacts)) {
+    p.contacts = p.contacts.filter((c) => c && (c.name || c.phone || c.email)).map((c) => ({
+      name: c.name || '', role: c.role || '', phone: c.phone || '', email: c.email || ''
+    }))
+  }
+  if (Array.isArray(p.companyDocuments)) {
+    p.companyDocuments = p.companyDocuments.filter((d) => d && d.url).map((d) => ({
+      name: d.name || 'Document', url: d.url, publicId: d.publicId || '', docType: d.docType || '', uploadedAt: d.uploadedAt || new Date()
     }))
   }
   // Same delivery address → copy the main address fields
@@ -936,10 +977,198 @@ const DecisionMakerList = ({ form, update, roleOptions }) => {
   )
 }
 
+/* Additional contacts list with role tags */
+const ContactList = ({ form, update }) => {
+  const list = Array.isArray(form.contacts) ? form.contacts : []
+  const setAt = (i, key, val) => {
+    const next = list.map((c, j) => (j === i ? { ...c, [key]: val } : c))
+    update('contacts', next)
+  }
+  const add = () => update('contacts', [...list, { name: '', role: '', phone: '', email: '' }])
+  const remove = (i) => update('contacts', list.filter((_, j) => j !== i))
+
+  return (
+    <div className="col-span-full grid gap-2">
+      {list.map((c, i) => (
+        <div key={i} className="grid grid-cols-2 gap-2 rounded-lg border border-gray-200 bg-gray-50/70 p-2.5 md:grid-cols-[1fr_150px_1fr_1fr_auto]">
+          <input value={c.name || ''} placeholder="Contact name" onChange={(e) => setAt(i, 'name', e.target.value)} className={inputCls} />
+          <select value={c.role || ''} onChange={(e) => setAt(i, 'role', e.target.value)} className={inputCls}>
+            <option value="">Role</option>
+            {CONTACT_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+          </select>
+          <input value={c.phone || ''} placeholder="Phone" onChange={(e) => setAt(i, 'phone', e.target.value)} className={inputCls} />
+          <input value={c.email || ''} placeholder="Email" onChange={(e) => setAt(i, 'email', e.target.value)} className={inputCls} />
+          <button type="button" onClick={() => remove(i)} className="rounded-md border border-red-200 px-2 text-xs font-semibold text-red-600 hover:bg-red-50">Remove</button>
+        </div>
+      ))}
+      <button type="button" onClick={add} className="w-fit rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:border-[#F41703] hover:text-[#F41703]">
+        + Add contact
+      </button>
+    </div>
+  )
+}
+
+/* Company registration / license document upload */
+const DocUploadField = ({ form, update, notify }) => {
+  const docs = Array.isArray(form.companyDocuments) ? form.companyDocuments : []
+  const [uploading, setUploading] = useState(false)
+  const fileRef = useRef(null)
+
+  const onFiles = async (e) => {
+    const files = Array.from(e.target.files || [])
+    e.target.value = ''
+    if (!files.length) return
+    setUploading(true)
+    try {
+      const { uploadDocument } = await import('../../services/uploadApi')
+      for (const file of files) {
+        if (file.size > 10 * 1024 * 1024) {
+          notify?.('error', `${file.name} exceeds 10MB limit`)
+          continue
+        }
+        const res = await uploadDocument(file)
+        if (res?.documentUrl || res?.url) {
+          update('companyDocuments', [...docs, {
+            name: file.name,
+            url: res.documentUrl || res.url,
+            publicId: res.publicId || '',
+            docType: DOC_TYPES[0],
+            uploadedAt: new Date()
+          }])
+        } else {
+          notify?.('error', res?.message || `Failed to upload ${file.name}`)
+        }
+      }
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <div className="col-span-full grid gap-2">
+      {docs.map((d, i) => (
+        <div key={i} className="flex flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-gray-50/70 px-3 py-2">
+          <a href={d.url} target="_blank" rel="noreferrer" className="text-xs font-semibold text-[#F41703] hover:underline">{d.name}</a>
+          <select value={d.docType || ''} onChange={(e) => {
+            const next = docs.map((x, j) => (j === i ? { ...x, docType: e.target.value } : x))
+            update('companyDocuments', next)
+          }} className="rounded-md border border-gray-300 px-2 py-1 text-xs">
+            {DOC_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <button type="button" onClick={() => update('companyDocuments', docs.filter((_, j) => j !== i))} className="ml-auto text-xs font-semibold text-red-600 hover:underline">Remove</button>
+        </div>
+      ))}
+      <div>
+        <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" multiple className="hidden" onChange={onFiles} />
+        <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:border-[#F41703] hover:text-[#F41703] disabled:opacity-50">
+          {uploading ? 'Uploading...' : '+ Upload document (PDF/image, max 10MB)'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/* PIN code input with searchable dropdown + city/state/country autofill */
+const PinCodeInput = ({ id, value, onChange, onAutoFill, className }) => {
+  const [pincodes, setPincodes] = useState([])
+  const [show, setShow] = useState(false)
+
+  const fetchList = async () => {
+    if (pincodes.length) return
+    try {
+      const res = await fetch('https://cdn.jsdelivr.net/gh/iaseth/pincodes-india@master/pincodes.json')
+      const data = await res.json()
+      setPincodes(data.pincodes || [])
+    } catch (e) {
+      console.error('Error fetching pincodes:', e)
+    }
+  }
+
+  const lookup = async (pin) => {
+    if (!/^\d{6}$/.test(pin)) return
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`)
+      const data = await res.json()
+      const office = data?.[0]?.PostOffice?.find((o) => o.District) || data?.[0]?.PostOffice?.[0]
+      if (office) {
+        onAutoFill({
+          city: office.District || '',
+          state: office.State || '',
+          country: office.Country || 'India'
+        })
+        return
+      }
+    } catch (e) {
+      console.error('Pincode lookup failed:', e)
+    }
+    // Fallback source
+    try {
+      const res = await fetch(`https://api.zippopotam.us/in/${pin}`)
+      if (!res.ok) return
+      const data = await res.json()
+      const place = data?.places?.[0]
+      if (place) {
+        onAutoFill({ city: place['place name'] || '', state: place.state || '', country: place.country || 'India' })
+      }
+    } catch (e) {
+      console.error('Pincode fallback lookup failed:', e)
+    }
+  }
+
+  const matches = pincodes.filter((pin) => pin.includes(value || '')).slice(0, 50)
+
+  return (
+    <div className="relative">
+      <input
+        id={id}
+        type="text"
+        inputMode="numeric"
+        autoComplete="off"
+        maxLength={6}
+        value={value ?? ''}
+        placeholder="Search PIN code"
+        onChange={(e) => {
+          const v = e.target.value.replace(/\D/g, '').slice(0, 6)
+          onChange(v)
+          setShow(true)
+          if (/^\d{6}$/.test(v)) lookup(v)
+        }}
+        onFocus={() => {
+          fetchList()
+          setShow(true)
+        }}
+        onBlur={() => setTimeout(() => setShow(false), 150)}
+        className={className}
+      />
+      {show && (
+        <div className="absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+          {matches.length === 0 ? (
+            <div className="p-3 text-sm text-gray-500">{pincodes.length ? 'No PIN codes found' : 'Loading PIN codes...'}</div>
+          ) : (
+            matches.map((pin) => (
+              <div
+                key={pin}
+                onMouseDown={() => {
+                  onChange(pin)
+                  setShow(false)
+                  lookup(pin)
+                }}
+                className={`cursor-pointer border-b border-gray-100 px-4 py-2.5 text-sm last:border-0 hover:bg-gray-50 ${pin === value ? 'bg-orange-50 font-medium' : ''}`}
+              >
+                {pin}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 /* ------------------------------------------------------------------ */
 /* One form field, drawn from the definition above                     */
 /* ------------------------------------------------------------------ */
-const FieldView = ({ f, form, update, error, employees, catalog, onMapPick }) => {
+const FieldView = ({ f, form, update, updateMany, error, employees, catalog, onMapPick, notify }) => {
   const required = isRequired(f, form)
   const id = `f-${f.name}`
   const value = form[f.name]
@@ -962,6 +1191,41 @@ const FieldView = ({ f, form, update, error, employees, catalog, onMapPick }) =>
     return <CatalogPicker f={f} form={form} update={update} products={catalog?.products || []} />
   }
 
+  if (f.type === 'contactList') {
+    return (
+      <div className={wrap}>
+        <ContactList form={form} update={update} />
+      </div>
+    )
+  }
+
+  if (f.type === 'docUpload') {
+    return (
+      <div className={wrap}>
+        <DocUploadField form={form} update={update} notify={notify} />
+      </div>
+    )
+  }
+
+  if (f.type === 'mapPickerDelivery') {
+    return (
+      <div className={wrap}>
+        <label className="mb-0.5 block text-[11px] font-bold uppercase tracking-wide text-gray-500">{f.label}</label>
+        <button
+          type="button"
+          onClick={() => onMapPick('delivery')}
+          className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-gray-300 bg-gray-50 px-3 py-2.5 text-xs font-semibold text-gray-600 transition-colors hover:border-[#F41703] hover:bg-[#F41703]/5 hover:text-[#F41703]"
+        >
+          <Icon name="pin" className="h-4 w-4" />
+          {form.deliveryLocationLat ? 'Update delivery pin' : 'Pin delivery location on map'}
+        </button>
+        {form.deliveryLocationLat && (
+          <p className="mt-1 text-[11px] font-medium text-green-600">Delivery pinned: {Number(form.deliveryLocationLat).toFixed(4)}, {Number(form.deliveryLocationLng).toFixed(4)}</p>
+        )}
+      </div>
+    )
+  }
+
   if (f.type === 'dmList') {
     return <DecisionMakerList form={form} update={update} roleOptions={f.options} />
   }
@@ -981,6 +1245,33 @@ const FieldView = ({ f, form, update, error, employees, catalog, onMapPick }) =>
         {form.locationLat && (
           <p className="mt-1 text-[11px] font-medium text-green-600">Location pinned: {Number(form.locationLat).toFixed(4)}, {Number(form.locationLng).toFixed(4)}</p>
         )}
+      </div>
+    )
+  }
+
+  if (f.name === 'pincode' || f.name === 'deliveryPincode') {
+    const prefix = f.name === 'deliveryPincode' ? 'delivery' : ''
+    return (
+      <div className={wrap}>
+        <label htmlFor={id} className="mb-0.5 flex items-center justify-between text-[11px] font-bold uppercase tracking-wide text-gray-500">
+          <span>
+            {f.label} {required && <span className="text-[#F41703]">*</span>}
+          </span>
+        </label>
+        <PinCodeInput
+          id={id}
+          value={value ?? ''}
+          className={base}
+          onChange={(v) => update(f.name, v)}
+          onAutoFill={(loc) =>
+            updateMany({
+              [`${prefix}city`]: loc.city || form[`${prefix}city`],
+              [`${prefix}state`]: loc.state || form[`${prefix}state`],
+              [`${prefix}country`]: loc.country || form[`${prefix}country`]
+            })
+          }
+        />
+        {error && <p className="mt-0.5 text-[11px] font-medium text-red-600">{error}</p>}
       </div>
     )
   }
@@ -1054,6 +1345,70 @@ const FieldView = ({ f, form, update, error, employees, catalog, onMapPick }) =>
   )
 }
 
+/* Quick "add update" note posted to the lead's activity timeline */
+const QualificationUpdate = ({ lead, notify }) => {
+  const [open, setOpen] = useState(false)
+  const [type, setType] = useState('Note')
+  const [subject, setSubject] = useState('')
+  const [description, setDescription] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  const submit = async () => {
+    if (!description.trim() && !subject.trim()) {
+      notify?.('error', 'Write an update before saving.')
+      return
+    }
+    setSaving(true)
+    try {
+      await api.post(`/api/crm/leads/${lead._id}/activities`, {
+        type,
+        subject: subject || 'Qualification update',
+        description,
+        activityDate: new Date().toISOString()
+      })
+      notify?.('success', 'Update added to lead timeline.')
+      setSubject('')
+      setDescription('')
+      setOpen(false)
+    } catch (e) {
+      notify?.('error', e.response?.data?.message || 'Failed to add update')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="mb-4 inline-flex items-center gap-2 rounded-xl border border-dashed border-gray-300 px-4 py-2 text-xs font-semibold text-gray-600 hover:border-[#F41703] hover:text-[#F41703]"
+      >
+        + Add Update
+      </button>
+    )
+  }
+
+  return (
+    <div className="mb-4 rounded-xl border border-[#F41703]/30 bg-[#F41703]/5 p-4">
+      <p className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500">Add update to qualification</p>
+      <div className="grid grid-cols-2 gap-2">
+        <select value={type} onChange={(e) => setType(e.target.value)} className={inputCls}>
+          {['Note', 'Activity Outcome', 'Call Log', 'Meeting Log', 'Quotation Log'].map((t) => <option key={t} value={t}>{t}</option>)}
+        </select>
+        <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" className={inputCls} />
+      </div>
+      <textarea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What changed or what was discussed?" className={`${inputCls} mt-2 resize-none`} />
+      <div className="mt-2 flex gap-2">
+        <button type="button" onClick={submit} disabled={saving} className="rounded-lg bg-[#F41703] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#d31402] disabled:opacity-50">
+          {saving ? 'Saving...' : 'Save update'}
+        </button>
+        <button type="button" onClick={() => setOpen(false)} className="rounded-lg border border-gray-300 px-4 py-1.5 text-xs font-semibold text-gray-600 hover:bg-white">Cancel</button>
+      </div>
+    </div>
+  )
+}
+
 /* ================================================================== */
 /* Add / edit form (quick add or full details)                         */
 /* ================================================================== */
@@ -1087,21 +1442,38 @@ const LeadForm = ({ lead, employees, leads, onClose, onSaved, onOpenLead, notify
 
   const updateMany = (obj) => setForm((prev) => ({ ...prev, ...obj }))
 
-  const openMapPicker = () => {
-    setMapPoint(form.locationLat ? [Number(form.locationLat), Number(form.locationLng)] : null)
+  const [mapTarget, setMapTarget] = useState('main') // 'main' | 'delivery'
+
+  const openMapPicker = (target = 'main') => {
+    setMapTarget(target)
+    const latKey = target === 'delivery' ? 'deliveryLocationLat' : 'locationLat'
+    const lngKey = target === 'delivery' ? 'deliveryLocationLng' : 'locationLng'
+    setMapPoint(form[latKey] ? [Number(form[latKey]), Number(form[lngKey])] : null)
     setShowMap(true)
   }
 
   const handleMapConfirm = (loc) => {
-    updateMany({
-      locationLat: loc.lat,
-      locationLng: loc.lng,
-      address: loc.address || form.address,
-      city: loc.city || form.city,
-      state: loc.state || form.state,
-      country: loc.country || form.country,
-      pincode: loc.pincode || form.pincode
-    })
+    if (mapTarget === 'delivery') {
+      updateMany({
+        deliveryLocationLat: loc.lat,
+        deliveryLocationLng: loc.lng,
+        deliveryAddress: loc.address || form.deliveryAddress,
+        deliveryCity: loc.city || form.deliveryCity,
+        deliveryState: loc.state || form.deliveryState,
+        deliveryCountry: loc.country || form.deliveryCountry,
+        deliveryPincode: loc.pincode || form.deliveryPincode
+      })
+    } else {
+      updateMany({
+        locationLat: loc.lat,
+        locationLng: loc.lng,
+        address: loc.address || form.address,
+        city: loc.city || form.city,
+        state: loc.state || form.state,
+        country: loc.country || form.country,
+        pincode: loc.pincode || form.pincode
+      })
+    }
     setShowMap(false)
   }
 
@@ -1193,7 +1565,7 @@ const LeadForm = ({ lead, employees, leads, onClose, onSaved, onOpenLead, notify
         <section key={s.title} className="mb-4 last:mb-0">
           <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 md:grid-cols-3 xl:grid-cols-4">
             {fields.map((f) => (
-              <FieldView key={f.name} f={f} form={form} update={update} error={errors[f.name]} employees={employees} catalog={catalog} onMapPick={openMapPicker} />
+              <FieldView key={f.name} f={f} form={form} update={update} updateMany={updateMany} error={errors[f.name]} employees={employees} catalog={catalog} onMapPick={openMapPicker} notify={notify} />
             ))}
           </div>
         </section>
@@ -1275,7 +1647,10 @@ const LeadForm = ({ lead, employees, leads, onClose, onSaved, onOpenLead, notify
               ))}
             </>
           ) : (
-            renderSections(TABS[tab].sections)
+            <>
+              {renderSections(TABS[tab].sections)}
+              {TABS[tab].id === 'qualification' && editing && <QualificationUpdate lead={lead} notify={notify} />}
+            </>
           )}
 
           {mode === 'full' && TABS[tab].id === 'source' && editing && (
@@ -1920,6 +2295,250 @@ const SORTS = {
   name: { label: 'Name A to Z', fn: (a, b) => nameOf(a).localeCompare(nameOf(b)) }
 }
 
+/* ================================================================== */
+/* Bulk lead upload (CSV) — maps Meta / Google lead form columns      */
+/* ================================================================== */
+const CSV_ALIASES = {
+  firstName: ['firstname', 'first_name', 'first name', 'fname', 'given_name'],
+  lastName: ['lastname', 'last_name', 'last name', 'lname', 'family_name', 'surname'],
+  customerName: ['fullname', 'full_name', 'full name', 'name', 'contact_name', 'your_name'],
+  mobileNumber: ['phone_number', 'phone', 'mobile', 'mobile_number', 'mobile number', 'phone number', 'contact_number', 'telephone', 'phone_1'],
+  alternatePhone: ['alternate_phone', 'alternate phone', 'alt_phone', 'secondary_phone', 'phone_2'],
+  whatsapp: ['whatsapp', 'whatsapp_number', 'whatsapp number', 'whatsapp_phone'],
+  email: ['email', 'email_address', 'email address', 'e-mail', 'email_1'],
+  alternateEmail: ['alternate_email', 'alternate email', 'email_2', 'secondary_email'],
+  companyName: ['company_name', 'company', 'organization', 'organisation', 'business_name', 'companyname', 'company_name_text'],
+  jobTitle: ['job_title', 'job title', 'designation', 'title', 'position', 'role_title'],
+  city: ['city', 'town', 'city_name'],
+  state: ['state', 'province', 'region', 'state_province'],
+  country: ['country', 'country_name', 'country_region'],
+  pincode: ['pincode', 'pin_code', 'pin code', 'zip_code', 'zip', 'postal_code', 'postcode', 'postal'],
+  address: ['address', 'street_address', 'street address', 'full_address', 'address_line_1'],
+  source: ['lead_source', 'source', 'lead_source_manual', 'how_did_you_hear'],
+  campaignName: ['campaign_name', 'campaign', 'campaignname', 'campaign_id', 'campaignid'],
+  utmSource: ['utm_source', 'utm source'],
+  utmMedium: ['utm_medium', 'utm medium'],
+  utmCampaign: ['utm_campaign', 'utm campaign'],
+  productInterest: ['product_interest', 'product interest', 'product_category', 'product', 'service_interest', 'interest'],
+  productRequirement: ['requirement', 'product_requirement', 'requirement_details', 'requirementdetails', 'message', 'notes', 'comments', 'description'],
+  budgetRange: ['budget', 'budget_range', 'budgetrange', 'target_price', 'targetprice'],
+  quantity: ['quantity', 'qty', 'volume'],
+  leadCapturedBy: ['lead_captured_by', 'captured_by'],
+  preferredContactMethod: ['preferred_contact_method', 'preferred_contact', 'best_way_to_contact', 'contact_preference']
+}
+
+const normHeader = (h) => String(h || '').toLowerCase().replace(/[_\-./]+/g, ' ').replace(/\s+/g, ' ').trim()
+const buildHeaderMap = (headers) => {
+  const map = {}
+  headers.forEach((h, idx) => {
+    const n = normHeader(h)
+    for (const [field, aliases] of Object.entries(CSV_ALIASES)) {
+      if (aliases.includes(n) && map[field] === undefined) map[field] = idx
+    }
+  })
+  return map
+}
+
+const parseCsvText = (text) => {
+  const rows = []
+  let row = []
+  let field = ''
+  let inQ = false
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i]
+    if (inQ) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++ } else inQ = false
+      } else field += c
+    } else if (c === '"') inQ = true
+    else if (c === ',') { row.push(field); field = '' }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && text[i + 1] === '\n') i++
+      row.push(field); field = ''
+      if (row.some((x) => String(x).trim() !== '')) rows.push(row)
+      row = []
+    } else field += c
+  }
+  if (field !== '' || row.length) { row.push(field); if (row.some((x) => String(x).trim() !== '')) rows.push(row) }
+  return rows
+}
+
+const TEMPLATE_HEADERS = ['First Name', 'Last Name', 'Phone Number', 'Email', 'Company Name', 'Job Title', 'City', 'State', 'PIN Code', 'Country', 'Address', 'Product Interest', 'Requirement Details', 'Budget Range', 'Lead Source', 'Campaign Name']
+
+const BulkUploadModal = ({ onClose, onDone, notify }) => {
+  const [fileName, setFileName] = useState('')
+  const [parsed, setParsed] = useState(null) // { headers, leads, skipped }
+  const [submitting, setSubmitting] = useState(false)
+  const [result, setResult] = useState(null)
+  const fileRef = useRef(null)
+
+  const downloadTemplate = () => {
+    const blob = new Blob([TEMPLATE_HEADERS.join(',') + '\n'], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'lead_upload_template.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const onFile = async (e) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    setFileName(file.name)
+    setParsed(null)
+    setResult(null)
+    const text = await file.text()
+    const rows = parseCsvText(text)
+    if (rows.length < 2) {
+      notify('error', 'CSV must have a header row and at least one data row')
+      return
+    }
+    const headers = rows[0].map((h) => String(h).trim())
+    const hmap = buildHeaderMap(headers)
+    const leads = []
+    let skipped = 0
+    rows.slice(1).forEach((r, i) => {
+      const get = (f) => {
+        const idx = hmap[f]
+        return idx === undefined ? '' : String(r[idx] ?? '').trim()
+      }
+      const firstName = get('firstName')
+      const lastName = get('lastName')
+      const full = get('customerName') || [firstName, lastName].filter(Boolean).join(' ')
+      const phone = get('mobileNumber')
+      const email = get('email')
+      if (!full && !phone && !email) { skipped++; return }
+      const lead = {
+        firstName, lastName,
+        customerName: full,
+        mobileNumber: phone, phone,
+        alternatePhone: get('alternatePhone'),
+        whatsapp: get('whatsapp'),
+        email, alternateEmail: get('alternateEmail'),
+        companyName: get('companyName'),
+        jobTitle: get('jobTitle'),
+        city: get('city'), state: get('state'), country: get('country') || 'India',
+        pincode: get('pincode'), address: get('address'),
+        productInterest: get('productInterest'),
+        productRequirement: get('productRequirement'),
+        budgetRange: get('budgetRange'),
+        quantity: get('quantity'),
+        source: get('source') || undefined,
+        campaignName: get('campaignName'),
+        utmSource: get('utmSource'), utmMedium: get('utmMedium'), utmCampaign: get('utmCampaign'),
+        preferredContactMethod: get('preferredContactMethod') || undefined,
+        dataSource: 'Import'
+      }
+      Object.keys(lead).forEach((k) => { if (lead[k] === '' || lead[k] === undefined) delete lead[k] })
+      leads.push(lead)
+    })
+    setParsed({ headers, leads, skipped, mapped: Object.keys(hmap) })
+  }
+
+  const submit = async () => {
+    if (!parsed?.leads?.length) return
+    setSubmitting(true)
+    try {
+      const res = await api.post('/api/crm/leads/bulk', { leads: parsed.leads })
+      setResult(res.data?.data || { created: 0, failed: 0, errors: [] })
+      if (res.data?.data?.created > 0) onDone?.()
+    } catch (e) {
+      notify('error', e.response?.data?.message || 'Bulk upload failed')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[80] flex h-screen items-center justify-center bg-gray-900/50 backdrop-blur-sm" onMouseDown={(e) => e.target === e.currentTarget && !submitting && onClose()}>
+      <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Bulk Lead Upload</h2>
+            <p className="text-xs text-gray-500">Upload a CSV exported from Meta Leads or Google Lead Forms. Columns are auto-detected.</p>
+          </div>
+          <button onClick={onClose} disabled={submitting} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">✕</button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-6 py-4">
+          {!result && (
+            <>
+              <div className="mb-4 flex flex-wrap items-center gap-3">
+                <button type="button" onClick={downloadTemplate} className="rounded-lg border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+                  Download CSV template
+                </button>
+                <button type="button" onClick={() => fileRef.current?.click()} className="rounded-lg bg-[#F41703] px-4 py-2 text-xs font-bold text-white hover:bg-[#d31402]">
+                  {fileName ? `File: ${fileName}` : 'Choose CSV file'}
+                </button>
+                <input ref={fileRef} type="file" accept=".csv,text/csv" className="hidden" onChange={onFile} />
+              </div>
+
+              {parsed && (
+                <div className="rounded-xl border border-gray-200">
+                  <div className="border-b border-gray-100 bg-gray-50 px-4 py-2 text-xs text-gray-600">
+                    <b>{parsed.leads.length}</b> leads ready
+                    {parsed.skipped > 0 && <span className="text-amber-600"> · {parsed.skipped} rows skipped (no name/phone/email)</span>}
+                    <span className="ml-2 text-gray-400">Mapped columns: {parsed.mapped.length}</span>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto">
+                    <table className="w-full text-xs">
+                      <thead className="sticky top-0 bg-white">
+                        <tr className="border-b border-gray-100 text-left text-gray-500">
+                          <th className="px-3 py-2">#</th><th className="px-3 py-2">Name</th><th className="px-3 py-2">Phone</th><th className="px-3 py-2">Email</th><th className="px-3 py-2">Company</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {parsed.leads.slice(0, 50).map((l, i) => (
+                          <tr key={i} className="border-b border-gray-50">
+                            <td className="px-3 py-1.5 text-gray-400">{i + 1}</td>
+                            <td className="px-3 py-1.5 font-medium text-gray-800">{l.customerName || `${l.firstName || ''} ${l.lastName || ''}`.trim()}</td>
+                            <td className="px-3 py-1.5 text-gray-600">{l.mobileNumber || '—'}</td>
+                            <td className="px-3 py-1.5 text-gray-600">{l.email || '—'}</td>
+                            <td className="px-3 py-1.5 text-gray-600">{l.companyName || '—'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {parsed.leads.length > 50 && <p className="px-4 py-2 text-xs text-gray-400">…and {parsed.leads.length - 50} more</p>}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {result && (
+            <div className="rounded-xl border border-gray-200 p-5">
+              <p className="text-sm font-bold text-gray-900">Upload complete</p>
+              <p className="mt-1 text-sm text-green-700"><b>{result.created}</b> leads created · <b className={result.failed ? 'text-red-600' : 'text-gray-500'}>{result.failed}</b> failed</p>
+              {result.errors?.length > 0 && (
+                <div className="mt-3 max-h-48 overflow-y-auto rounded-lg bg-red-50 p-3 text-xs text-red-700">
+                  {result.errors.slice(0, 20).map((e, i) => <p key={i}>Row {e.row} ({e.name}): {e.message}</p>)}
+                  {result.errors.length > 20 && <p>…and {result.errors.length - 20} more</p>}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+          {result ? (
+            <button onClick={onClose} className="rounded-lg bg-[#F41703] px-5 py-2 text-sm font-bold text-white hover:bg-[#d31402]">Done</button>
+          ) : (
+            <>
+              <button onClick={onClose} disabled={submitting} className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-white disabled:opacity-50">Cancel</button>
+              <button onClick={submit} disabled={!parsed?.leads?.length || submitting} className="rounded-lg bg-[#F41703] px-5 py-2 text-sm font-bold text-white hover:bg-[#d31402] disabled:opacity-50">
+                {submitting ? 'Uploading...' : `Upload ${parsed?.leads?.length || 0} leads`}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const Leads = () => {
   const navigate = useNavigate()
   const [leads, setLeads] = useState([])
@@ -1936,6 +2555,7 @@ const Leads = () => {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [formState, setFormState] = useState(null) // { lead }
+  const [showBulk, setShowBulk] = useState(false)
   const [viewId, setViewId] = useState(null)
   const [confirm, setConfirm] = useState(null)
   const [toasts, setToasts] = useState([])
@@ -2097,6 +2717,9 @@ const Leads = () => {
           </button>
           <button onClick={exportCsv} disabled={!filtered.length} className={`inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:border-[#F41703] hover:text-[#F41703] disabled:opacity-50 ${ring}`}>
             <Icon name="download" /> Export CSV
+          </button>
+          <button onClick={() => setShowBulk(true)} className={`inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:border-[#F41703] hover:text-[#F41703] ${ring}`}>
+            <Icon name="download" /> Bulk Upload
           </button>
           <button onClick={() => setFormState({ lead: null })} className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-[#F41703]/25 transition-shadow hover:shadow-lg ${brandGrad} ${ring}`}>
             <Icon name="plus" /> Add New Lead
@@ -2359,6 +2982,14 @@ const Leads = () => {
           </>
         )}
       </div>
+
+      {showBulk && (
+        <BulkUploadModal
+          notify={notify}
+          onClose={() => setShowBulk(false)}
+          onDone={() => { setShowBulk(false); fetchLeads() }}
+        />
+      )}
 
       {/* Add / edit */}
       {formState && (

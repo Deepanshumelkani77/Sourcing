@@ -7,6 +7,7 @@ const {
   updateLead,
   deleteLead,
   convertLeadToCustomer,
+  bulkCreateLeads,
   getLeadStats,
   updateLeadStatus,
   getEmployeesForAssignment,
@@ -55,6 +56,7 @@ router
   .post(protectAdmin, createLead)
   .get(protectAdmin, getLeads);
 
+router.route("/leads/bulk").post(protectAdmin, bulkCreateLeads);
 router.route("/leads/stats").get(protectAdmin, getLeadStats);
 router.route("/leads/:id").get(protectAdmin, getLead);
 router.route("/leads/:id").put(protectAdmin, updateLead);
