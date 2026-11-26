@@ -251,9 +251,9 @@ const TABS = [
       {
         title: 'Registration & licenses',
         fields: [
-          F('registrationDocument', 'Company registration', 'docSingle', { span: true }),
+          F('registrationDocument', 'Company registration', 'docSingle'),
           F('registrationDocStatus', 'Document verification', 'select', { options: DOC_STATUS }),
-          F('licenseDocument', 'Licenses', 'docSingle', { span: true }),
+          F('licenseDocument', 'Licenses', 'docSingle'),
           F('licenseDocStatus', 'Document verification', 'select', { options: DOC_STATUS })
         ]
       },
