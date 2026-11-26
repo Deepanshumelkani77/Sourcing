@@ -291,7 +291,7 @@ const TABS = [
         title: 'What the customer needs',
         fields: [
           F('productInterest', 'Product / service interest', 'catalogPicker', { req: true, quick: true }),
-          F('productRequirement', 'Requirement details', 'text', { req: true, quick: true, span: 2, placeholder: 'What exactly does the customer want to buy or source?' }),
+          F('productRequirement', 'Requirement details', 'text', { req: true, quick: true, span: 3, placeholder: 'What exactly does the customer want to buy or source?' }),
           F('servicesInterested', 'Sourcing services needed', 'multiSelect', { span: true })
         ]
       },
@@ -1238,7 +1238,7 @@ const FieldView = ({ f, form, update, updateMany, error, employees, catalog, onM
   const base = `w-full rounded-md border bg-white px-2.5 py-1.5 text-[13px] text-gray-900 outline-none transition focus:ring-2 ${
     error ? 'border-red-400 focus:ring-red-200' : 'border-gray-300 focus:border-[#F41703] focus:ring-[#F41703]/15'
   }`
-  const wrap = f.span === 2 ? 'col-span-2' : f.span ? 'col-span-full' : ''
+  const wrap = f.span === 2 ? 'col-span-2' : f.span === 3 ? 'col-span-3' : f.span ? 'col-span-full' : ''
 
   if (f.type === 'check') {
     return (
