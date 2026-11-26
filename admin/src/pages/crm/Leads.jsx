@@ -85,6 +85,13 @@ const SERVICES = [
 /* Helpers                                                            */
 /* ================================================================== */
 const toDateInput = (d) => (d ? String(d).split('T')[0] : '')
+const toDateTimeInput = (d) => {
+  if (!d) return ''
+  const dt = new Date(d)
+  if (isNaN(dt)) return ''
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`
+}
 const todayStr = () => {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -194,7 +201,7 @@ const TABS = [
           F('preferredContactOther', 'Please specify', 'text', { showIf: (f) => f.preferredContactMethod === 'Other', placeholder: 'e.g. SMS, Telegram...' }),
           F('meetingMode', 'Meeting mode', 'select', { options: ONLINE_MEETING_MODES, showIf: (f) => f.preferredContactMethod === 'Online Meeting' }),
           F('meetingLinkOrId', 'Meeting ID / link / customer ID', 'text', { showIf: (f) => f.preferredContactMethod === 'Online Meeting' && f.meetingMode }),
-          F('meetingDate', 'Meeting date & time', 'date', { showIf: (f) => ['Online Meeting', 'Physical Meeting'].includes(f.preferredContactMethod) }),
+          F('meetingDate', 'Meeting date & time', 'datetime', { showIf: (f) => ['Online Meeting', 'Physical Meeting'].includes(f.preferredContactMethod) }),
           F('meetingAddress', 'Physical meeting address', 'area', { rows: 1, span: true, showIf: (f) => f.preferredContactMethod === 'Physical Meeting' }),
           F('preferredLanguage', 'Preferred language', 'select', { options: LANGUAGES }),
           F('bestTimeToContact', 'Best time to contact', 'text', { placeholder: 'e.g. 11 AM - 1 PM' }),
@@ -242,10 +249,12 @@ const TABS = [
         ]
       },
       {
-        title: 'Company documents',
+        title: 'Registration & licenses',
         fields: [
-          F('companyDocuments', 'Registration & licenses', 'docUpload', { span: true }),
-          F('documentStatus', 'Document verification', 'select', { options: DOC_STATUS })
+          F('registrationDocument', 'Company registration', 'docSingle', { span: true }),
+          F('registrationDocStatus', 'Document verification', 'select', { options: DOC_STATUS }),
+          F('licenseDocument', 'Licenses', 'docSingle', { span: true }),
+          F('licenseDocStatus', 'Document verification', 'select', { options: DOC_STATUS })
         ]
       },
       {
@@ -473,6 +482,7 @@ const formFromLead = (lead) => {
   DATE_FIELDS.forEach((k) => {
     out[k] = toDateInput(lead[k])
   })
+  out.meetingDate = toDateTimeInput(lead.meetingDate)
   ;['expectedOrderValue', 'numberOfFollowUps'].forEach((k) => {
     out[k] = lead[k] ?? ''
   })
@@ -533,7 +543,7 @@ const buildPayload = (form) => {
   DATE_FIELDS.forEach((k) => {
     p[k] = p[k] || null
   })
-  ;['locationLat', 'locationLng', 'deliveryLocationLat', 'deliveryLocationLng', 'productId'].forEach((k) => {
+  ;['locationLat', 'locationLng', 'deliveryLocationLat', 'deliveryLocationLng', 'productId', 'registrationDocument', 'licenseDocument'].forEach((k) => {
     if (p[k] === '') p[k] = null
   })
   delete p.deliveryMapLocation
@@ -1069,6 +1079,57 @@ const DocUploadField = ({ form, update, notify }) => {
   )
 }
 
+/* Single document upload field (registration / license) */
+const DocSingleField = ({ form, field, update, notify }) => {
+  const doc = form[field]
+  const [uploading, setUploading] = useState(false)
+  const fileRef = useRef(null)
+
+  const onFile = async (e) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    if (file.size > 10 * 1024 * 1024) {
+      notify?.('error', `${file.name} exceeds 10MB limit`)
+      return
+    }
+    setUploading(true)
+    try {
+      const { uploadDocument } = await import('../../services/uploadApi')
+      const res = await uploadDocument(file)
+      if (res?.documentUrl || res?.url) {
+        update(field, {
+          name: file.name,
+          url: res.documentUrl || res.url,
+          publicId: res.publicId || '',
+          uploadedAt: new Date()
+        })
+      } else {
+        notify?.('error', res?.message || `Failed to upload ${file.name}`)
+      }
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {doc?.url ? (
+        <>
+          <a href={doc.url} target="_blank" rel="noreferrer" className="text-xs font-semibold text-[#F41703] hover:underline">{doc.name || 'View document'}</a>
+          <button type="button" onClick={() => update(field, '')} className="text-xs font-semibold text-red-600 hover:underline">Remove</button>
+        </>
+      ) : (
+        <span className="text-xs text-gray-400">No document uploaded</span>
+      )}
+      <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={onFile} />
+      <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:border-[#F41703] hover:text-[#F41703] disabled:opacity-50">
+        {uploading ? 'Uploading...' : doc?.url ? 'Replace' : '+ Upload document (PDF/image, max 10MB)'}
+      </button>
+    </div>
+  )
+}
+
 /* PIN code input with searchable dropdown + city/state/country autofill */
 const PinCodeInput = ({ id, value, onChange, onAutoFill, className }) => {
   const [pincodes, setPincodes] = useState([])
@@ -1208,6 +1269,15 @@ const FieldView = ({ f, form, update, updateMany, error, employees, catalog, onM
     )
   }
 
+  if (f.type === 'docSingle') {
+    return (
+      <div className={wrap}>
+        <label className="mb-0.5 block text-[11px] font-bold uppercase tracking-wide text-gray-500">{f.label}</label>
+        <DocSingleField form={form} field={f.name} update={update} notify={notify} />
+      </div>
+    )
+  }
+
   if (f.type === 'mapPickerDelivery') {
     return (
       <div className={wrap}>
@@ -1318,7 +1388,7 @@ const FieldView = ({ f, form, update, updateMany, error, employees, catalog, onM
       </div>
     )
   } else {
-    control = <input id={id} type={f.type === 'tel' ? 'tel' : f.type} value={value ?? ''} placeholder={f.placeholder} disabled={sameAsMobile} onChange={(e) => update(f.name, e.target.value)} className={`${base} ${sameAsMobile ? 'cursor-not-allowed bg-gray-50 text-gray-400' : ''}`} />
+    control = <input id={id} type={f.type === 'tel' ? 'tel' : f.type === 'datetime' ? 'datetime-local' : f.type} value={value ?? ''} placeholder={f.placeholder} disabled={sameAsMobile} onChange={(e) => update(f.name, e.target.value)} className={`${base} ${sameAsMobile ? 'cursor-not-allowed bg-gray-50 text-gray-400' : ''}`} />
   }
 
   return (

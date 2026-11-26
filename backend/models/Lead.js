@@ -143,6 +143,28 @@ const leadSchema = new mongoose.Schema(
       enum: ["", "Pending", "Verified", "Rejected"],
       default: "",
     },
+    registrationDocument: {
+      name: { type: String, trim: true, default: "" },
+      url: { type: String, trim: true, default: "" },
+      publicId: { type: String, trim: true, default: "" },
+      uploadedAt: { type: Date },
+    },
+    registrationDocStatus: {
+      type: String,
+      enum: ["", "Pending", "Verified", "Rejected"],
+      default: "",
+    },
+    licenseDocument: {
+      name: { type: String, trim: true, default: "" },
+      url: { type: String, trim: true, default: "" },
+      publicId: { type: String, trim: true, default: "" },
+      uploadedAt: { type: Date },
+    },
+    licenseDocStatus: {
+      type: String,
+      enum: ["", "Pending", "Verified", "Rejected"],
+      default: "",
+    },
     address: { type: String, trim: true, default: "" },
     city: { type: String, trim: true, default: "" },
     state: { type: String, trim: true, default: "" },
