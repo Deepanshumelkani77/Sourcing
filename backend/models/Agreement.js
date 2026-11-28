@@ -38,6 +38,8 @@ const agreementSchema = new mongoose.Schema({
   middleName: { type: String, trim: true, default: '' },
   lastName: { type: String, trim: true, default: '' },
   customerCompany: { type: String, trim: true, default: '' },
+  companyType: { type: String, enum: ['', 'Private Limited', 'Public Limited', 'LLP', 'Partnership', 'Sole Proprietorship', 'HUF', 'Trust', 'Society', 'Government', 'Other'], default: '' },
+  registrationNo: { type: String, trim: true, default: '' },
   customerAddress: { type: String, trim: true, default: '' },
   customerEmail: { type: String, trim: true, default: '' },
   mobileNumber: { type: String, trim: true, default: '' },

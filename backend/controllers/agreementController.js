@@ -93,6 +93,8 @@ const buildPdfBuffer = (agreement) => {
     section('1. Parties');
     kv('Customer', agreement.customerName);
     kv('Company', agreement.customerCompany);
+    kv('Company Type', agreement.companyType);
+    kv('Registration No', agreement.registrationNo);
     kv('Address', agreement.customerAddress);
     kv('Email', agreement.customerEmail);
     kv('Related Order', agreement.orderNumber || 'N/A');

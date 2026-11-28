@@ -54,6 +54,8 @@ const emptyForm = () => ({
   middleName: '',
   lastName: '',
   customerCompany: '',
+  companyType: '',
+  registrationNo: '',
   customerAddress: '',
   customerEmail: '',
   mobileNumber: '',
@@ -275,6 +277,8 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
       middleName: a.middleName || '',
       lastName: a.lastName || '',
       customerCompany: a.customerCompany || '',
+      companyType: a.companyType || '',
+      registrationNo: a.registrationNo || '',
       customerAddress: a.customerAddress || '',
       customerEmail: a.customerEmail || '',
       mobileNumber: a.mobileNumber || '',
@@ -368,6 +372,7 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
   const validate = () => {
     const e = {}
     if (!form.customer) e.customer = 'Please select a customer'
+    if (!form.companyType) e.companyType = 'Please select company type'
     if (!form.agreementDate) e.agreementDate = 'Required'
     if (form.validUntil && form.agreementDate && form.validUntil < form.agreementDate) e.validUntil = 'Must be on or after the agreement date'
     if (form.customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.customerEmail.trim())) e.customerEmail = 'Enter a valid email'
@@ -380,7 +385,7 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
     return e
   }
 
-  const stepOfError = { customer: 0, agreementDate: 0, validUntil: 0, customerEmail: 0, products: 1, sourcingServiceCharges: 1, advancePayment: 3, remainingPayment: 3 }
+  const stepOfError = { customer: 0, companyType: 0, agreementDate: 0, validUntil: 0, customerEmail: 0, products: 1, sourcingServiceCharges: 1, advancePayment: 3, remainingPayment: 3 }
   const stepErrors = STEPS.map((_, i) => Object.keys(errors).filter((k) => errors[k] && stepOfError[k] === i).length)
 
   const handleSave = async () => {
@@ -487,6 +492,17 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                   </Field>
                   <Field label="Customer company name">
                     <input type="text" value={form.customerCompany} onChange={(e) => set('customerCompany', e.target.value)} className={inp()} />
+                  </Field>
+                  <Field label="Type of company *" error={errors.companyType} span>
+                    <select value={form.companyType} onChange={(e) => set('companyType', e.target.value)} className={inp('companyType', errors.companyType)}>
+                      <option value="">Select company type...</option>
+                      {['Private Limited', 'Public Limited', 'LLP', 'Partnership', 'Sole Proprietorship', 'HUF', 'Trust', 'Society', 'Government', 'Other'].map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label="Registration no." span>
+                    <input type="text" value={form.registrationNo} onChange={(e) => set('registrationNo', e.target.value)} className={inp()} placeholder="Company registration / CIN number" />
                   </Field>
                 </div>
                 <Field label="Mobile number">
@@ -907,7 +923,7 @@ const AgreementView = ({ agreement: a, onClose, onEdit, onPdf, onSend, onSign, o
         {/* Content */}
         <div className="flex-1 space-y-4 overflow-y-auto p-6">
           <Block title="Parties" icon="users">
-            <KV items={[['Customer', customerOf(a)], ['Company', companyOf(a)], ['Email', a.customerEmail || a.customer?.email], ['Mobile', a.mobileNumber], ['Alternate mobile', a.alternateMobile], ['WhatsApp', a.whatsappNo], ['PIN / City / State / Country', [a.pinCode, a.city, a.state, a.country].filter(Boolean).join(', ')], ['Address', a.customerAddress, true]]} />
+            <KV items={[['Customer', customerOf(a)], ['Company', companyOf(a)], ['Company type', a.companyType], ['Registration no', a.registrationNo], ['Email', a.customerEmail || a.customer?.email], ['Mobile', a.mobileNumber], ['Alternate mobile', a.alternateMobile], ['WhatsApp', a.whatsappNo], ['PIN / City / State / Country', [a.pinCode, a.city, a.state, a.country].filter(Boolean).join(', ')], ['Address', a.customerAddress, true]]} />
           </Block>
 
           <Block title="Products and pricing" icon="box">
