@@ -493,7 +493,7 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                   <Field label="Customer company name">
                     <input type="text" value={form.customerCompany} onChange={(e) => set('customerCompany', e.target.value)} className={inp()} />
                   </Field>
-                  <Field label="Type of company *" error={errors.companyType} span>
+                  <Field label="Type of company *" error={errors.companyType}>
                     <select value={form.companyType} onChange={(e) => set('companyType', e.target.value)} className={inp('companyType', errors.companyType)}>
                       <option value="">Select company type...</option>
                       {['Private Limited', 'Public Limited', 'LLP', 'Partnership', 'Sole Proprietorship', 'HUF', 'Trust', 'Society', 'Government', 'Other'].map((t) => (
@@ -501,7 +501,7 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                       ))}
                     </select>
                   </Field>
-                  <Field label="Registration no." span>
+                  <Field label="Registration no.">
                     <input type="text" value={form.registrationNo} onChange={(e) => set('registrationNo', e.target.value)} className={inp()} placeholder="Company registration / CIN number" />
                   </Field>
                 </div>
