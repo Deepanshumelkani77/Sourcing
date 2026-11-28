@@ -1044,40 +1044,36 @@ const AdminDashboard = () => {
                 key={view.id}
                 onClick={() => toggleView(view.id)}
                 aria-pressed={on}
-                className={`group relative overflow-hidden rounded-2xl border p-5 text-left transition-all duration-300 ${ring} ${
+                className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border px-4 py-3 text-left transition-all duration-300 ${ring} ${
                   on
-                    ? 'border-[#F41703] bg-gradient-to-br from-[#F41703] to-[#F97316] text-white shadow-xl shadow-[#F41703]/25'
-                    : 'border-gray-200 bg-white shadow-sm hover:-translate-y-1 hover:border-[#F41703]/30 hover:shadow-lg hover:shadow-[#F41703]/10'
+                    ? 'border-[#F41703] bg-gradient-to-r from-[#F41703] to-[#F97316] text-white shadow-lg shadow-[#F41703]/25'
+                    : 'border-gray-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-[#F41703]/30 hover:shadow-md hover:shadow-[#F41703]/10'
                 }`}
               >
-                {/* Decorative background pattern */}
-                <div className={`absolute -right-4 -top-4 h-24 w-24 rounded-full opacity-10 transition-all ${on ? 'bg-white' : 'bg-[#F41703] group-hover:opacity-20'}`} />
-                <div className={`absolute -right-8 -bottom-8 h-32 w-32 rounded-full opacity-5 transition-all ${on ? 'bg-white' : 'bg-[#F97316] group-hover:opacity-10'}`} />
-
-                <div className="relative flex items-start justify-between">
-                  <span className={`flex h-12 w-12 items-center justify-center rounded-xl transition-all shadow-lg ${
-                    on
-                      ? 'bg-white/20 text-white backdrop-blur-sm'
-                      : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-600 group-hover:from-[#F41703]/10 group-hover:to-[#F97316]/10 group-hover:text-[#F41703]'
-                  }`}>
-                    {ICONS[view.id]('h-6 w-6')}
-                  </span>
-                  {on && (
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white shadow-lg">
-                      {ICONS.check('h-4 w-4')}
+                <span className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg transition-all ${
+                  on
+                    ? 'bg-white/20 text-white backdrop-blur-sm'
+                    : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-600 group-hover:from-[#F41703]/10 group-hover:to-[#F97316]/10 group-hover:text-[#F41703]'
+                }`}>
+                  {ICONS[view.id]('h-5 w-5')}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className={`block truncate text-xs font-semibold ${on ? 'text-white/90' : 'text-gray-500'}`}>{view.label}</span>
+                  {firstLoadOf(view.id) ? (
+                    <span className="mt-1 block h-5 w-14 animate-pulse rounded bg-gray-200" />
+                  ) : errorMap[view.id] && data[view.id].length === 0 ? (
+                    <span className="mt-0.5 block text-xs font-semibold text-red-600">Failed to load</span>
+                  ) : (
+                    <span className="mt-0.5 flex items-baseline gap-1.5">
+                      <span className={`text-xl font-extrabold tracking-tight ${on ? 'text-white' : 'text-gray-900'}`}>{k.value}</span>
+                      <span className={`truncate text-[11px] font-medium ${on ? 'text-white/80' : 'text-gray-500'}`}>{k.sub}</span>
                     </span>
                   )}
-                </div>
-                <p className={`relative mt-4 text-sm font-semibold ${on ? 'text-white/90' : 'text-gray-500'}`}>{view.label}</p>
-                {firstLoadOf(view.id) ? (
-                  <div className="relative mt-2 h-9 w-20 animate-pulse rounded-lg bg-gray-200" />
-                ) : errorMap[view.id] && data[view.id].length === 0 ? (
-                  <p className="relative mt-2 text-sm font-semibold text-red-600">Failed to load</p>
-                ) : (
-                  <>
-                    <p className={`relative mt-1 text-3xl font-extrabold tracking-tight ${on ? 'text-white' : 'text-gray-900'}`}>{k.value}</p>
-                    <p className={`relative mt-1 text-xs font-medium ${on ? 'text-white/80' : 'text-gray-500'}`}>{k.sub}</p>
-                  </>
+                </span>
+                {on && (
+                  <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
+                    {ICONS.check('h-3 w-3')}
+                  </span>
                 )}
               </button>
             )
