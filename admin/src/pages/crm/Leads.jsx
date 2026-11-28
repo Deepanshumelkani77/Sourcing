@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../../config/axios'
+import SourcingRequests from '../SourcingRequests'
+import AdminQuotations from '../AdminQuotations'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet'
@@ -2626,6 +2628,7 @@ const Leads = () => {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [formState, setFormState] = useState(null) // { lead }
+  const [leadTab, setLeadTab] = useState('leads') // 'leads' | 'service' | 'product'
   const [showBulk, setShowBulk] = useState(false)
   const [viewId, setViewId] = useState(null)
   const [confirm, setConfirm] = useState(null)
@@ -2774,6 +2777,26 @@ const Leads = () => {
         ))}
       </nav>
 
+      {/* Section tabs: Leads / Service Requests / Product Requests */}
+      <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-gray-200 bg-gray-50 p-1.5">
+        {[
+          ['leads', 'Leads'],
+          ['service', 'Service Requests'],
+          ['product', 'Product Requests']
+        ].map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setLeadTab(id)}
+            aria-pressed={leadTab === id}
+            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${ring} ${leadTab === id ? `${brandGrad} text-white shadow-md shadow-[#F41703]/25` : 'text-gray-600 hover:bg-white hover:text-gray-900'}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {leadTab === 'leads' ? (
+      <>
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
@@ -3100,6 +3123,12 @@ const Leads = () => {
 
       <ConfirmDialog dialog={confirm} onCancel={() => setConfirm(null)} />
       <Toasts items={toasts} dismiss={(id) => setToasts((t) => t.filter((x) => x.id !== id))} />
+      </>
+      ) : leadTab === 'service' ? (
+        <SourcingRequests />
+      ) : (
+        <AdminQuotations />
+      )}
     </div>
   )
 }
