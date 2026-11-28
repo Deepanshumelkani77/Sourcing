@@ -63,7 +63,8 @@ const App = () => {
                 <Route path="/jobs" element={<AdminJobs />} />
                 <Route path="/tracking" element={<AdminTracking />} />
                 <Route path="/contact-submissions" element={<AdminContactSubmissions />} />
-                <Route path="/quotations" element={<AdminQuotations />} />
+                <Route path="/product-requests" element={<AdminQuotations />} />
+                <Route path="/quotations" element={<Navigate to="/product-requests" replace />} />
                 <Route path="/agreements" element={<AdminAgreements />} />
                 <Route path="/blogs" element={<AdminBlogs />} />
                 {/* CRM Routes */}
@@ -72,7 +73,8 @@ const App = () => {
                 <Route path="/crm/followups" element={<CRMFollowUps />} />
                 <Route path="/crm/complaints" element={<AdminIssues />} />
                 <Route path="/crm/reviews" element={<AdminReviews />} />
-                <Route path="/sourcing-requests" element={<SourcingRequests />} />
+                <Route path="/service-requests" element={<SourcingRequests />} />
+                <Route path="/sourcing-requests" element={<Navigate to="/service-requests" replace />} />
                 <Route path="/employees" element={<Employees />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
