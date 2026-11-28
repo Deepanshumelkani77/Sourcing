@@ -52,30 +52,6 @@ const CRMDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* CRM Sub-navigation */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div className="flex items-center gap-4">
-          <Link to="/crm" className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-            Dashboard
-          </Link>
-          <Link to="/crm/leads" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-            Leads
-          </Link>
-          <Link to="/crm/customers" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-            Customers
-          </Link>
-          <Link to="/crm/followups" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-            Follow-ups
-          </Link>
-          <Link to="/crm/complaints" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-            Complaints
-          </Link>
-          <Link to="/crm/reviews" className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-            Reviews
-          </Link>
-        </div>
-      </div>
-
       {/* Workflow Visualization */}
       <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-green-50 rounded-xl shadow-sm border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Complete CRM Workflow</h3>
