@@ -369,7 +369,21 @@ const VIEW_BY_ID = Object.fromEntries(VIEWS.map((v) => [v.id, v]))
 const STORAGE_KEY = 'adminDashboardViews'
 const FILTERS_KEY = 'adminDashboardFilters'
 const ATTENTION_KEY = 'adminDashboardAttention'
+const CONTAINER_STATUS_KEY = 'adminDashboardContainerStatuses'
+const FUNNEL_KEY = 'adminDashboardFunnelStages'
 const PAGE = 10
+
+const FUNNEL_STAGE_OPTIONS = ['New', 'Contacted', 'Follow-Up', 'Interested', 'Site Visit', 'Quotation Sent', 'Negotiation', 'Qualified', 'Won', 'Lost']
+const DEFAULT_FUNNEL = ['New', 'Contacted', 'Qualified', 'Won']
+
+const readSavedList = (key) => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(key) || 'null')
+    return Array.isArray(saved) && saved.length ? saved : null
+  } catch (e) {
+    return null
+  }
+}
 
 const readSavedViews = () => {
   try {
@@ -517,14 +531,17 @@ const SkeletonRows = ({ cols }) =>
     </tr>
   ))
 
-const Panel = ({ icon, title, subtitle, children, className = '' }) => (
+const Panel = ({ icon, title, subtitle, action, children, className = '' }) => (
   <div className={`rounded-2xl border border-gray-200 bg-white p-6 shadow-sm ${className}`}>
-    <div className="mb-5 flex items-center gap-3">
-      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#F41703]/10 to-[#F97316]/15 text-[#F41703]">{ICONS[icon]('h-5 w-5')}</span>
-      <div>
-        <h3 className="font-bold text-gray-900">{title}</h3>
-        {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
+    <div className="mb-5 flex items-center justify-between gap-3">
+      <div className="flex items-center gap-3">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#F41703]/10 to-[#F97316]/15 text-[#F41703]">{ICONS[icon]('h-5 w-5')}</span>
+        <div>
+          <h3 className="font-bold text-gray-900">{title}</h3>
+          {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
+        </div>
       </div>
+      {action}
     </div>
     {children}
   </div>
@@ -541,6 +558,66 @@ const Bar = ({ label, value, max, tone = 'from-[#F41703] to-[#F97316]', suffix }
     </div>
     <div className="h-2.5 overflow-hidden rounded-full bg-gray-100">
       <div className={`h-full rounded-full bg-gradient-to-r ${tone} transition-all duration-700`} style={{ width: `${max ? Math.max(value ? 4 : 0, (value / max) * 100) : 0}%` }} />
+    </div>
+  </div>
+)
+
+/* Generic "manage options" modal for dashboard panels */
+const PanelOptionsModal = ({ title, subtitle, options, selected, onToggle, onReset, onClose }) => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+      <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+        <div>
+          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+          <p className="text-sm text-gray-500">{subtitle}</p>
+        </div>
+        <button onClick={onClose} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div className="max-h-[60vh] overflow-y-auto p-6">
+        <div className="grid gap-3 sm:grid-cols-2">
+          {options.map((option) => {
+            const on = selected.includes(option.id)
+            return (
+              <button
+                key={option.id}
+                onClick={() => onToggle(option.id)}
+                className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-all ${
+                  on ? 'border-[#F41703] bg-[#F41703]/5' : 'border-gray-200 bg-white hover:border-gray-300'
+                }`}
+              >
+                <div className="mt-0.5">
+                  <div className={`flex h-5 w-5 items-center justify-center rounded border-2 ${on ? 'border-[#F41703] bg-[#F41703]' : 'border-gray-300'}`}>
+                    {on && (
+                      <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <span className="font-semibold text-gray-900">{option.label}</span>
+                  {option.description && <p className="mt-1 text-xs text-gray-500">{option.description}</p>}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+      <div className="flex items-center justify-between border-t border-gray-200 px-6 py-4">
+        <p className="text-sm text-gray-500">{selected.length} of {options.length} options selected</p>
+        <div className="flex gap-2">
+          <button onClick={onReset} className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+            Reset to default
+          </button>
+          <button onClick={onClose} className="rounded-lg bg-[#F41703] px-5 py-2 text-sm font-semibold text-white hover:bg-[#d10f02]">
+            Done
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 )
@@ -689,6 +766,9 @@ const AdminDashboard = () => {
   const [lastUpdated, setLastUpdated] = useState(null)
   const [activeAttention, setActiveAttention] = useState(savedAttention)
   const [showAttentionModal, setShowAttentionModal] = useState(false)
+  const [containerSel, setContainerSel] = useState(() => readSavedList(CONTAINER_STATUS_KEY))
+  const [funnelSel, setFunnelSel] = useState(() => readSavedList(FUNNEL_KEY))
+  const [panelModal, setPanelModal] = useState(null) // 'containers' | 'funnel'
 
   const yearRef = useRef(yearFilter)
   const monthRef = useRef(monthFilter)
@@ -759,6 +839,20 @@ const AdminDashboard = () => {
     }
   }, [activeAttention])
 
+  useEffect(() => {
+    try {
+      if (containerSel) localStorage.setItem(CONTAINER_STATUS_KEY, JSON.stringify(containerSel))
+      else localStorage.removeItem(CONTAINER_STATUS_KEY)
+    } catch (e) { /* ignore */ }
+  }, [containerSel])
+
+  useEffect(() => {
+    try {
+      if (funnelSel) localStorage.setItem(FUNNEL_KEY, JSON.stringify(funnelSel))
+      else localStorage.removeItem(FUNNEL_KEY)
+    } catch (e) { /* ignore */ }
+  }, [funnelSel])
+
   const toggleView = (id) =>
     setSelectedViews((prev) => {
       if (prev.includes(id)) return prev.length === 1 ? prev : prev.filter((x) => x !== id)
@@ -813,16 +907,21 @@ const AdminDashboard = () => {
     const newLeads = leads.filter((l) => l.status === 'New').length
     const stuffing = containers.filter((c) => c.currentStatus === 'Goods Under Stuffing').length
 
-    const containerStatus = Object.entries(
+    const containerStatusAll = Object.entries(
       containers.reduce((acc, c) => {
         const s = c.currentStatus || 'Unknown'
         acc[s] = (acc[s] || 0) + 1
         return acc
       }, {})
     ).sort((a, b) => b[1] - a[1])
+    const containerStatus = containerSel
+      ? containerStatusAll.filter(([s]) => containerSel.includes(s))
+      : containerStatusAll.slice(0, 5)
 
-    const funnel = ['New', 'Contacted', 'Qualified', 'Converted'].map((s) => [s, leads.filter((l) => l.status === s).length])
-    const converted = funnel[3][1]
+    const funnelAll = FUNNEL_STAGE_OPTIONS.map((s) => [s, leads.filter((l) => l.status === s).length])
+    const funnelStages = funnelSel || DEFAULT_FUNNEL
+    const funnel = funnelAll.filter(([s]) => funnelStages.includes(s))
+    const converted = leads.filter((l) => l.status === 'Won' || l.status === 'Converted').length
 
     // Calculate counts for all attention options
     const attentionCounts = {
@@ -872,7 +971,24 @@ const AdminDashboard = () => {
       funnel,
       conversion: leads.length ? Math.round((converted / leads.length) * 100) : 0
     }
-  }, [data, activeAttention])
+  }, [data, activeAttention, containerSel, funnelSel])
+
+  /* Options for the panel "Manage options" modals */
+  const containerStatusOptions = useMemo(
+    () =>
+      Object.entries(
+        (data.containers || []).reduce((acc, c) => {
+          const s = c.currentStatus || 'Unknown'
+          acc[s] = (acc[s] || 0) + 1
+          return acc
+        }, {})
+      )
+        .sort((a, b) => b[1] - a[1])
+        .map(([s, count]) => ({ id: s, label: s, description: `${count} container${count === 1 ? '' : 's'}` })),
+    [data.containers]
+  )
+  const effectiveContainerSel = containerSel || containerStatusOptions.slice(0, 5).map((o) => o.id)
+  const funnelOptions = FUNNEL_STAGE_OPTIONS.map((s) => ({ id: s, label: s }))
 
   const anyLoading = Object.values(loadingMap).some(Boolean)
   const firstLoadOf = (id) => loadingMap[id] && data[id].length === 0
@@ -987,15 +1103,24 @@ const AdminDashboard = () => {
           </ul>
         </Panel>
 
-        <Panel icon="bars" title="Container status" subtitle={
-          yearFilter && monthFilter
-            ? `${monthNames[monthFilter]} ${yearFilter}`
-            : yearFilter
-            ? `Year ${yearFilter}`
-            : monthFilter
-            ? monthNames[monthFilter]
-            : 'All time'
-        }>
+        <Panel
+          icon="bars"
+          title="Container status"
+          subtitle={
+            yearFilter && monthFilter
+              ? `${monthNames[monthFilter]} ${yearFilter}`
+              : yearFilter
+              ? `Year ${yearFilter}`
+              : monthFilter
+              ? monthNames[monthFilter]
+              : 'All time'
+          }
+          action={
+            <button onClick={() => setPanelModal('containers')} className="text-xs font-semibold text-[#F41703] hover:text-[#d10f02]">
+              Manage options
+            </button>
+          }
+        >
           {firstLoadOf('containers') ? (
             <div className="space-y-4">
               {[...Array(4)].map((_, i) => (
@@ -1013,7 +1138,16 @@ const AdminDashboard = () => {
           )}
         </Panel>
 
-        <Panel icon="funnel" title="Lead pipeline" subtitle={`${stats.conversion}% converted`}>
+        <Panel
+          icon="funnel"
+          title="Lead pipeline"
+          subtitle={`${stats.conversion}% converted`}
+          action={
+            <button onClick={() => setPanelModal('funnel')} className="text-xs font-semibold text-[#F41703] hover:text-[#d10f02]">
+              Manage options
+            </button>
+          }
+        >
           {firstLoadOf('leads') ? (
             <div className="space-y-4">
               {[...Array(4)].map((_, i) => (
@@ -1191,6 +1325,33 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Container status / Lead pipeline options modal */}
+      {panelModal && (
+        <PanelOptionsModal
+          title={panelModal === 'containers' ? 'Manage Container Status Options' : 'Manage Lead Pipeline Stages'}
+          subtitle={panelModal === 'containers' ? 'Select which container statuses to show' : 'Select which pipeline stages to show'}
+          options={panelModal === 'containers' ? containerStatusOptions : funnelOptions}
+          selected={panelModal === 'containers' ? effectiveContainerSel : (funnelSel || DEFAULT_FUNNEL)}
+          onToggle={(id) => {
+            if (panelModal === 'containers') {
+              setContainerSel((prev) => {
+                const cur = prev || containerStatusOptions.slice(0, 5).map((o) => o.id)
+                const next = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]
+                return next.length ? next : cur
+              })
+            } else {
+              setFunnelSel((prev) => {
+                const cur = prev || DEFAULT_FUNNEL
+                const next = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]
+                return next.length ? next : cur
+              })
+            }
+          }}
+          onReset={() => (panelModal === 'containers' ? setContainerSel(null) : setFunnelSel(null))}
+          onClose={() => setPanelModal(null)}
+        />
       )}
     </div>
   )
