@@ -70,6 +70,7 @@ const agreementSchema = new mongoose.Schema({
 
   // Sourcing & Service Terms
   sourcingServiceCharges: { type: Number, default: 0 },
+  sourcingChargePercent: { type: Number, default: null },
   supplierDetails: { type: String, trim: true, default: '' },
   qualityInspectionTerms: { type: String, trim: true, default: '' },
   sampleApprovalTerms: { type: String, trim: true, default: '' },

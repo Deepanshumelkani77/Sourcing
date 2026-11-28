@@ -68,6 +68,7 @@ const emptyForm = () => ({
   products: [{ ...emptyProduct }],
   currency: 'USD',
   sourcingServiceCharges: 0,
+  sourcingChargePercent: '',
   supplierDetails: 'Nest N Best',
   qualityInspectionTerms: '',
   sampleApprovalTerms: '',
@@ -291,6 +292,7 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
       products: a.products?.length ? a.products.map((p) => ({ ...emptyProduct, ...p })) : [{ ...emptyProduct }],
       currency: a.currency || 'USD',
       sourcingServiceCharges: a.sourcingServiceCharges || 0,
+      sourcingChargePercent: a.sourcingChargePercent ?? '',
       supplierDetails: a.supplierDetails || '',
       qualityInspectionTerms: a.qualityInspectionTerms || '',
       sampleApprovalTerms: a.sampleApprovalTerms || '',
@@ -331,7 +333,12 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
     setForm((f) => {
       const products = [...f.products]
       products[index] = { ...products[index], [key]: value }
-      return { ...f, products }
+      const next = { ...f, products }
+      if (f.sourcingChargePercent !== '' && f.sourcingChargePercent != null) {
+        const product = products.reduce((s, p) => s + (Number(p.quantity) || 0) * (Number(p.unitPrice) || 0), 0)
+        next.sourcingServiceCharges = Number(((product * (Number(f.sourcingChargePercent) || 0)) / 100).toFixed(2))
+      }
+      return next
     })
     setErrors((e) => (e.products ? { ...e, products: undefined } : e))
   }
@@ -480,31 +487,29 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
                     ))}
                   </select>
                 </Field>
-                <div className="md:col-span-4 grid grid-cols-1 gap-4 md:grid-cols-4">
-                  <Field label="First name">
-                    <input type="text" value={form.firstName} onChange={(e) => set('firstName', e.target.value)} className={inp()} placeholder="First name" />
-                  </Field>
-                  <Field label="Middle name">
-                    <input type="text" value={form.middleName} onChange={(e) => set('middleName', e.target.value)} className={inp()} placeholder="Middle name" />
-                  </Field>
-                  <Field label="Last name">
-                    <input type="text" value={form.lastName} onChange={(e) => set('lastName', e.target.value)} className={inp()} placeholder="Last name" />
-                  </Field>
-                  <Field label="Customer company name">
-                    <input type="text" value={form.customerCompany} onChange={(e) => set('customerCompany', e.target.value)} className={inp()} />
-                  </Field>
-                  <Field label="Type of company *" error={errors.companyType}>
-                    <select value={form.companyType} onChange={(e) => set('companyType', e.target.value)} className={inp('companyType', errors.companyType)}>
-                      <option value="">Select company type...</option>
-                      {['Private Limited', 'Public Limited', 'LLP', 'Partnership', 'Sole Proprietorship', 'HUF', 'Trust', 'Society', 'Government', 'Other'].map((t) => (
-                        <option key={t} value={t}>{t}</option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="Registration no.">
-                    <input type="text" value={form.registrationNo} onChange={(e) => set('registrationNo', e.target.value)} className={inp()} placeholder="Company registration / CIN number" />
-                  </Field>
-                </div>
+                <Field label="First name">
+                  <input type="text" value={form.firstName} onChange={(e) => set('firstName', e.target.value)} className={inp()} placeholder="First name" />
+                </Field>
+                <Field label="Middle name">
+                  <input type="text" value={form.middleName} onChange={(e) => set('middleName', e.target.value)} className={inp()} placeholder="Middle name" />
+                </Field>
+                <Field label="Last name">
+                  <input type="text" value={form.lastName} onChange={(e) => set('lastName', e.target.value)} className={inp()} placeholder="Last name" />
+                </Field>
+                <Field label="Customer company name">
+                  <input type="text" value={form.customerCompany} onChange={(e) => set('customerCompany', e.target.value)} className={inp()} />
+                </Field>
+                <Field label="Type of company *" error={errors.companyType}>
+                  <select value={form.companyType} onChange={(e) => set('companyType', e.target.value)} className={inp('companyType', errors.companyType)}>
+                    <option value="">Select company type...</option>
+                    {['Private Limited', 'Public Limited', 'LLP', 'Partnership', 'Sole Proprietorship', 'HUF', 'Trust', 'Society', 'Government', 'Other'].map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Registration no.">
+                  <input type="text" value={form.registrationNo} onChange={(e) => set('registrationNo', e.target.value)} className={inp()} placeholder="Company registration / CIN number" />
+                </Field>
                 <Field label="Mobile number">
                   <input type="tel" value={form.mobileNumber} onChange={(e) => set('mobileNumber', e.target.value)} className={inp()} placeholder="Mobile number" />
                 </Field>
@@ -596,7 +601,32 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
 
                 <div className={grid}>
                   <Field label={`Sourcing service charges (${form.currency})`} error={errors.sourcingServiceCharges}>
-                    <input type="number" min="0" step="0.01" value={form.sourcingServiceCharges} onChange={(e) => set('sourcingServiceCharges', e.target.value)} className={inp('x', errors.sourcingServiceCharges)} />
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={form.sourcingServiceCharges}
+                      onChange={(e) => setForm((f) => ({ ...f, sourcingServiceCharges: e.target.value, sourcingChargePercent: '' }))}
+                      className={inp('x', errors.sourcingServiceCharges)}
+                    />
+                  </Field>
+                  <Field label="or percentage of product value (%)">
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={form.sourcingChargePercent}
+                      onChange={(e) => {
+                        const pct = e.target.value
+                        setForm((f) => {
+                          const product = f.products.reduce((s, p) => s + (Number(p.quantity) || 0) * (Number(p.unitPrice) || 0), 0)
+                          const charges = pct === '' ? f.sourcingServiceCharges : Number(((product * (Number(pct) || 0)) / 100).toFixed(2))
+                          return { ...f, sourcingChargePercent: pct, sourcingServiceCharges: charges }
+                        })
+                      }}
+                      className={inp()}
+                      placeholder="e.g. 5"
+                    />
                   </Field>
                   <Field label="Total agreement amount">
                     <input type="text" disabled value={fmtMoney(totals.total, form.currency)} className={`${inputBase} ${inputOk} bg-gray-100 font-bold text-gray-800`} />
@@ -963,7 +993,7 @@ const AgreementView = ({ agreement: a, onClose, onEdit, onPdf, onSend, onSign, o
             </div>
             <dl className="ml-auto mt-4 w-full max-w-xs space-y-2 text-sm">
               <div className="flex justify-between"><dt className="text-gray-500">Product value</dt><dd className="font-semibold">{fmtMoney(productTotal, cur)}</dd></div>
-              <div className="flex justify-between"><dt className="text-gray-500">Sourcing charges</dt><dd className="font-semibold">{fmtMoney(a.sourcingServiceCharges, cur)}</dd></div>
+              <div className="flex justify-between"><dt className="text-gray-500">Sourcing charges</dt><dd className="font-semibold">{fmtMoney(a.sourcingServiceCharges, cur)}{a.sourcingChargePercent != null ? ` (${a.sourcingChargePercent}%)` : ''}</dd></div>
               <div className="flex justify-between border-t border-gray-200 pt-2"><dt className="font-bold text-gray-800">Total</dt><dd className="text-base font-extrabold text-[#F41703]">{fmtMoney(a.totalAmount, cur)}</dd></div>
             </dl>
           </Block>

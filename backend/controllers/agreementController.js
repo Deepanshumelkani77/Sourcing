@@ -22,7 +22,7 @@ const composeCustomerName = (body) => {
   return composed || body.customerName || '';
 };
 
-const NUMERIC_FIELDS = ['sourcingServiceCharges', 'advancePayment', 'remainingPayment'];
+const NUMERIC_FIELDS = ['sourcingServiceCharges', 'sourcingChargePercent', 'advancePayment', 'remainingPayment'];
 
 const sanitizeBody = (body) => {
   const data = { ...body };
