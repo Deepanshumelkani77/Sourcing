@@ -53,7 +53,7 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Routes>
-                <Route path="/" element={<AdminDashboardd/>} />
+                <Route path="/" element={<AdminDashboard/>} />
                 <Route path="/products" element={<AdminProducts />} />
                 <Route path="/services" element={<AdminServices />} />
                 <Route path="/containers" element={<AdminContainers />} />

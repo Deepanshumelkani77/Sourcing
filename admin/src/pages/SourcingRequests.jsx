@@ -109,7 +109,7 @@ const SourcingRequests = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Sourcing Requests</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Service Requests</h2>
           <p className="text-gray-600 mt-1">Manage service requests from the website</p>
         </div>
         <div className="flex items-center gap-3">
