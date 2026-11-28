@@ -953,7 +953,7 @@ const MultiSelect = ({ groups, value = [], onChange, placeholder = 'Select...' }
 const sanitizeFieldValue = (name, type, v) => {
   const s = String(v ?? '')
   if (type === 'tel' || /phone|mobile|whatsapp/i.test(name)) return s.replace(/[^\d+\-\s()]/g, '').slice(0, 20)
-  if (type === 'email' || /email/i.test(name)) return s.replace(/\s/g, '')
+  if (type === 'email' || /email/i.test(name)) return s.replace(/[^a-zA-Z0-9@._%+\-]/g, '')
   if (/pincode/i.test(name)) return s.replace(/\D/g, '').slice(0, 6)
   return s
 }
