@@ -908,16 +908,16 @@ const AdminDashboard = () => {
     const newLeads = leads.filter((l) => l.status === 'New').length
     const stuffing = containers.filter((c) => c.currentStatus === 'Goods Under Stuffing').length
 
-    const containerStatusAll = Object.entries(
-      containers.reduce((acc, c) => {
-        const s = c.currentStatus || 'Unknown'
-        acc[s] = (acc[s] || 0) + 1
-        return acc
-      }, {})
-    ).sort((a, b) => b[1] - a[1])
-    const containerStatus = containerSel
-      ? containerStatusAll.filter(([s]) => containerSel.includes(s))
-      : containerStatusAll.slice(0, 5)
+    const statusCounts = containers.reduce((acc, c) => {
+      const s = c.currentStatus || 'Unknown'
+      acc[s] = (acc[s] || 0) + 1
+      return acc
+    }, {})
+    const containerStatusAll = Object.entries(statusCounts).sort((a, b) => b[1] - a[1])
+    const selectedStatusIds = containerSel || containerStatusAll.slice(0, 5).map(([s]) => s)
+    const containerStatus = selectedStatusIds
+      .map((s) => [s, statusCounts[s] || 0])
+      .sort((a, b) => b[1] - a[1])
 
     const funnelAll = FUNNEL_STAGE_OPTIONS.map((s) => [s, leads.filter((l) => l.status === s).length])
     const funnelStages = funnelSel || DEFAULT_FUNNEL
