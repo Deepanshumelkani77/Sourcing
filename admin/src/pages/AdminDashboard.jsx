@@ -375,6 +375,7 @@ const PAGE = 10
 
 const FUNNEL_STAGE_OPTIONS = ['New', 'Contacted', 'Follow-Up', 'Interested', 'Site Visit', 'Quotation Sent', 'Negotiation', 'Qualified', 'Won', 'Lost']
 const DEFAULT_FUNNEL = ['New', 'Contacted', 'Qualified', 'Won']
+const KNOWN_CONTAINER_STATUSES = ['Goods Under Stuffing', 'Container Loaded', 'Under Shipment', 'Arrival Port Added', 'Custom Clearance', 'Under Transportation', 'Under Delivery', 'Delivered', 'Completed']
 
 const readSavedList = (key) => {
   try {
@@ -974,20 +975,20 @@ const AdminDashboard = () => {
   }, [data, activeAttention, containerSel, funnelSel])
 
   /* Options for the panel "Manage options" modals */
-  const containerStatusOptions = useMemo(
-    () =>
-      Object.entries(
-        (data.containers || []).reduce((acc, c) => {
-          const s = c.currentStatus || 'Unknown'
-          acc[s] = (acc[s] || 0) + 1
-          return acc
-        }, {})
-      )
-        .sort((a, b) => b[1] - a[1])
-        .map(([s, count]) => ({ id: s, label: s, description: `${count} container${count === 1 ? '' : 's'}` })),
-    [data.containers]
-  )
-  const effectiveContainerSel = containerSel || containerStatusOptions.slice(0, 5).map((o) => o.id)
+  const containerStatusOptions = useMemo(() => {
+    const counts = (data.containers || []).reduce((acc, c) => {
+      const s = c.currentStatus || 'Unknown'
+      acc[s] = (acc[s] || 0) + 1
+      return acc
+    }, {})
+    const known = KNOWN_CONTAINER_STATUSES.map((s) => ({ id: s, label: s, description: `${counts[s] || 0} container${(counts[s] || 0) === 1 ? '' : 's'}` }))
+    const extras = Object.keys(counts)
+      .filter((s) => !KNOWN_CONTAINER_STATUSES.includes(s))
+      .sort((a, b) => counts[b] - counts[a])
+      .map((s) => ({ id: s, label: s, description: `${counts[s]} container${counts[s] === 1 ? '' : 's'}` }))
+    return [...known, ...extras]
+  }, [data.containers])
+  const effectiveContainerSel = containerSel || stats.containerStatus.map(([s]) => s)
   const funnelOptions = FUNNEL_STAGE_OPTIONS.map((s) => ({ id: s, label: s }))
 
   const anyLoading = Object.values(loadingMap).some(Boolean)
@@ -1067,15 +1068,16 @@ const AdminDashboard = () => {
 
       {/* ===================== Insights ===================== */}
       <div className="grid gap-6 lg:grid-cols-3">
-        <Panel icon="bell" title="Needs attention" subtitle={`Click an item to view details · ${activeAttention.length} items showing`}>
-          <div className="mb-4">
-            <button
-              onClick={() => setShowAttentionModal(true)}
-              className="text-xs font-semibold text-[#F41703] hover:text-[#d10f02]"
-            >
+        <Panel
+          icon="bell"
+          title="Needs attention"
+          subtitle="Click an item to view details"
+          action={
+            <button onClick={() => setShowAttentionModal(true)} className="text-xs font-semibold text-[#F41703] hover:text-[#d10f02]">
               Manage options
             </button>
-          </div>
+          }
+        >
           <ul className="space-y-2">
             {stats.attention.map((a) => (
               <li key={a.label}>
@@ -1337,7 +1339,7 @@ const AdminDashboard = () => {
           onToggle={(id) => {
             if (panelModal === 'containers') {
               setContainerSel((prev) => {
-                const cur = prev || containerStatusOptions.slice(0, 5).map((o) => o.id)
+                const cur = prev || stats.containerStatus.map(([s]) => s)
                 const next = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]
                 return next.length ? next : cur
               })
