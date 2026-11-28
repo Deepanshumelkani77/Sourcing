@@ -950,6 +950,14 @@ const MultiSelect = ({ groups, value = [], onChange, placeholder = 'Select...' }
 /* ------------------------------------------------------------------ */
 /* Repeating decision-maker entries driven by the count field         */
 /* ------------------------------------------------------------------ */
+const sanitizeFieldValue = (name, type, v) => {
+  const s = String(v ?? '')
+  if (type === 'tel' || /phone|mobile|whatsapp/i.test(name)) return s.replace(/[^\d+\-\s()]/g, '').slice(0, 20)
+  if (type === 'email' || /email/i.test(name)) return s.replace(/\s/g, '')
+  if (/pincode/i.test(name)) return s.replace(/\D/g, '').slice(0, 6)
+  return s
+}
+
 const inputCls = 'w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-xs text-gray-900 outline-none focus:border-[#F41703] focus:ring-1 focus:ring-[#F41703]/30'
 
 const DecisionMakerList = ({ form, update, roleOptions }) => {
@@ -975,7 +983,7 @@ const DecisionMakerList = ({ form, update, roleOptions }) => {
             <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
               <input value={d.name || ''} placeholder="Name" onChange={(e) => setAt(i, 'name', e.target.value)} className={inputCls} />
               <input value={d.designation || ''} placeholder="Designation" onChange={(e) => setAt(i, 'designation', e.target.value)} className={inputCls} />
-              <input value={d.contact || ''} placeholder="Contact" onChange={(e) => setAt(i, 'contact', e.target.value)} className={inputCls} />
+              <input value={d.contact || ''} placeholder="Contact" inputMode="tel" onChange={(e) => setAt(i, 'contact', sanitizeFieldValue('contact', 'tel', e.target.value))} className={inputCls} />
               <select value={d.role || ''} onChange={(e) => setAt(i, 'role', e.target.value)} className={inputCls}>
                 <option value="">Decision role</option>
                 {(roleOptions || []).map((r) => <option key={r} value={r}>{r}</option>)}
@@ -1007,8 +1015,8 @@ const ContactList = ({ form, update }) => {
             <option value="">Role</option>
             {CONTACT_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
           </select>
-          <input value={c.phone || ''} placeholder="Phone" onChange={(e) => setAt(i, 'phone', e.target.value)} className={inputCls} />
-          <input value={c.email || ''} placeholder="Email" onChange={(e) => setAt(i, 'email', e.target.value)} className={inputCls} />
+          <input value={c.phone || ''} placeholder="Phone" inputMode="tel" onChange={(e) => setAt(i, 'phone', sanitizeFieldValue('phone', 'tel', e.target.value))} className={inputCls} />
+          <input value={c.email || ''} placeholder="Email" inputMode="email" onChange={(e) => setAt(i, 'email', sanitizeFieldValue('email', 'email', e.target.value))} className={inputCls} />
           <button type="button" onClick={() => remove(i)} className="rounded-md border border-red-200 px-2 text-xs font-semibold text-red-600 hover:bg-red-50">Remove</button>
         </div>
       ))}
@@ -1388,7 +1396,7 @@ const FieldView = ({ f, form, update, updateMany, error, employees, catalog, onM
       </div>
     )
   } else {
-    control = <input id={id} type={f.type === 'tel' ? 'tel' : f.type === 'datetime' ? 'datetime-local' : f.type} value={value ?? ''} placeholder={f.placeholder} disabled={sameAsMobile} onChange={(e) => update(f.name, e.target.value)} className={`${base} ${sameAsMobile ? 'cursor-not-allowed bg-gray-50 text-gray-400' : ''}`} />
+    control = <input id={id} type={f.type === 'tel' ? 'tel' : f.type === 'datetime' ? 'datetime-local' : f.type} inputMode={f.type === 'tel' ? 'tel' : f.type === 'email' ? 'email' : undefined} value={value ?? ''} placeholder={f.placeholder} disabled={sameAsMobile} onChange={(e) => update(f.name, sanitizeFieldValue(f.name, f.type, e.target.value))} className={`${base} ${sameAsMobile ? 'cursor-not-allowed bg-gray-50 text-gray-400' : ''}`} />
   }
 
   return (

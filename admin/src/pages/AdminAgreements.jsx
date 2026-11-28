@@ -316,7 +316,11 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
   const totals = calcTotals(form)
 
   const set = (key, value) => {
-    setForm((f) => ({ ...f, [key]: value }))
+    let v = value
+    if (/mobile|phone|whatsapp|contact/i.test(key)) v = String(v ?? '').replace(/[^\d+\-\s()]/g, '').slice(0, 20)
+    else if (/email/i.test(key)) v = String(v ?? '').replace(/\s/g, '')
+    else if (/pin/i.test(key)) v = String(v ?? '').replace(/\D/g, '').slice(0, 6)
+    setForm((f) => ({ ...f, [key]: v }))
     setErrors((e) => (e[key] ? { ...e, [key]: undefined } : e))
   }
   const setProduct = (index, key, value) => {
