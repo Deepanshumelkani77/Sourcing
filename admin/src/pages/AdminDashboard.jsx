@@ -1050,14 +1050,17 @@ const AdminDashboard = () => {
                     : 'border-gray-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-[#F41703]/30 hover:shadow-md hover:shadow-[#F41703]/10'
                 }`}
               >
-                <span className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg transition-all ${
+                {/* Decorative background blobs */}
+                <div className={`pointer-events-none absolute -right-4 -top-4 h-20 w-20 rounded-full opacity-10 transition-all ${on ? 'bg-white' : 'bg-[#F41703] group-hover:opacity-20'}`} />
+                <div className={`pointer-events-none absolute -bottom-6 -right-2 h-16 w-16 rounded-full opacity-[0.07] transition-all ${on ? 'bg-white' : 'bg-[#F97316] group-hover:opacity-15'}`} />
+                <span className={`relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg transition-all ${
                   on
                     ? 'bg-white/20 text-white backdrop-blur-sm'
                     : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-600 group-hover:from-[#F41703]/10 group-hover:to-[#F97316]/10 group-hover:text-[#F41703]'
                 }`}>
                   {ICONS[view.id]('h-5 w-5')}
                 </span>
-                <span className="min-w-0 flex-1">
+                <span className="relative min-w-0 flex-1">
                   <span className={`block truncate text-xs font-semibold ${on ? 'text-white/90' : 'text-gray-500'}`}>{view.label}</span>
                   {firstLoadOf(view.id) ? (
                     <span className="mt-1 block h-5 w-14 animate-pulse rounded bg-gray-200" />
@@ -1071,7 +1074,7 @@ const AdminDashboard = () => {
                   )}
                 </span>
                 {on && (
-                  <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
+                  <span className="relative flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
                     {ICONS.check('h-3 w-3')}
                   </span>
                 )}
