@@ -1133,7 +1133,7 @@ const AdminDashboard = () => {
             <p className="py-6 text-center text-sm text-gray-500">No containers to show</p>
           ) : (
             <div className="space-y-4">
-              {stats.containerStatus.slice(0, 5).map(([status, count]) => (
+              {stats.containerStatus.map(([status, count]) => (
                 <Bar key={status} label={status} value={count} max={stats.containerStatus[0][1]} tone={statusTone(status)} />
               ))}
             </div>
