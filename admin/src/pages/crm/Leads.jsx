@@ -2807,15 +2807,21 @@ const Leads = () => {
               key={v.id}
               onClick={() => setQuickView(v.id)}
               aria-pressed={on}
-              className={`group relative overflow-hidden rounded-2xl border bg-white p-4 text-left transition-all duration-300 ${ring} ${on ? 'shadow-lg' : 'border-gray-200 shadow-sm hover:-translate-y-0.5 hover:shadow-md'}`}
+              className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border bg-white px-4 py-3 text-left transition-all duration-300 ${ring} ${on ? 'shadow-lg' : 'border-gray-200 shadow-sm hover:-translate-y-0.5 hover:shadow-md'}`}
               style={on ? { borderColor: v.color, boxShadow: `0 12px 26px -12px ${v.color}77` } : undefined}
             >
-              <span className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-10 transition-opacity group-hover:opacity-20" style={{ background: v.color }} aria-hidden="true" />
-              <span className="relative flex h-10 w-10 items-center justify-center rounded-xl text-white" style={{ background: v.color }}>
+              <span className="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full opacity-10 transition-opacity group-hover:opacity-20" style={{ background: v.color }} aria-hidden="true" />
+              <span className="pointer-events-none absolute -bottom-5 -right-2 h-14 w-14 rounded-full opacity-[0.07] transition-opacity group-hover:opacity-15" style={{ background: v.color }} aria-hidden="true" />
+              <span className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-white" style={{ background: v.color }}>
                 <Icon name={v.icon} className="h-5 w-5" />
               </span>
-              <span className="relative mt-3 block text-2xl font-extrabold tracking-tight text-gray-900">{loading ? '–' : counts[v.id]}</span>
-              <span className="relative block text-xs font-semibold text-gray-500">{v.label}</span>
+              <span className="relative min-w-0 flex-1">
+                <span className="block truncate text-[11px] font-semibold uppercase tracking-wide text-gray-500">{v.label}</span>
+                <span className="mt-0.5 flex items-baseline gap-1.5">
+                  <span className="text-xl font-extrabold tracking-tight text-gray-900">{loading ? '–' : counts[v.id]}</span>
+                  {on && <span className="text-[10px] font-bold" style={{ color: v.color }}>●</span>}
+                </span>
+              </span>
             </button>
           )
         })}
