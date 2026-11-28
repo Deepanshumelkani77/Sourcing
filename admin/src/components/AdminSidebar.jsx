@@ -4,7 +4,8 @@ import { Link, useLocation } from 'react-router-dom'
 const LEADS_SUBITEMS = [
   { path: '/crm/leads', label: 'Leads' },
   { path: '/service-requests', label: 'Service Requests' },
-  { path: '/product-requests', label: 'Product Requests' }
+  { path: '/product-requests', label: 'Product Requests' },
+  { path: '/contact-submissions', label: 'Contact Submissions' }
 ]
 
 const CRM_ITEMS = [
@@ -105,7 +106,6 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
     { path: '/jobs', label: 'Careers', icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
     { path: '/agreements', label: 'Agreements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
     { path: '/blogs', label: 'Blogs', icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1h2a2 2 0 012 2v8a2 2 0 01-2 2h-2zM9 7h6M9 11h6M9 15h6' },
-    { path: '/contact-submissions', label: 'Contact Submissions', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
     { path: '/employees', label: 'Employees', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' }
   ]
 
