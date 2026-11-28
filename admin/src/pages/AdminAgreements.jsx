@@ -68,7 +68,7 @@ const emptyForm = () => ({
   products: [{ ...emptyProduct }],
   currency: 'USD',
   sourcingServiceCharges: 0,
-  supplierDetails: '',
+  supplierDetails: 'Nest N Best',
   qualityInspectionTerms: '',
   sampleApprovalTerms: '',
   packagingRequirements: '',
@@ -608,7 +608,13 @@ const AgreementForm = ({ editing, customers, orders, onClose, onSaved, notify })
             {step === 2 && (
               <div className={grid}>
                 <Field label="Supplier details" span>
-                  <input type="text" value={form.supplierDetails} onChange={(e) => set('supplierDetails', e.target.value)} className={inp()} placeholder="e.g. Supplier name, location" />
+                  <input type="text" list="supplier-options" value={form.supplierDetails} onChange={(e) => set('supplierDetails', e.target.value)} className={inp()} placeholder="e.g. Supplier name, location" />
+                  <datalist id="supplier-options">
+                    <option value="Nest N Best" />
+                    <option value="Guangzhou Trading Co." />
+                    <option value="Shenzhen Electronics Ltd." />
+                    <option value="Yiwu Commodity Market" />
+                  </datalist>
                 </Field>
                 {textarea('qualityInspectionTerms', 'Quality inspection terms')}
                 {textarea('sampleApprovalTerms', 'Sample approval terms')}
